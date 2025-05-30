@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>Nouveau Projet BookShop</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+  <style>
+    :root {
+      --primary-text: #222;
+      --secondary-text: #555;
+      --border-radius-pill: 2rem;
+      --border-radius-circle: 50%; /* Added for circular icon background */
+      --border-color: #e0e0e0;
+      --accent: #0064d2; /* Couleur d'accentuation pour le lien actif */
+      --icon-bg-active: rgba(0, 100, 210, 0.12); /* Background for active icon */
+      --ripple-color: rgba(0, 100, 210, 0.25); /* Ripple color */
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      font-family: 'Roboto', sans-serif;
+      background: #fff;
+      color: var(--primary-text);
+      -webkit-font-smoothing: antialiased;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      display: flex;
+      flex-direction: column;
+      height: 100vh; 
+      height: 100dvh;
+      visibility: hidden; /* Caché initialement pour éviter FOUC */
+    }
+
+    /* --- Gestion de la visibilité des "pages" --- */
+    main.page {
+      display: none;            /* cachée par défaut */
+      flex: 1 1 auto;           /* occupe l’espace restant */
+      width: 100%;              /* toute la largeur */
+      overflow-y: auto;         /* scroll interne si besoin */
+      padding: 1rem;            /* Un peu de padding pour le contenu */
+      padding-bottom: calc(56px + 1rem + env(safe-area-inset-bottom));
+    }
+
+    main.page.visible {
+      display: flex;            /* devient visible et flex */
+      flex-direction: column;
+    }
+
+    /* NAVIGATION BAR */
+    nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #fff;
+      border-top: 1px solid var(--border-color);
+      z-index: 300;
+    }
+
+    .nav-inner {
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+      padding: 0.4rem 0 env(safe-area-inset-bottom) 0;
+    }
+
+    .nav-link {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      color: var(--secondary-text);
+      outline: none;
+      user-select: none;
+      position: relative;
+      /* overflow: hidden; /* Not strictly needed here anymore for ripple */
+      padding: 0.6rem 0; /* Padding for the whole clickable area */
+      /* border-radius: var(--border-radius-pill); /* Not visually needed if no bg on nav-link */
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      gap: 0.2rem; /* MODIFIED: Added gap between icon container and text */
+    }
+
+    /* NEW: Container for the icon, to handle its background and ripple */
+    .nav-icon-container {
+      position: relative; /* For ripple positioning */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.4rem; /* Adjust as needed */
+      height: 2.4rem; /* Adjust as needed */
+      border-radius: var(--border-radius-circle); /* Circular background */
+      overflow: hidden; /* To contain the ripple */
+      transition: background-color 0.2s ease-in-out;
+    }
+
+    .nav-link i { /* Icon itself */
+      font-size: 1.25rem; 
+      line-height: 1; /* Helps with vertical alignment if needed */
+    }
+    
+    .nav-link span:not(.nav-icon-container) { /* Style for the text part */
+        transition: color 0.2s ease-in-out;
+    }
+
+
+    /* MODIFIED: Active state styles */
+    .nav-link.active {
+      color: var(--accent); /* Text color changes */
+      /* background: rgba(0, 100, 210, 0.12); /* REMOVED: Background moved to icon container */
+    }
+
+    .nav-link.active .nav-icon-container {
+      background: var(--icon-bg-active); /* Background only on icon container */
+    }
+    
+    /* RIPPLE EFFECT */
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      background: var(--ripple-color); /* Using variable */
+      animation: ripple 600ms linear;
+      pointer-events: none;
+    }
+
+    @keyframes ripple {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main id="home" class="page visible">
+    <h1>Page d'Accueil</h1>
+    <p>C'est le contenu de la page d'accueil.</p>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    <p>Scrollable content to test padding...</p>
+    <p>Scrollable content to test padding...</p>
+    <p>Scrollable content to test padding...</p>
+    <p>Scrollable content to test padding...</p>
+    <p>Scrollable content to test padding...</p>
+    <p>Scrollable content to test padding...</p>
+    <p>Scrollable content to test padding...</p>
+    <p>Scrollable content to test padding...</p>
+    <p>Scrollable content to test padding...</p>
+    <p>Scrollable content to test padding...</p>
+    <p>Scrollable content to test padding...</p>
+    <p>Scrollable content to test padding...</p>
+    <p>Scrollable content to test padding...</p>
+    <p>Scrollable content to test padding...</p>
+    <p>Scrollable content to test padding...</p>
+  </main>
+
+  <main id="catalog" class="page">
+    <h1>Page Catalogue</h1>
+    <p>C'est le contenu de la page catalogue.</p>
+  </main>
+
+  <main id="sales" class="page">
+    <h1>Page Ventes</h1>
+    <p>C'est le contenu de la page des ventes.</p>
+  </main>
+
+  <main id="account" class="page">
+    <h1>Page Compte</h1>
+    <p>C'est le contenu de la page de compte.</p>
+  </main>
+
+  <main id="not-found" class="page" style="text-align:center; justify-content:center; align-items:center;">
+    <div>
+      <i class="bi bi-emoji-frown" style="font-size: 3rem; color: var(--secondary-text); margin-bottom: 1rem;"></i>
+      <h2>Page non trouvée</h2>
+      <p style="color: var(--secondary-text); margin-bottom: 1.5rem;">Désolé, la page que vous cherchez n'existe pas.</p>
+      <a href="#home" data-hash="home" class="nav-link" style="color: var(--accent); text-decoration:underline; flex-direction: row; gap: 0.5em;">
+         <span class="nav-icon-container" style="width:auto; height:auto; background:transparent;"> <i class="bi bi-house-door-fill"></i>
+         </span>
+         <span>Retour à l'accueil</span>
+      </a>
+    </div>
+  </main>
+
+  <nav aria-label="Main navigation">
+    <div class="nav-inner">
+      <a href="#home" data-hash="home" class="nav-link active" aria-label="Home">
+        <span class="nav-icon-container">
+          <i class="bi bi-house-door-fill"></i>
+        </span>
+        <span>Accueil</span>
+      </a>
+      <a href="#catalog" data-hash="catalog" class="nav-link" aria-label="Catalog">
+        <span class="nav-icon-container">
+          <i class="bi bi-journal-richtext"></i>
+        </span>
+        <span>Catalogue</span>
+      </a>
+      <a href="#sales" data-hash="sales" class="nav-link" aria-label="Sales History">
+        <span class="nav-icon-container">
+          <i class="bi bi-receipt"></i>
+        </span>
+        <span>Ventes</span>
+      </a>
+      <a href="#account" data-hash="account" class="nav-link" aria-label="Account">
+        <span class="nav-icon-container">
+          <i class="bi bi-person-fill"></i>
+        </span>
+        <span>Compte</span>
+      </a>
+    </div>
+  </nav>
+
+  <script>
+  // Script de routage simplifié pour la navigation
+  (function() {
+    const allPages = document.querySelectorAll('main.page');
+    const navLinks = document.querySelectorAll('nav .nav-link');
+
+    function showOnlyPage(pageIdToShow) {
+      let pageFound = false;
+      allPages.forEach(p => {
+        const isVisible = p.id === pageIdToShow;
+        p.classList.toggle('visible', isVisible);
+        if (isVisible) {
+          pageFound = true;
+        }
+      });
+
+      if (!pageFound) {
+        allPages.forEach(p => p.classList.toggle('visible', p.id === 'not-found'));
+        pageIdToShow = 'not-found';
+      }
+      
+      navLinks.forEach(el => {
+        el.classList.toggle('active', el.dataset.hash === pageIdToShow);
+      });
+
+      const activePageElement = document.getElementById(pageIdToShow);
+      if (activePageElement) {
+        activePageElement.scrollTop = 0;
+      }
+    }
+
+    function route() {
+      const hashKey = location.hash.slice(1) || 'home';
+      showOnlyPage(hashKey);
+    }
+
+    window.addEventListener('hashchange', route);
+    window.addEventListener('load', () => {
+      route(); // Gérer la route initiale
+      document.body.style.visibility = 'visible'; // Rendre le body visible après le premier routage
+    });
+
+    // Effet Ripple sur les liens de navigation
+    document.body.addEventListener('click', e => {
+      const navLinkElement = e.target.closest('.nav-link');
+      if (!navLinkElement) return;
+
+      // Gérer la navigation si ce n'est pas déjà fait par href
+      if (navLinkElement.dataset.hash && (location.hash !== '#' + navLinkElement.dataset.hash || navLinkElement.tagName !== 'A')) {
+          // Check if the click is on the "Retour à l'accueil" link on the not-found page
+          // This link might not need the special ripple handling if it's just a standard anchor.
+          // However, if we want consistent behavior for all .nav-link elements:
+          if (location.hash !== '#' + navLinkElement.dataset.hash) {
+            location.hash = navLinkElement.dataset.hash;
+          }
+      }
+      
+      // MODIFIED: Ripple effect logic
+      const iconContainer = navLinkElement.querySelector('.nav-icon-container');
+      // Only apply ripple if the icon container exists (it should for main nav items)
+      // and if the click is on a main navigation link (not the special one on not-found page unless styled similarly)
+      if (iconContainer && navLinkElement.closest('nav')) { 
+        const rect = iconContainer.getBoundingClientRect();
+        const rippleSize = Math.max(rect.width, rect.height) * 1.5; // Make ripple a bit larger than container
+        const rippleSpan = document.createElement('span');
+        rippleSpan.className = 'ripple';
+        rippleSpan.style.width = rippleSpan.style.height = rippleSize + 'px';
+
+        // Position ripple in the center of the icon container
+        rippleSpan.style.left = (iconContainer.offsetWidth / 2 - rippleSize / 2) + 'px';
+        rippleSpan.style.top = (iconContainer.offsetHeight / 2 - rippleSize / 2) + 'px';
+
+        const existingRipple = iconContainer.querySelector('.ripple');
+        if (existingRipple) existingRipple.remove();
+
+        iconContainer.appendChild(rippleSpan);
+        rippleSpan.addEventListener('animationend', () => rippleSpan.remove(), { once: true });
+      }
+    });
+
+  })();
+  </script>
+</body>
+</html>
