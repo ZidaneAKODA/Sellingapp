@@ -12,12 +12,13 @@
     :root {
       --primary-text: #222;
       --secondary-text: #555;
-      --border-radius-pill: 1rem; /* Adjusted for new nav icon container shape */
-      --border-radius-circle: 50%; /* Kept for other potential uses */
+      --border-radius-pill: 1rem; 
+      --border-radius-circle: 50%; 
       --border-color: #e0e0e0;
-      --accent: #0064d2; /* Couleur d'accentuation pour le lien actif */
-      --icon-bg-active: rgba(0, 100, 210, 0.12); /* Background for active icon's container */
-      --ripple-color: rgba(0, 100, 210, 0.25); /* Ripple color */
+      --accent: #0064d2; 
+      --icon-bg-active: rgba(0, 100, 210, 0.12); 
+      --ripple-color: rgba(0, 100, 210, 0.25); 
+      --icon-default-color: #000000; /* MODIFIED: Pure black for default icon color */
     }
 
     *, *::before, *::after {
@@ -48,7 +49,7 @@
       width: 100%;                
       overflow-y: auto;           
       padding: 1rem;              
-      padding-bottom: calc(60px + 1rem + env(safe-area-inset-bottom)); /* Adjusted slightly for potentially taller nav items due to icon container */
+      padding-bottom: calc(60px + 1rem + env(safe-area-inset-bottom)); 
     }
 
     main.page.visible {
@@ -80,16 +81,16 @@
       align-items: center;
       justify-content: center;
       font-size: 0.8rem;
-      color: var(--secondary-text);
+      color: var(--secondary-text); /* Default color for text */
       outline: none;
       user-select: none;
       position: relative;
-      padding: 0.5rem 0; /* Adjusted padding slightly */
+      padding: 0.5rem 0; 
       background: none;
       border: none;
       cursor: pointer;
       text-decoration: none;
-      gap: 0.25rem; /* Slightly increased gap */
+      gap: 0.25rem; 
     }
 
     .nav-icon-container {
@@ -97,18 +98,18 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      /* MODIFIED: Dimensions for horizontal rectangle with rounded ends */
-      width: 3.2rem;  /* Horizontally longer */
-      height: 2rem;   /* Vertically shorter */
-      border-radius: var(--border-radius-pill); /* Pill shape (1rem) */
+      width: 3.2rem;  
+      height: 2rem;   
+      border-radius: var(--border-radius-pill); 
       overflow: hidden; 
       transition: background-color 0.2s ease-in-out;
     }
 
     .nav-link i { /* Icon itself */
-      font-size: 1.4rem; /* MODIFIED: Slightly larger icons */
+      font-size: 1.4rem; 
       line-height: 1; 
-      transition: color 0.2s ease-in-out; /* For icon color transition if needed */
+      color: var(--icon-default-color); /* MODIFIED: Default icon color set to pure black */
+      transition: color 0.2s ease-in-out; 
     }
     
     .nav-link span:not(.nav-icon-container) { 
@@ -119,10 +120,9 @@
       color: var(--accent); 
     }
     
-    /* Icon color for active link (if not handled by fill change) */
-    /* .nav-link.active i { 
+    .nav-link.active i { /* MODIFIED: Icon color for active link */
       color: var(--accent); 
-    } */
+    }
 
     .nav-link.active .nav-icon-container {
       background: var(--icon-bg-active); 
@@ -193,7 +193,7 @@
       <p style="color: var(--secondary-text); margin-bottom: 1.5rem;">Désolé, la page que vous cherchez n'existe pas.</p>
       <a href="#home" data-hash="home" class="nav-link" style="color: var(--accent); text-decoration:underline; flex-direction: row; gap: 0.5em;">
           <span class="nav-icon-container" style="width:auto; height:auto; background:transparent; border-radius:0;"> 
-            <i class="bi bi-house-door-fill"></i> </span>
+            <i class="bi bi-house-door-fill" style="color: var(--accent);"></i> </span>
           <span>Retour à l'accueil</span>
       </a>
     </div>
@@ -203,10 +203,12 @@
     <div class="nav-inner">
       <a href="#home" data-hash="home" class="nav-link active" aria-label="Accueil" data-icon-outline="bi-house-door" data-icon-fill="bi-house-door-fill">
         <span class="nav-icon-container">
-          <i class="bi bi-house-door"></i> </span>
+          <i class="bi bi-house-door"></i> 
+        </span>
         <span>Accueil</span>
       </a>
-      <a href="#search" data-hash="search" class="nav-link" aria-label="Recherche" data-icon-outline="bi-search" data-icon-fill="bi-search"> <span class="nav-icon-container">
+      <a href="#search" data-hash="search" class="nav-link" aria-label="Recherche" data-icon-outline="bi-search" data-icon-fill="bi-search"> 
+        <span class="nav-icon-container">
           <i class="bi bi-search"></i> 
         </span>
         <span>Recherche</span>
@@ -231,7 +233,6 @@
   const allPages = document.querySelectorAll('main.page');
   const navLinks = document.querySelectorAll('nav .nav-link');
 
-  // Function to update icon based on active state
   function updateNavIcon(navLinkElement, isActive) {
     const iconElement = navLinkElement.querySelector('.nav-icon-container i');
     if (!iconElement) return;
@@ -240,13 +241,11 @@
     const fillIconClass = navLinkElement.dataset.iconFill;
 
     if (isActive) {
-      iconElement.className = `bi ${fillIconClass}`; // Set filled icon
-      // Optional: if you want the icon itself to change color to accent
-      // iconElement.style.color = 'var(--accent)'; 
+      iconElement.className = `bi ${fillIconClass}`; 
+      iconElement.style.color = 'var(--accent)'; // MODIFIED: Set icon color to accent when active
     } else {
-      iconElement.className = `bi ${outlineIconClass}`; // Set outline icon
-      // Optional: reset icon color if it was changed
-      // iconElement.style.color = 'var(--secondary-text)'; // Or inherit
+      iconElement.className = `bi ${outlineIconClass}`; 
+      iconElement.style.color = 'var(--icon-default-color)'; // MODIFIED: Set icon color to default (black) when inactive
     }
   }
 
@@ -270,7 +269,7 @@
       if (linkHash) {
         const isActive = linkHash === pageIdToShow;
         el.classList.toggle('active', isActive);
-        updateNavIcon(el, isActive); // Update icon based on active state
+        updateNavIcon(el, isActive); 
       }
     });
 
@@ -289,7 +288,6 @@
   window.addEventListener('load', () => {
     route(); 
     document.body.style.visibility = 'visible';
-    // Ensure initial active link icon is correctly set to filled
     const initialActiveLink = document.querySelector('nav .nav-link.active');
     if (initialActiveLink) {
         updateNavIcon(initialActiveLink, true);
