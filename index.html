@@ -12,8 +12,8 @@
     :root {
       --primary-text: #222;
       --secondary-text: #555;
-      --border-radius-pill: 2rem;
-      --border-radius-circle: 50%; /* Added for circular icon background */
+      --border-radius-pill: 1rem; /* Adjusted for new nav icon container shape */
+      --border-radius-circle: 50%;
       --border-color: #e0e0e0;
       --accent: #0064d2; /* Couleur d'accentuation pour le lien actif */
       --icon-bg-active: rgba(0, 100, 210, 0.12); /* Background for active icon */
@@ -37,7 +37,7 @@
       -webkit-tap-highlight-color: transparent;
       display: flex;
       flex-direction: column;
-      height: 100vh; 
+      height: 100vh;  
       height: 100dvh;
       visibility: hidden; /* Caché initialement pour éviter FOUC */
     }
@@ -49,7 +49,7 @@
       width: 100%;              /* toute la largeur */
       overflow-y: auto;         /* scroll interne si besoin */
       padding: 1rem;            /* Un peu de padding pour le contenu */
-      padding-bottom: calc(56px + 1rem + env(safe-area-inset-bottom));
+      padding-bottom: calc(56px + 1rem + env(safe-area-inset-bottom)); /* Adjust 56px if nav height changes significantly */
     }
 
     main.page.visible {
@@ -86,43 +86,40 @@
       outline: none;
       user-select: none;
       position: relative;
-      /* overflow: hidden; /* Not strictly needed here anymore for ripple */
       padding: 0.6rem 0; /* Padding for the whole clickable area */
-      /* border-radius: var(--border-radius-pill); /* Not visually needed if no bg on nav-link */
       background: none;
       border: none;
       cursor: pointer;
       text-decoration: none;
-      gap: 0.2rem; /* MODIFIED: Added gap between icon container and text */
+      gap: 0.2rem; 
     }
 
-    /* NEW: Container for the icon, to handle its background and ripple */
+    /* Container for the icon, to handle its background and ripple */
     .nav-icon-container {
       position: relative; /* For ripple positioning */
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 2.4rem; /* Adjust as needed */
-      height: 2.4rem; /* Adjust as needed */
-      border-radius: var(--border-radius-circle); /* Circular background */
+      /* MODIFIED: Dimensions for horizontal rectangle with rounded ends */
+      width: 3.2rem;  /* Horizontally longer */
+      height: 2rem;   /* Vertically shorter */
+      border-radius: var(--border-radius-pill); /* Pill shape (1rem) */
       overflow: hidden; /* To contain the ripple */
       transition: background-color 0.2s ease-in-out;
     }
 
     .nav-link i { /* Icon itself */
-      font-size: 1.25rem; 
-      line-height: 1; /* Helps with vertical alignment if needed */
+      font-size: 1.25rem;  
+      line-height: 1; 
     }
     
     .nav-link span:not(.nav-icon-container) { /* Style for the text part */
         transition: color 0.2s ease-in-out;
     }
 
-
-    /* MODIFIED: Active state styles */
+    /* Active state styles */
     .nav-link.active {
       color: var(--accent); /* Text color changes */
-      /* background: rgba(0, 100, 210, 0.12); /* REMOVED: Background moved to icon container */
     }
 
     .nav-link.active .nav-icon-container {
@@ -134,7 +131,7 @@
       position: absolute;
       border-radius: 50%;
       transform: scale(0);
-      background: var(--ripple-color); /* Using variable */
+      background: var(--ripple-color); 
       animation: ripple 600ms linear;
       pointer-events: none;
     }
@@ -192,7 +189,7 @@
       <h2>Page non trouvée</h2>
       <p style="color: var(--secondary-text); margin-bottom: 1.5rem;">Désolé, la page que vous cherchez n'existe pas.</p>
       <a href="#home" data-hash="home" class="nav-link" style="color: var(--accent); text-decoration:underline; flex-direction: row; gap: 0.5em;">
-         <span class="nav-icon-container" style="width:auto; height:auto; background:transparent;"> <i class="bi bi-house-door-fill"></i>
+         <span class="nav-icon-container" style="width:auto; height:auto; background:transparent; border-radius: 0;"> <i class="bi bi-house-door-fill"></i>
          </span>
          <span>Retour à l'accueil</span>
       </a>
@@ -232,7 +229,8 @@
   // Script de routage simplifié pour la navigation
   (function() {
     const allPages = document.querySelectorAll('main.page');
-    const navLinks = document.querySelectorAll('nav .nav-link');
+    const navLinks = document.querySelectorAll('nav .nav-link'); // Main navigation links
+    const allNavLinkElements = document.querySelectorAll('.nav-link'); // All elements that can act as nav links
 
     function showOnlyPage(pageIdToShow) {
       let pageFound = false;
@@ -249,10 +247,12 @@
         pageIdToShow = 'not-found';
       }
       
+      // Update active state for main navigation links
       navLinks.forEach(el => {
         el.classList.toggle('active', el.dataset.hash === pageIdToShow);
       });
 
+      // Reset scroll for the new page
       const activePageElement = document.getElementById(pageIdToShow);
       if (activePageElement) {
         activePageElement.scrollTop = 0;
@@ -270,41 +270,39 @@
       document.body.style.visibility = 'visible'; // Rendre le body visible après le premier routage
     });
 
-    // Effet Ripple sur les liens de navigation
+    // Effet Ripple
     document.body.addEventListener('click', e => {
       const navLinkElement = e.target.closest('.nav-link');
       if (!navLinkElement) return;
 
-      // Gérer la navigation si ce n'est pas déjà fait par href
-      if (navLinkElement.dataset.hash && (location.hash !== '#' + navLinkElement.dataset.hash || navLinkElement.tagName !== 'A')) {
-          // Check if the click is on the "Retour à l'accueil" link on the not-found page
-          // This link might not need the special ripple handling if it's just a standard anchor.
-          // However, if we want consistent behavior for all .nav-link elements:
-          if (location.hash !== '#' + navLinkElement.dataset.hash) {
-            location.hash = navLinkElement.dataset.hash;
-          }
+      // Handle navigation if it's a link with data-hash
+      if (navLinkElement.dataset.hash && (location.hash !== '#' + navLinkElement.dataset.hash)) {
+          location.hash = navLinkElement.dataset.hash;
+          // route() will be called by 'hashchange' event
       }
       
-      // MODIFIED: Ripple effect logic
-      const iconContainer = navLinkElement.querySelector('.nav-icon-container');
-      // Only apply ripple if the icon container exists (it should for main nav items)
-      // and if the click is on a main navigation link (not the special one on not-found page unless styled similarly)
-      if (iconContainer && navLinkElement.closest('nav')) { 
-        const rect = iconContainer.getBoundingClientRect();
-        const rippleSize = Math.max(rect.width, rect.height) * 1.5; // Make ripple a bit larger than container
-        const rippleSpan = document.createElement('span');
-        rippleSpan.className = 'ripple';
-        rippleSpan.style.width = rippleSpan.style.height = rippleSize + 'px';
+      // Ripple effect logic for main navigation items
+      // Check if the clicked navLinkElement is within the main <nav>
+      if (navLinkElement.closest('nav')) {
+        const iconContainer = navLinkElement.querySelector('.nav-icon-container');
+        if (iconContainer) { // Ensure iconContainer exists
+          const rect = iconContainer.getBoundingClientRect();
+          // Make ripple slightly larger than the longest dimension of the icon container
+          const rippleSize = Math.max(iconContainer.offsetWidth, iconContainer.offsetHeight) * 1.5; 
+          const rippleSpan = document.createElement('span');
+          rippleSpan.className = 'ripple';
+          rippleSpan.style.width = rippleSpan.style.height = rippleSize + 'px';
 
-        // Position ripple in the center of the icon container
-        rippleSpan.style.left = (iconContainer.offsetWidth / 2 - rippleSize / 2) + 'px';
-        rippleSpan.style.top = (iconContainer.offsetHeight / 2 - rippleSize / 2) + 'px';
+          // Position ripple in the center of the icon container
+          rippleSpan.style.left = (iconContainer.offsetWidth / 2 - rippleSize / 2) + 'px';
+          rippleSpan.style.top = (iconContainer.offsetHeight / 2 - rippleSize / 2) + 'px';
 
-        const existingRipple = iconContainer.querySelector('.ripple');
-        if (existingRipple) existingRipple.remove();
+          const existingRipple = iconContainer.querySelector('.ripple');
+          if (existingRipple) existingRipple.remove();
 
-        iconContainer.appendChild(rippleSpan);
-        rippleSpan.addEventListener('animationend', () => rippleSpan.remove(), { once: true });
+          iconContainer.appendChild(rippleSpan);
+          rippleSpan.addEventListener('animationend', () => rippleSpan.remove(), { once: true });
+        }
       }
     });
 
