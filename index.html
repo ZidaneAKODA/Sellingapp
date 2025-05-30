@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <title>Application E-commerce</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script> <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
   <style>
@@ -18,7 +18,12 @@
       --accent: #0064d2; 
       --icon-bg-active: rgba(0, 100, 210, 0.12); 
       --ripple-color: rgba(0, 100, 210, 0.25); 
-      --icon-default-color: #000000; /* MODIFIED: Pure black for default icon color */
+      --icon-default-color: #000000;
+      /* Variables from Code B or for merged content */
+      --surface: #fff;
+      --content-bg: #f0f2f5;
+      --border-radius-card: 0.75rem; /* For cards from Code B */
+      --ebay-blue-color: #0063d3; /* Code B's accent, similar to Code A's */
     }
 
     *, *::before, *::after {
@@ -30,8 +35,8 @@
     html, body {
       width: 100%;
       height: 100%;
-      font-family: 'Roboto', sans-serif;
-      background: #fff;
+      font-family: 'Roboto', sans-serif; /* Using Roboto from Code A */
+      background-color: var(--content-bg); /* Page background from Code B's theme */
       color: var(--primary-text);
       -webkit-font-smoothing: antialiased;
       touch-action: manipulation;
@@ -40,29 +45,41 @@
       flex-direction: column;
       height: 100vh; 
       height: 100dvh; 
-      visibility: hidden; 
+      visibility: hidden; /* Initially hidden, made visible by JS */
     }
 
     main.page {
-      display: none;              
-      flex: 1 1 auto;             
-      width: 100%;                
-      overflow-y: auto;           
-      padding: 1rem;              
+      display: none;            
+      flex: 1 1 auto;           
+      width: 100%;              
+      overflow-y: auto;         
+      background-color: var(--surface); /* Make pages like white cards */
+      /* Padding for non-home pages, home page will override some */
+      padding: 1rem; 
       padding-bottom: calc(60px + 1rem + env(safe-area-inset-bottom)); 
     }
+    
+    /* Specific padding overrides for home page to accommodate sticky header */
+    main#home.page {
+        padding-left: 0;
+        padding-right: 0;
+        padding-top: 0;
+         /* padding-bottom is already set for nav bar by general main.page rule */
+    }
+
 
     main.page.visible {
-      display: flex;              
+      display: flex;            
       flex-direction: column;
     }
 
+    /* Navigation styles from Code A */
     nav {
       position: fixed;
       bottom: 0;
       left: 0;
       width: 100%;
-      background: #fff;
+      background: var(--surface); /* Using --surface for consistency */
       border-top: 1px solid var(--border-color);
       z-index: 300;
     }
@@ -81,7 +98,7 @@
       align-items: center;
       justify-content: center;
       font-size: 0.8rem;
-      color: var(--secondary-text); /* Default color for text */
+      color: var(--secondary-text);
       outline: none;
       user-select: none;
       position: relative;
@@ -105,10 +122,10 @@
       transition: background-color 0.2s ease-in-out;
     }
 
-    .nav-link i { /* Icon itself */
+    .nav-link i { /* Icon itself in nav */
       font-size: 1.4rem; 
       line-height: 1; 
-      color: var(--icon-default-color); /* MODIFIED: Default icon color set to pure black */
+      color: var(--icon-default-color);
       transition: color 0.2s ease-in-out; 
     }
     
@@ -116,11 +133,11 @@
         transition: color 0.2s ease-in-out;
     }
 
-    .nav-link.active span:not(.nav-icon-container) { /* Text color for active link */
+    .nav-link.active span:not(.nav-icon-container) {
       color: var(--accent); 
     }
     
-    .nav-link.active i { /* MODIFIED: Icon color for active link */
+    .nav-link.active i {
       color: var(--accent); 
     }
 
@@ -128,20 +145,92 @@
       background: var(--icon-bg-active); 
     }
     
-    .ripple {
+    /* Ripple for Navigation Icons (Code A) */
+    .nav-icon-container .ripple {
       position: absolute;
       border-radius: 50%;
       transform: scale(0);
       background: var(--ripple-color); 
-      animation: ripple 600ms linear;
+      animation: nav-ripple-effect 600ms linear; /* Renamed to avoid conflict */
       pointer-events: none;
     }
 
-    @keyframes ripple {
+    @keyframes nav-ripple-effect { /* Renamed to avoid conflict */
       to {
         transform: scale(4);
         opacity: 0;
       }
+    }
+
+    /* Styles from Code B for integrated content */
+    .ebay-blue-text { color: var(--ebay-blue-color); } /* Using specific var for clarity */
+    .ebay-red-notification { background-color: #d90000; }
+    .search-icon-color { color: var(--secondary-text); }
+    .header-bg { background-color: var(--surface); }
+    .content-bg-div { background-color: var(--content-bg); } /* Wrapper for main content area of home page */
+    .card-bg { background-color: var(--surface); }
+
+    .category-chip {
+      border: 1px solid var(--border-color);
+      padding: 6px 14px;
+      border-radius: var(--border-radius-pill); /* Using Code A's pill radius */
+      font-size: 0.8rem;
+      margin-right: 8px;
+      color: var(--primary-text);
+      background-color: var(--surface);
+      white-space: nowrap;
+      transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+      cursor: pointer;
+    }
+    .category-chip.active {
+      background-color: var(--accent); /* Using Code A's accent */
+      color: white;
+      font-weight: 500;
+      border-color: var(--accent);
+    }
+
+    .horizontal-scroll-container {
+      display: flex;
+      overflow-x: auto;
+      padding-bottom: 8px; 
+      scrollbar-width: none; 
+      -ms-overflow-style: none;  
+    }
+    .horizontal-scroll-container::-webkit-scrollbar {
+      display: none; 
+    }
+
+    /* General Ripple Effect Styles (adapted from Code B) */
+    .btn-ripple { /* Container for general ripple elements */
+      position: relative;
+      overflow: hidden;
+      /* z-index: 0; /* Tailwind often handles z-index contextually */
+    }
+    .btn-ripple > .ripple-general { /* General ripple element itself */
+      position: absolute;
+      border-radius: 50%;
+      background-color: rgba(0, 0, 0, 0.1); /* Default ripple */
+      transform: scale(0);
+      animation: general-ripple-effect 0.6s linear; /* Distinct animation name */
+      pointer-events: none;
+    }
+    .btn-ripple.light-ripple > .ripple-general { /* For dark backgrounds */
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+
+    @keyframes general-ripple-effect { /* Distinct animation name */
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+    /* Ensure Lucide icons from Code B content are sized if not handled by Tailwind */
+    .lucide {
+        width: 1em; /* Default size, can be overridden by Tailwind classes */
+        height: 1em;
+        stroke-width: 2;
+        fill: none;
+        stroke: currentColor;
     }
   </style>
 </head>
@@ -149,11 +238,117 @@
 <body>
 
   <main id="home" class="page visible">
-    <h1>Page d'Accueil</h1>
-    <p>Bienvenue sur notre application e-commerce !</p>
-    <p>Découvrez nos dernières nouveautés et promotions exclusives.</p>
-    <p style="margin-top: 20px;">Contenu de défilement pour tester...</p>
-    <p>Item</p><p>Item</p><p>Item</p><p>Item</p><p>Item</p><p>Item</p><p>Item</p><p>Item</p><p>Item</p><p>Item</p><p>Item</p><p>Item</p><p>Item</p><p>Item</p><p>Item</p>
+    <header class="header-bg p-3 border-b border-gray-200" style="position: sticky; top: 0; z-index: 200;">
+        <div class="flex justify-between items-center mb-3">
+            <img src="https://placehold.co/100x30/0063d3/ffffff?text=MaBoutique" alt="Logo MaBoutique" class="h-7" onerror="this.onerror=null;this.src='https://placehold.co/100x30/cccccc/505050?text=Logo';">
+            <div class="relative btn-ripple rounded-full p-1 cursor-pointer" onclick="console.log('Cart clicked')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" class="lucide lucide-shopping-cart search-icon-color"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.16"/></svg>
+                <span class="absolute -top-1 -right-1 ebay-red-notification text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">1</span>
+            </div>
+        </div>
+        <div class="relative flex items-center">
+            <div class="absolute left-3 top-1/2 -translate-y-1/2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" class="lucide lucide-search search-icon-color"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            </div>
+            <input type="text" placeholder="Rechercher un téléphone, accessoire..." class="w-full bg-gray-100 border border-gray-300 rounded-full py-2.5 pl-10 pr-16 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ebay-blue-color)] focus:border-transparent">
+            <div class="absolute right-3 top-1/2 -translate-y-1/2 flex space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" class="lucide lucide-mic search-icon-color btn-ripple rounded-full p-0.5 cursor-pointer" onclick="console.log('Mic clicked')"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" class="lucide lucide-camera search-icon-color btn-ripple rounded-full p-0.5 cursor-pointer" onclick="console.log('Camera clicked')"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+            </div>
+        </div>
+        <div class="mt-3 horizontal-scroll-container">
+            <button class="category-chip active btn-ripple">Promos</button>
+            <button class="category-chip btn-ripple">Nouveautés</button>
+            <button class="category-chip btn-ripple">Smartphones</button>
+            <button class="category-chip btn-ripple">Accessoires</button>
+            <button class="category-chip btn-ripple">Marques</button>
+        </div>
+    </header>
+
+    <div class="content-bg-div p-4 space-y-6">
+        <section class="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white btn-ripple light-ripple rounded-lg cursor-pointer" onclick="console.log('iPhone Banner clicked')">
+            <h2 class="text-2xl font-bold mb-2">iPhone 15 Pro Max</h2>
+            <p class="text-sm mb-4">Titane. Si robuste. Si léger. Si Pro.</p>
+            <button class="bg-white text-blue-700 font-semibold py-2 px-5 rounded-full text-sm btn-ripple">
+                Découvrir Maintenant
+            </button>
+        </section>
+
+        <section>
+            <h3 class="text-lg font-semibold mb-3 text-gray-800">Parcourir par Catégorie</h3>
+            <div class="horizontal-scroll-container space-x-3">
+                <div class="category-card card-bg rounded-lg p-3 flex flex-col items-center space-y-2 btn-ripple cursor-pointer min-w-[100px]" onclick="console.log('Category: Smartphones')">
+                    <div class="bg-blue-100 p-3 rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" class="lucide lucide-smartphone text-[var(--ebay-blue-color)]"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+                    </div>
+                    <span class="text-xs font-medium text-gray-700">Smartphones</span>
+                </div>
+                <div class="category-card card-bg rounded-lg p-3 flex flex-col items-center space-y-2 btn-ripple cursor-pointer min-w-[100px]" onclick="console.log('Category: Accessoires')">
+                    <div class="bg-green-100 p-3 rounded-full">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" class="lucide lucide-headphones text-green-500"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>
+                    </div>
+                    <span class="text-xs font-medium text-gray-700">Accessoires</span>
+                </div>
+                 <div class="category-card card-bg rounded-lg p-3 flex flex-col items-center space-y-2 btn-ripple cursor-pointer min-w-[100px]" onclick="console.log('Category: Chargeurs')">
+                    <div class="bg-yellow-100 p-3 rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" class="lucide lucide-battery-charging text-yellow-500"><path d="M15 7h1a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-2"/><path d="M6 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h1"/><path d="m11 7-3 5h4l-3 5"/><path d="M22 11v2"/></svg>
+                    </div>
+                    <span class="text-xs font-medium text-gray-700">Chargeurs</span>
+                </div>
+                <div class="category-card card-bg rounded-lg p-3 flex flex-col items-center space-y-2 btn-ripple cursor-pointer min-w-[100px]" onclick="console.log('Category: Coques')">
+                    <div class="bg-purple-100 p-3 rounded-full">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" class="lucide lucide-shield text-purple-500"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <span class="text-xs font-medium text-gray-700">Coques</span>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-lg font-semibold text-gray-800">Produits Populaires</h3>
+                <a href="#" class="text-sm font-medium ebay-blue-text">Voir tout</a>
+            </div>
+            <div class="horizontal-scroll-container space-x-4">
+                <div class="product-card card-bg rounded-lg p-3 space-y-2 flex-shrink-0 btn-ripple cursor-pointer min-w-[140px]" onclick="console.log('Product: Smartphone X')">
+                    <img src="https://placehold.co/150x150/e0e0e0/707070?text=T%C3%A9l%C3%A9phone+X" alt="Image d'un téléphone" class="rounded-md w-full aspect-square object-cover" onerror="this.onerror=null;this.src='https://placehold.co/150x150/e0e0e0/707070?text=Image+Indisponible';">
+                    <h4 class="text-sm font-medium text-gray-700 truncate">Super Smartphone X</h4>
+                    <p class="text-xs text-gray-500">Le dernier cri</p>
+                    <p class="text-md font-semibold text-gray-900">699 €</p>
+                    <button class="w-full bg-[var(--ebay-blue-color)] text-white text-xs py-2 rounded-md font-semibold btn-ripple light-ripple">
+                        Ajouter au Panier
+                    </button>
+                </div>
+                <div class="product-card card-bg rounded-lg p-3 space-y-2 flex-shrink-0 btn-ripple cursor-pointer min-w-[140px]" onclick="console.log('Product: Écouteurs Pro')">
+                    <img src="https://placehold.co/150x150/cccccc/505050?text=%C3%89couteurs+Pro" alt="Image d'écouteurs" class="rounded-md w-full aspect-square object-cover" onerror="this.onerror=null;this.src='https://placehold.co/150x150/cccccc/505050?text=Image+Indisponible';">
+                    <h4 class="text-sm font-medium text-gray-700 truncate">Écouteurs Sans Fil Pro</h4>
+                    <p class="text-xs text-gray-500">Son immersif</p>
+                    <p class="text-md font-semibold text-gray-900">149 €</p>
+                    <button class="w-full bg-[var(--ebay-blue-color)] text-white text-xs py-2 rounded-md font-semibold btn-ripple light-ripple">
+                        Ajouter au Panier
+                    </button>
+                </div>
+                <div class="product-card card-bg rounded-lg p-3 space-y-2 flex-shrink-0 btn-ripple cursor-pointer min-w-[140px]" onclick="console.log('Product: Chargeur Rapide')">
+                    <img src="https://placehold.co/150x150/dddddd/606060?text=Chargeur+Rapide" alt="Image d'un chargeur" class="rounded-md w-full aspect-square object-cover" onerror="this.onerror=null;this.src='https://placehold.co/150x150/dddddd/606060?text=Image+Indisponible';">
+                    <h4 class="text-sm font-medium text-gray-700 truncate">Chargeur Ultra Rapide</h4>
+                    <p class="text-xs text-gray-500">USB-C 65W</p>
+                    <p class="text-md font-semibold text-gray-900">39 €</p>
+                    <button class="w-full bg-[var(--ebay-blue-color)] text-white text-xs py-2 rounded-md font-semibold btn-ripple light-ripple">
+                        Ajouter au Panier
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-red-500 p-6 text-white btn-ripple light-ripple rounded-lg cursor-pointer" onclick="console.log('Offer Banner clicked')">
+            <h2 class="text-xl font-bold mb-1">Offre Flash !</h2>
+            <p class="text-sm mb-3">-30% sur une sélection d'accessoires</p>
+            <button class="bg-white text-red-600 font-semibold py-2 px-5 rounded-full text-sm btn-ripple">
+                Profiter de l'offre
+            </button>
+        </section>
+        <div style="height: 300px; background: #e2e8f0; border-radius: 0.5rem; display:flex; align-items:center; justify-content:center; color: #718096;">Espace de test scroll</div>
+    </div>
   </main>
 
   <main id="search" class="page">
@@ -192,9 +387,9 @@
       <h2>Page non trouvée</h2>
       <p style="color: var(--secondary-text); margin-bottom: 1.5rem;">Désolé, la page que vous cherchez n'existe pas.</p>
       <a href="#home" data-hash="home" class="nav-link" style="color: var(--accent); text-decoration:underline; flex-direction: row; gap: 0.5em;">
-          <span class="nav-icon-container" style="width:auto; height:auto; background:transparent; border-radius:0;"> 
-            <i class="bi bi-house-door-fill" style="color: var(--accent);"></i> </span>
-          <span>Retour à l'accueil</span>
+        <span class="nav-icon-container" style="width:auto; height:auto; background:transparent; border-radius:0;"> 
+          <i class="bi bi-house-door-fill" style="color: var(--accent);"></i> </span>
+        <span>Retour à l'accueil</span>
       </a>
     </div>
   </main>
@@ -230,6 +425,7 @@
 
 <script>
 (function() {
+  // --- Start of Code A's original script (navigation, page routing) ---
   const allPages = document.querySelectorAll('main.page');
   const navLinks = document.querySelectorAll('nav .nav-link');
 
@@ -242,10 +438,10 @@
 
     if (isActive) {
       iconElement.className = `bi ${fillIconClass}`; 
-      iconElement.style.color = 'var(--accent)'; // MODIFIED: Set icon color to accent when active
+      iconElement.style.color = 'var(--accent)';
     } else {
       iconElement.className = `bi ${outlineIconClass}`; 
-      iconElement.style.color = 'var(--icon-default-color)'; // MODIFIED: Set icon color to default (black) when inactive
+      iconElement.style.color = 'var(--icon-default-color)';
     }
   }
 
@@ -266,7 +462,7 @@
     
     navLinks.forEach(el => {
       const linkHash = el.dataset.hash;
-      if (linkHash) {
+      if (linkHash) { // Ensure element has data-hash (like actual nav links)
         const isActive = linkHash === pageIdToShow;
         el.classList.toggle('active', isActive);
         updateNavIcon(el, isActive); 
@@ -287,7 +483,8 @@
   window.addEventListener('hashchange', route);
   window.addEventListener('load', () => {
     route(); 
-    document.body.style.visibility = 'visible';
+    document.body.style.visibility = 'visible'; // Make body visible after setup
+    // Ensure initial active icon is filled
     const initialActiveLink = document.querySelector('nav .nav-link.active');
     if (initialActiveLink) {
         updateNavIcon(initialActiveLink, true);
@@ -296,30 +493,90 @@
 
   document.body.addEventListener('click', e => {
     const navLinkElement = e.target.closest('.nav-link');
-    if (!navLinkElement) return;
+    if (navLinkElement && navLinkElement.closest('nav')) { // Ensure it's a nav bar link
+      const targetHash = navLinkElement.dataset.hash;
+      if (targetHash && (location.hash !== '#' + targetHash)) {
+          location.hash = targetHash; // This will trigger hashchange and route()
+      }
+      
+      // Ripple effect for NAV ICON (from Code A)
+      const iconContainer = navLinkElement.querySelector('.nav-icon-container');
+      if (iconContainer) { 
+        const rect = iconContainer.getBoundingClientRect();
+        const rippleSize = Math.max(iconContainer.offsetWidth, iconContainer.offsetHeight) * 1.5; 
+        const rippleSpan = document.createElement('span');
+        rippleSpan.className = 'ripple'; // Uses .ripple for nav icons
+        rippleSpan.style.width = rippleSpan.style.height = rippleSize + 'px';
+        // Center ripple on the icon container, not click position
+        rippleSpan.style.left = (iconContainer.offsetWidth / 2 - rippleSize / 2) + 'px';
+        rippleSpan.style.top = (iconContainer.offsetHeight / 2 - rippleSize / 2) + 'px';
 
-    const targetHash = navLinkElement.dataset.hash;
-    if (targetHash && (location.hash !== '#' + targetHash)) {
-       location.hash = targetHash;
-    }
-    
-    const iconContainer = navLinkElement.querySelector('.nav-icon-container');
-    if (iconContainer && navLinkElement.closest('nav')) { 
-      const rect = iconContainer.getBoundingClientRect();
-      const rippleSize = Math.max(iconContainer.offsetWidth, iconContainer.offsetHeight) * 1.5; 
-      const rippleSpan = document.createElement('span');
-      rippleSpan.className = 'ripple';
-      rippleSpan.style.width = rippleSpan.style.height = rippleSize + 'px';
-      rippleSpan.style.left = (iconContainer.offsetWidth / 2 - rippleSize / 2) + 'px';
-      rippleSpan.style.top = (iconContainer.offsetHeight / 2 - rippleSize / 2) + 'px';
+        const existingRipple = iconContainer.querySelector('.ripple');
+        if (existingRipple) existingRipple.remove();
 
-      const existingRipple = iconContainer.querySelector('.ripple');
-      if (existingRipple) existingRipple.remove();
-
-      iconContainer.appendChild(rippleSpan);
-      rippleSpan.addEventListener('animationend', () => rippleSpan.remove(), { once: true });
+        iconContainer.appendChild(rippleSpan);
+        rippleSpan.addEventListener('animationend', () => rippleSpan.remove(), { once: true });
+      }
     }
   });
+  // --- End of Code A's original script ---
+
+
+  // --- Start of scripts from Code B (adapted) ---
+  document.addEventListener('DOMContentLoaded', () => {
+    // Script for GENERAL Ripple Effect (adapted from Code B for .btn-ripple elements)
+    const generalRippleButtons = document.querySelectorAll('.btn-ripple');
+    generalRippleButtons.forEach(button => {
+        button.addEventListener('click', function (event) {
+            // Prevent ripple if a child .btn-ripple was clicked and this is a parent .btn-ripple
+            // or if the click is on a nav-link (handled by Code A's nav ripple logic)
+            if (event.target.closest('.nav-link')) return;
+            if (event.target !== this && event.target.closest('.btn-ripple') !== this) {
+                 // If the event target itself is a .btn-ripple (nested), let its own handler fire.
+                 if (event.target.classList.contains('btn-ripple')) return;
+            }
+
+            const rect = button.getBoundingClientRect();
+            const rippleSpan = document.createElement('span');
+            rippleSpan.classList.add('ripple-general'); // Use distinct class for general ripples
+
+            const size = Math.max(rect.width, rect.height) * 2; // Make ripple a bit larger
+            rippleSpan.style.width = rippleSpan.style.height = size + 'px';
+            // Position ripple at click location relative to the button
+            rippleSpan.style.left = (event.clientX - rect.left - size / 2) + 'px';
+            rippleSpan.style.top = (event.clientY - rect.top - size / 2) + 'px';
+
+            // Remove previous general ripple from this specific button
+            const existingRipple = button.querySelector('.ripple-general');
+            if (existingRipple) existingRipple.remove();
+
+            button.appendChild(rippleSpan);
+            rippleSpan.addEventListener('animationend', () => {
+                if (rippleSpan.parentElement) {
+                    rippleSpan.remove();
+                }
+            }, { once: true });
+        });
+    });
+
+    // Script for category chips (from Code B, scoped to #home page)
+    const categoryChipsContainer = document.querySelector('#home .horizontal-scroll-container');
+    if (categoryChipsContainer) {
+        categoryChipsContainer.addEventListener('click', function(event) {
+            const chip = event.target.closest('.category-chip');
+            if (!chip) return;
+
+            // Remove 'active' from all chips within this specific container
+            this.querySelectorAll('.category-chip.active').forEach(activeChip => activeChip.classList.remove('active'));
+            // Add 'active' to the clicked chip
+            chip.classList.add('active');
+            console.log(`Category selected: ${chip.textContent.trim()}`);
+        });
+    }
+    
+    console.log("E-commerce application initialized.");
+  });
+  // --- End of scripts from Code B ---
 
 })();
 </script>
