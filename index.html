@@ -5,25 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <title>Application E-commerce</title>
 
-  <script src="https://cdn.tailwindcss.com"></script> <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
   <style>
     :root {
       --primary-text: #222;
       --secondary-text: #555;
-      --border-radius-pill: 1rem; 
-      --border-radius-circle: 50%; 
+      --border-radius-pill: 1rem;
+      --border-radius-circle: 50%;
       --border-color: #e0e0e0;
-      --accent: #0064d2; 
-      --icon-bg-active: rgba(0, 100, 210, 0.12); 
-      --ripple-color: rgba(0, 100, 210, 0.25); 
+      --accent: #0064d2;
+      --icon-bg-active: rgba(0, 100, 210, 0.12);
+      --ripple-color: rgba(0, 100, 210, 0.25);
       --icon-default-color: #000000;
-      /* Variables from Code B or for merged content */
       --surface: #fff;
       --content-bg: #f0f2f5;
-      --border-radius-card: 0.75rem; /* For cards from Code B */
-      --ebay-blue-color: #0063d3; /* Code B's accent, similar to Code A's */
+      --border-radius-card: 0.75rem;
+      --ebay-blue-color: #0063d3;
     }
 
     *, *::before, *::after {
@@ -35,51 +35,46 @@
     html, body {
       width: 100%;
       height: 100%;
-      font-family: 'Roboto', sans-serif; /* Using Roboto from Code A */
-      background-color: var(--content-bg); /* Page background from Code B's theme */
+      font-family: 'Roboto', sans-serif;
+      background-color: var(--content-bg);
       color: var(--primary-text);
       -webkit-font-smoothing: antialiased;
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
       display: flex;
       flex-direction: column;
-      height: 100vh; 
-      height: 100dvh; 
+      height: 100vh;
+      height: 100dvh;
       visibility: hidden; /* Initially hidden, made visible by JS */
     }
 
     main.page {
-      display: none;            
-      flex: 1 1 auto;           
-      width: 100%;              
-      overflow-y: auto;         
-      background-color: var(--surface); /* Make pages like white cards */
-      /* Padding for non-home pages, home page will override some */
-      padding: 1rem; 
-      padding-bottom: calc(60px + 1rem + env(safe-area-inset-bottom)); 
+      display: none;
+      flex: 1 1 auto;
+      width: 100%;
+      overflow-y: auto;
+      background-color: var(--surface);
+      padding: 1rem;
+      padding-bottom: calc(60px + 1rem + env(safe-area-inset-bottom));
     }
     
-    /* Specific padding overrides for home page to accommodate sticky header */
     main#home.page {
         padding-left: 0;
         padding-right: 0;
         padding-top: 0;
-         /* padding-bottom is already set for nav bar by general main.page rule */
     }
 
-
     main.page.visible {
-      display: flex;            
+      display: flex;
       flex-direction: column;
     }
 
-    /* Navigation styles from Code A */
     nav {
       position: fixed;
       bottom: 0;
       left: 0;
       width: 100%;
-      background: var(--surface); /* Using --surface for consistency */
+      background: var(--surface);
       border-top: 1px solid var(--border-color);
       z-index: 300;
     }
@@ -88,7 +83,7 @@
       display: flex;
       justify-content: space-evenly;
       align-items: center;
-      padding: 0.4rem 0 env(safe-area-inset-bottom) 0; 
+      padding: 0.4rem 0 env(safe-area-inset-bottom) 0;
     }
 
     .nav-link {
@@ -102,131 +97,144 @@
       outline: none;
       user-select: none;
       position: relative;
-      padding: 0.5rem 0; 
+      padding: 0.5rem 0;
       background: none;
       border: none;
       cursor: pointer;
       text-decoration: none;
-      gap: 0.25rem; 
+      gap: 0.25rem;
     }
 
     .nav-icon-container {
-      position: relative; 
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 3.2rem;  
-      height: 2rem;   
-      border-radius: var(--border-radius-pill); 
-      overflow: hidden; 
+      width: 3.2rem;
+      height: 2rem;
+      border-radius: var(--border-radius-pill);
+      overflow: hidden;
       transition: background-color 0.2s ease-in-out;
     }
 
-    .nav-link i { /* Icon itself in nav */
-      font-size: 1.4rem; 
-      line-height: 1; 
+    .nav-link i {
+      font-size: 1.4rem;
+      line-height: 1;
       color: var(--icon-default-color);
-      transition: color 0.2s ease-in-out; 
+      transition: color 0.2s ease-in-out;
     }
     
-    .nav-link span:not(.nav-icon-container) { 
+    .nav-link span:not(.nav-icon-container) {
         transition: color 0.2s ease-in-out;
     }
 
     .nav-link.active span:not(.nav-icon-container) {
-      color: var(--accent); 
+      color: var(--accent);
     }
     
     .nav-link.active i {
-      color: var(--accent); 
+      color: var(--accent);
     }
 
     .nav-link.active .nav-icon-container {
-      background: var(--icon-bg-active); 
+      background: var(--icon-bg-active);
     }
     
-    /* Ripple for Navigation Icons (Code A) */
     .nav-icon-container .ripple {
       position: absolute;
       border-radius: 50%;
       transform: scale(0);
-      background: var(--ripple-color); 
-      animation: nav-ripple-effect 600ms linear; /* Renamed to avoid conflict */
+      background: var(--ripple-color);
+      animation: nav-ripple-effect 600ms linear;
       pointer-events: none;
     }
 
-    @keyframes nav-ripple-effect { /* Renamed to avoid conflict */
+    @keyframes nav-ripple-effect {
       to {
         transform: scale(4);
         opacity: 0;
       }
     }
 
-    /* Styles from Code B for integrated content */
-    .ebay-blue-text { color: var(--ebay-blue-color); } /* Using specific var for clarity */
+    .ebay-blue-text { color: var(--ebay-blue-color); }
     .ebay-red-notification { background-color: #d90000; }
     .search-icon-color { color: var(--secondary-text); }
     .header-bg { background-color: var(--surface); }
-    .content-bg-div { background-color: var(--content-bg); } /* Wrapper for main content area of home page */
+    .content-bg-div { background-color: var(--content-bg); }
     .card-bg { background-color: var(--surface); }
 
-    .category-chip {
+    /* Styles for new header navigation buttons */
+    .nav-header-button {
+      display: inline-flex; /* For icon and text alignment */
+      align-items: center;
+      gap: 0.5rem; /* Space between icon and text */
       border: 1px solid var(--border-color);
-      padding: 6px 14px;
-      border-radius: var(--border-radius-pill); /* Using Code A's pill radius */
-      font-size: 0.8rem;
-      margin-right: 8px;
+      padding: 8px 16px; /* Adjusted padding */
+      border-radius: var(--border-radius-pill);
+      font-size: 0.9rem;
+      margin-right: 10px; /* Spacing between buttons */
       color: var(--primary-text);
       background-color: var(--surface);
       white-space: nowrap;
       transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out;
       cursor: pointer;
+      text-decoration: none; /* For <a> tags */
     }
-    .category-chip.active {
-      background-color: var(--accent); /* Using Code A's accent */
+    .nav-header-button:last-child {
+        margin-right: 0; /* Remove margin from the last button in the scroll container */
+    }
+    .nav-header-button:hover {
+      background-color: #f0f0f0; /* Simple hover effect */
+    }
+    .nav-header-button i {
+      font-size: 1.1rem; /* Icon size */
+      color: var(--secondary-text); /* Icon color, can be customized */
+    }
+    .nav-header-button.active { /* Example active style if needed, though not used by default for these */
+      background-color: var(--accent);
       color: white;
-      font-weight: 500;
       border-color: var(--accent);
     }
+    .nav-header-button.active i {
+        color: white;
+    }
+
 
     .horizontal-scroll-container {
       display: flex;
       overflow-x: auto;
-      padding-bottom: 8px; 
-      scrollbar-width: none; 
-      -ms-overflow-style: none;  
+      padding-bottom: 8px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
     .horizontal-scroll-container::-webkit-scrollbar {
-      display: none; 
+      display: none;
     }
 
-    /* General Ripple Effect Styles (adapted from Code B) */
-    .btn-ripple { /* Container for general ripple elements */
+    .btn-ripple {
       position: relative;
       overflow: hidden;
-      /* z-index: 0; /* Tailwind often handles z-index contextually */
     }
-    .btn-ripple > .ripple-general { /* General ripple element itself */
+    .btn-ripple > .ripple-general {
       position: absolute;
       border-radius: 50%;
-      background-color: rgba(0, 0, 0, 0.1); /* Default ripple */
+      background-color: rgba(0, 0, 0, 0.1);
       transform: scale(0);
-      animation: general-ripple-effect 0.6s linear; /* Distinct animation name */
+      animation: general-ripple-effect 0.6s linear;
       pointer-events: none;
     }
-    .btn-ripple.light-ripple > .ripple-general { /* For dark backgrounds */
+    .btn-ripple.light-ripple > .ripple-general {
       background-color: rgba(255, 255, 255, 0.3);
     }
 
-    @keyframes general-ripple-effect { /* Distinct animation name */
+    @keyframes general-ripple-effect {
       to {
         transform: scale(4);
         opacity: 0;
       }
     }
-    /* Ensure Lucide icons from Code B content are sized if not handled by Tailwind */
     .lucide {
-        width: 1em; /* Default size, can be overridden by Tailwind classes */
+        width: 1em;
         height: 1em;
         stroke-width: 2;
         fill: none;
@@ -257,12 +265,16 @@
             </div>
         </div>
         <div class="mt-3 horizontal-scroll-container">
-            <button class="category-chip active btn-ripple">Promos</button>
-            <button class="category-chip btn-ripple">Nouveautés</button>
-            <button class="category-chip btn-ripple">Smartphones</button>
-            <button class="category-chip btn-ripple">Accessoires</button>
-            <button class="category-chip btn-ripple">Marques</button>
-        </div>
+            <a href="#selling" data-hash="selling" class="nav-header-button btn-ripple">
+                <i class="bi bi-tag-fill"></i> Selling
+            </a>
+            <a href="#deals" data-hash="deals" class="nav-header-button btn-ripple">
+                <i class="bi bi-lightning-fill"></i> Deals
+            </a>
+            <a href="#categories" data-hash="categories" class="nav-header-button btn-ripple">
+                <i class="bi bi-grid-fill"></i> Categories
+            </a>
+            </div>
     </header>
 
     <div class="content-bg-div p-4 space-y-6">
@@ -275,7 +287,7 @@
         </section>
 
         <section>
-            <h3 class="text-lg font-semibold mb-3 text-gray-800">Parcourir par Catégorie</h3>
+            <h3 class="text-lg font-semibold mb-3 text-gray-800">Parcourir par Catégorie (Contenu Page Accueil)</h3>
             <div class="horizontal-scroll-container space-x-3">
                 <div class="category-card card-bg rounded-lg p-3 flex flex-col items-center space-y-2 btn-ripple cursor-pointer min-w-[100px]" onclick="console.log('Category: Smartphones')">
                     <div class="bg-blue-100 p-3 rounded-full">
@@ -381,13 +393,30 @@
     </ul>
   </main>
 
+  <main id="selling" class="page">
+    <h1>Page Selling</h1>
+    <p>Contenu de la page "Selling" à venir ici.</p>
+    <p>Vous pourriez lister ici des articles que l'utilisateur vend, ou des outils pour vendeurs.</p>
+  </main>
+
+  <main id="deals" class="page">
+    <h1>Page Deals</h1>
+    <p>Contenu de la page "Deals" (Promotions) à venir ici.</p>
+    <p>Affichez ici les meilleures offres, les ventes flash, etc.</p>
+  </main>
+
+  <main id="categories" class="page">
+    <h1>Page Categories</h1>
+    <p>Contenu de la page "Categories" à venir ici.</p>
+    <p>Présentez ici une vue d'ensemble de toutes les catégories de produits disponibles.</p>
+  </main>
   <main id="not-found" class="page" style="text-align:center; justify-content:center; align-items:center;">
     <div>
       <i class="bi bi-emoji-frown" style="font-size: 3rem; color: var(--secondary-text); margin-bottom: 1rem;"></i>
       <h2>Page non trouvée</h2>
       <p style="color: var(--secondary-text); margin-bottom: 1.5rem;">Désolé, la page que vous cherchez n'existe pas.</p>
       <a href="#home" data-hash="home" class="nav-link" style="color: var(--accent); text-decoration:underline; flex-direction: row; gap: 0.5em;">
-        <span class="nav-icon-container" style="width:auto; height:auto; background:transparent; border-radius:0;"> 
+        <span class="nav-icon-container" style="width:auto; height:auto; background:transparent; border-radius:0;">
           <i class="bi bi-house-door-fill" style="color: var(--accent);"></i> </span>
         <span>Retour à l'accueil</span>
       </a>
@@ -398,25 +427,25 @@
     <div class="nav-inner">
       <a href="#home" data-hash="home" class="nav-link active" aria-label="Accueil" data-icon-outline="bi-house-door" data-icon-fill="bi-house-door-fill">
         <span class="nav-icon-container">
-          <i class="bi bi-house-door"></i> 
+          <i class="bi bi-house-door"></i>
         </span>
         <span>Accueil</span>
       </a>
-      <a href="#search" data-hash="search" class="nav-link" aria-label="Recherche" data-icon-outline="bi-search" data-icon-fill="bi-search"> 
+      <a href="#search" data-hash="search" class="nav-link" aria-label="Recherche" data-icon-outline="bi-search" data-icon-fill="bi-search">
         <span class="nav-icon-container">
-          <i class="bi bi-search"></i> 
+          <i class="bi bi-search"></i>
         </span>
         <span>Recherche</span>
       </a>
       <a href="#messages" data-hash="messages" class="nav-link" aria-label="Messages" data-icon-outline="bi-chat-dots" data-icon-fill="bi-chat-dots-fill">
         <span class="nav-icon-container">
-          <i class="bi bi-chat-dots"></i> 
+          <i class="bi bi-chat-dots"></i>
         </span>
         <span>Messages</span>
       </a>
       <a href="#account" data-hash="account" class="nav-link" aria-label="Compte" data-icon-outline="bi-person" data-icon-fill="bi-person-fill">
         <span class="nav-icon-container">
-          <i class="bi bi-person"></i> 
+          <i class="bi bi-person"></i>
         </span>
         <span>Compte</span>
       </a>
@@ -425,7 +454,6 @@
 
 <script>
 (function() {
-  // --- Start of Code A's original script (navigation, page routing) ---
   const allPages = document.querySelectorAll('main.page');
   const navLinks = document.querySelectorAll('nav .nav-link');
 
@@ -437,10 +465,10 @@
     const fillIconClass = navLinkElement.dataset.iconFill;
 
     if (isActive) {
-      iconElement.className = `bi ${fillIconClass}`; 
+      iconElement.className = `bi ${fillIconClass}`;
       iconElement.style.color = 'var(--accent)';
     } else {
-      iconElement.className = `bi ${outlineIconClass}`; 
+      iconElement.className = `bi ${outlineIconClass}`;
       iconElement.style.color = 'var(--icon-default-color)';
     }
   }
@@ -462,10 +490,10 @@
     
     navLinks.forEach(el => {
       const linkHash = el.dataset.hash;
-      if (linkHash) { // Ensure element has data-hash (like actual nav links)
+      if (linkHash) {
         const isActive = linkHash === pageIdToShow;
         el.classList.toggle('active', isActive);
-        updateNavIcon(el, isActive); 
+        updateNavIcon(el, isActive);
       }
     });
 
@@ -482,9 +510,8 @@
 
   window.addEventListener('hashchange', route);
   window.addEventListener('load', () => {
-    route(); 
-    document.body.style.visibility = 'visible'; // Make body visible after setup
-    // Ensure initial active icon is filled
+    route();
+    document.body.style.visibility = 'visible';
     const initialActiveLink = document.querySelector('nav .nav-link.active');
     if (initialActiveLink) {
         updateNavIcon(initialActiveLink, true);
@@ -492,22 +519,22 @@
   });
 
   document.body.addEventListener('click', e => {
-    const navLinkElement = e.target.closest('.nav-link');
-    if (navLinkElement && navLinkElement.closest('nav')) { // Ensure it's a nav bar link
+    const navLinkElement = e.target.closest('.nav-link'); // For bottom nav
+    const navHeaderButtonElement = e.target.closest('.nav-header-button'); // For new header buttons
+
+    if (navLinkElement && navLinkElement.closest('nav')) {
       const targetHash = navLinkElement.dataset.hash;
       if (targetHash && (location.hash !== '#' + targetHash)) {
-          location.hash = targetHash; // This will trigger hashchange and route()
+          location.hash = targetHash;
       }
       
-      // Ripple effect for NAV ICON (from Code A)
       const iconContainer = navLinkElement.querySelector('.nav-icon-container');
-      if (iconContainer) { 
+      if (iconContainer) {
         const rect = iconContainer.getBoundingClientRect();
-        const rippleSize = Math.max(iconContainer.offsetWidth, iconContainer.offsetHeight) * 1.5; 
+        const rippleSize = Math.max(iconContainer.offsetWidth, iconContainer.offsetHeight) * 1.5;
         const rippleSpan = document.createElement('span');
-        rippleSpan.className = 'ripple'; // Uses .ripple for nav icons
+        rippleSpan.className = 'ripple';
         rippleSpan.style.width = rippleSpan.style.height = rippleSize + 'px';
-        // Center ripple on the icon container, not click position
         rippleSpan.style.left = (iconContainer.offsetWidth / 2 - rippleSize / 2) + 'px';
         rippleSpan.style.top = (iconContainer.offsetHeight / 2 - rippleSize / 2) + 'px';
 
@@ -517,36 +544,38 @@
         iconContainer.appendChild(rippleSpan);
         rippleSpan.addEventListener('animationend', () => rippleSpan.remove(), { once: true });
       }
+    } else if (navHeaderButtonElement) { // Handle clicks on new header buttons
+        const targetHash = navHeaderButtonElement.dataset.hash;
+        if (targetHash && (location.hash !== '#' + targetHash)) {
+            location.hash = targetHash; // This will trigger hashchange and route()
+        }
+        // Ripple effect for these buttons is handled by the general .btn-ripple listener
     }
   });
-  // --- End of Code A's original script ---
 
-
-  // --- Start of scripts from Code B (adapted) ---
   document.addEventListener('DOMContentLoaded', () => {
-    // Script for GENERAL Ripple Effect (adapted from Code B for .btn-ripple elements)
     const generalRippleButtons = document.querySelectorAll('.btn-ripple');
     generalRippleButtons.forEach(button => {
         button.addEventListener('click', function (event) {
-            // Prevent ripple if a child .btn-ripple was clicked and this is a parent .btn-ripple
-            // or if the click is on a nav-link (handled by Code A's nav ripple logic)
-            if (event.target.closest('.nav-link')) return;
-            if (event.target !== this && event.target.closest('.btn-ripple') !== this) {
-                 // If the event target itself is a .btn-ripple (nested), let its own handler fire.
-                 if (event.target.classList.contains('btn-ripple')) return;
-            }
+            if (event.target.closest('.nav-link')) return; 
+            // Check if the click is on a nav-header-button, if so, the navigation is handled above.
+            // The ripple effect should still apply.
+            
+            // The following condition was to prevent nested ripples, 
+            // but for nav-header-button, it might be simpler.
+            // if (event.target !== this && event.target.closest('.btn-ripple') !== this) {
+            //     if (event.target.classList.contains('btn-ripple')) return;
+            // }
 
             const rect = button.getBoundingClientRect();
             const rippleSpan = document.createElement('span');
-            rippleSpan.classList.add('ripple-general'); // Use distinct class for general ripples
+            rippleSpan.classList.add('ripple-general');
 
-            const size = Math.max(rect.width, rect.height) * 2; // Make ripple a bit larger
+            const size = Math.max(rect.width, rect.height) * 2;
             rippleSpan.style.width = rippleSpan.style.height = size + 'px';
-            // Position ripple at click location relative to the button
             rippleSpan.style.left = (event.clientX - rect.left - size / 2) + 'px';
             rippleSpan.style.top = (event.clientY - rect.top - size / 2) + 'px';
 
-            // Remove previous general ripple from this specific button
             const existingRipple = button.querySelector('.ripple-general');
             if (existingRipple) existingRipple.remove();
 
@@ -559,24 +588,12 @@
         });
     });
 
-    // Script for category chips (from Code B, scoped to #home page)
-    const categoryChipsContainer = document.querySelector('#home .horizontal-scroll-container');
-    if (categoryChipsContainer) {
-        categoryChipsContainer.addEventListener('click', function(event) {
-            const chip = event.target.closest('.category-chip');
-            if (!chip) return;
-
-            // Remove 'active' from all chips within this specific container
-            this.querySelectorAll('.category-chip.active').forEach(activeChip => activeChip.classList.remove('active'));
-            // Add 'active' to the clicked chip
-            chip.classList.add('active');
-            console.log(`Category selected: ${chip.textContent.trim()}`);
-        });
-    }
+    // Removed the category chip specific logic as it's no longer used
+    // const categoryChipsContainer = document.querySelector('#home .horizontal-scroll-container');
+    // if (categoryChipsContainer) { ... }
     
     console.log("E-commerce application initialized.");
   });
-  // --- End of scripts from Code B ---
 
 })();
 </script>
