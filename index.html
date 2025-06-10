@@ -81,12 +81,14 @@
                 }, 2000);
             });
         }
+// Lance le scanner uniquement après que le DOM soit complètement chargé
+window.addEventListener("load", () => {
+    runScanner().catch(error => {
+        console.error("Erreur lors de l'initialisation du scanner:", error);
+        alert("Le scanner n'a pas pu démarrer. Vérifiez la console pour les erreurs.");
+    });
+});
 
-        // Lancez le scanner
-        runScanner().catch(error => {
-            console.error("Erreur lors de l'initialisation du scanner:", error);
-            alert("Le scanner n'a pas pu démarrer. Vérifiez la console pour les erreurs.");
-        });
 
     </script>
 </body>
