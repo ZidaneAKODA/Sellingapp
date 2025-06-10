@@ -42,8 +42,27 @@
     <script src="https://unpkg.com/scandit-sdk@5.x"></script>
 
     <script>
+        // Function to check if Scandit SDK is loaded
+        function isScanditLoaded() {
+            return typeof Scandit !== 'undefined' && typeof Scandit.configure === 'function';
+        }
+
         // Utilisation d'une fonction async pour gérer le chargement de la bibliothèque
         async function runScanner() {
+            // Wait for Scandit to be defined if it's not already
+            if (!isScanditLoaded()) {
+                console.log("Scandit SDK not yet loaded, waiting...");
+                await new Promise(resolve => {
+                    const checkInterval = setInterval(() => {
+                        if (isScanditLoaded()) {
+                            clearInterval(checkInterval);
+                            resolve();
+                        }
+                    }, 100); // Check every 100ms
+                });
+                console.log("Scandit SDK is now loaded.");
+            }
+
             // 2. Configurez la bibliothèque avec VOTRE clé de licence
             try {
                 // Clé de licence que vous avez fournie
@@ -81,7 +100,9 @@
                     }, 2000);
                 });
             }
+        
         // Lance le scanner uniquement après que le DOM soit complètement chargé
+        // AND after Scandit SDK is confirmed to be loaded
         window.addEventListener("load", () => {
             runScanner().catch(error => {
                 console.error("Erreur lors de l'initialisation du scanner:", error);
