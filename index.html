@@ -1,75 +1,92 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Scanner Universel avec ZXing</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background: #f2f2f2;
-    }
-
-    h1 {
-      color: #333;
-    }
-
-    #reader {
-      width: 100%;
-      max-width: 400px;
-      margin: 20px auto;
-      border: 3px solid #ccc;
-      border-radius: 8px;
-    }
-
-    #resultList {
-      background: #fff;
-      border-radius: 5px;
-      padding: 10px;
-      max-height: 150px;
-      overflow-y: auto;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    li {
-      padding: 5px 0;
-      border-bottom: 1px solid #eee;
-    }
-  </style>
+    <title>IMEI Barcode Scanner</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #1a1a1a;
+        }
+        #qr-reader-container {
+            width: 100%;
+            max-width: 500px;
+            border: 5px solid #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden; /* Ensures the video stream respects the border radius */
+        }
+        #qr-reader-results {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 470px; /* Aligns with the reader container */
+            font-size: 1.1em;
+            font-weight: bold;
+            text-align: center;
+            min-height: 25px;
+            word-wrap: break-word;
+        }
+    </style>
 </head>
 <body>
 
-<h1>Scanner avec ZXing (Webcam)</h1>
+    <h1>Web Barcode Scanner</h1>
+    <p>Point your camera at an IMEI barcode.</p>
 
-<div id="reader"></div>
+    <div id="qr-reader-container"></div>
+    
+    <h3>Scan Result:</h3>
+    <div id="qr-reader-results">No result yet</div>
 
-<h3>Codes détectés :</h3>
-<ul id="resultList"></ul>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
-<script type="module">
-  import { BrowserMultiFormatReader } from 'https://cdn.jsdelivr.net/npm/@zxing/library@0.19.1/esm/index.min.js';
+    <script>
+        // 3. This function runs when the entire page is loaded
+        document.addEventListener('DOMContentLoaded', (event) => {
 
-  const codeReader = new BrowserMultiFormatReader();
-  const resultList = document.getElementById("resultList");
+            // This function gets called when a scan is successful
+            function onScanSuccess(decodedText, decodedResult) {
+                // The 'decodedText' variable contains the scanned IMEI number
+                console.log(`Scan result: ${decodedText}`, decodedResult);
+                
+                // Display the result on the page
+                document.getElementById('qr-reader-results').innerText = decodedText;
+            }
 
-  codeReader.listVideoInputDevices()
-    .then(videoInputDevices => {
-      const selectedDeviceId = videoInputDevices[0].deviceId;
+            // This function gets called when a scan fails (e.g., no barcode found)
+            function onScanFailure(error) {
+                // This is useful for debugging but you might want to ignore it in production
+                // console.warn(`Code scan error = ${error}`);
+            }
 
-      codeReader.decodeFromVideoDevice(selectedDeviceId, 'reader', (result, err) => {
-        if (result) {
-          const li = document.createElement("li");
-          li.textContent = result.text;
-          resultList.insertBefore(li, resultList.firstChild);
-          if (navigator.vibrate) navigator.vibrate(100);
-        }
-      });
-    })
-    .catch(err => {
-      console.error(err);
-      alert("Impossible d'accéder à la caméra.");
-    });
-</script>
+            // 2. Create a new scanner instance
+            let html5QrcodeScanner = new Html5Qrcode("qr-reader-container");
+            
+            // 4. Start the scanner
+            html5QrcodeScanner.start(
+                { facingMode: "environment" }, // Use the rear camera of the phone
+                {
+                    fps: 10,    // Scans per second
+                    qrbox: { width: 250, height: 150 }  // Define the scanning box size
+                },
+                onScanSuccess,  // Callback for successful scans
+                onScanFailure   // Callback for failed scans
+            );
+        });
+    </script>
 
 </body>
 </html>
