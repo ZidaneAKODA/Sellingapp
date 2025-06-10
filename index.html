@@ -2,600 +2,74 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-  <title>Application E-commerce</title>
-
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-
+  <title>Scanner Universel avec ZXing</title>
   <style>
-    :root {
-      --primary-text: #222;
-      --secondary-text: #555;
-      --border-radius-pill: 1rem;
-      --border-radius-circle: 50%;
-      --border-color: #e0e0e0;
-      --accent: #0064d2;
-      --icon-bg-active: rgba(0, 100, 210, 0.12);
-      --ripple-color: rgba(0, 100, 210, 0.25);
-      --icon-default-color: #000000;
-      --surface: #fff;
-      --content-bg: #f0f2f5;
-      --border-radius-card: 0.75rem;
-      --ebay-blue-color: #0063d3;
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f2f2f2;
     }
 
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    h1 {
+      color: #333;
     }
 
-    html, body {
+    #reader {
       width: 100%;
-      height: 100%;
-      font-family: 'Roboto', sans-serif;
-      background-color: var(--content-bg);
-      color: var(--primary-text);
-      -webkit-font-smoothing: antialiased;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      height: 100dvh;
-      visibility: hidden; /* Initially hidden, made visible by JS */
+      max-width: 400px;
+      margin: 20px auto;
+      border: 3px solid #ccc;
+      border-radius: 8px;
     }
 
-    main.page {
-      display: none;
-      flex: 1 1 auto;
-      width: 100%;
+    #resultList {
+      background: #fff;
+      border-radius: 5px;
+      padding: 10px;
+      max-height: 150px;
       overflow-y: auto;
-      background-color: var(--surface);
-      padding: 1rem;
-      padding-bottom: calc(60px + 1rem + env(safe-area-inset-bottom));
-    }
-    
-    main#home.page {
-        padding-left: 0;
-        padding-right: 0;
-        padding-top: 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
-    main.page.visible {
-      display: flex;
-      flex-direction: column;
-    }
-
-    nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: var(--surface);
-      border-top: 1px solid var(--border-color);
-      z-index: 300;
-    }
-
-    .nav-inner {
-      display: flex;
-      justify-content: space-evenly;
-      align-items: center;
-      padding: 0.4rem 0 env(safe-area-inset-bottom) 0;
-    }
-
-    .nav-link {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.8rem;
-      color: var(--secondary-text);
-      outline: none;
-      user-select: none;
-      position: relative;
-      padding: 0.5rem 0;
-      background: none;
-      border: none;
-      cursor: pointer;
-      text-decoration: none;
-      gap: 0.25rem;
-    }
-
-    .nav-icon-container {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 3.2rem;
-      height: 2rem;
-      border-radius: var(--border-radius-pill);
-      overflow: hidden;
-      transition: background-color 0.2s ease-in-out;
-    }
-
-    .nav-link i {
-      font-size: 1.4rem;
-      line-height: 1;
-      color: var(--icon-default-color);
-      transition: color 0.2s ease-in-out;
-    }
-    
-    .nav-link span:not(.nav-icon-container) {
-        transition: color 0.2s ease-in-out;
-    }
-
-    .nav-link.active span:not(.nav-icon-container) {
-      color: var(--accent);
-    }
-    
-    .nav-link.active i {
-      color: var(--accent);
-    }
-
-    .nav-link.active .nav-icon-container {
-      background: var(--icon-bg-active);
-    }
-    
-    .nav-icon-container .ripple {
-      position: absolute;
-      border-radius: 50%;
-      transform: scale(0);
-      background: var(--ripple-color);
-      animation: nav-ripple-effect 600ms linear;
-      pointer-events: none;
-    }
-
-    @keyframes nav-ripple-effect {
-      to {
-        transform: scale(4);
-        opacity: 0;
-      }
-    }
-
-    .ebay-blue-text { color: var(--ebay-blue-color); }
-    .ebay-red-notification { background-color: #d90000; }
-    .search-icon-color { color: var(--secondary-text); }
-    .header-bg { background-color: var(--surface); }
-    .content-bg-div { background-color: var(--content-bg); }
-    .card-bg { background-color: var(--surface); }
-
-    /* Styles for new header navigation buttons */
-    .nav-header-button {
-      display: inline-flex; /* For icon and text alignment */
-      align-items: center;
-      gap: 0.5rem; /* Space between icon and text */
-      border: 1px solid var(--border-color);
-      padding: 8px 16px; /* Adjusted padding */
-      border-radius: var(--border-radius-pill);
-      font-size: 0.9rem;
-      margin-right: 10px; /* Spacing between buttons */
-      color: var(--primary-text);
-      background-color: var(--surface);
-      white-space: nowrap;
-      transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out;
-      cursor: pointer;
-      text-decoration: none; /* For <a> tags */
-    }
-    .nav-header-button:last-child {
-        margin-right: 0; /* Remove margin from the last button in the scroll container */
-    }
-    .nav-header-button:hover {
-      background-color: #f0f0f0; /* Simple hover effect */
-    }
-    .nav-header-button i {
-      font-size: 1.1rem; /* Icon size */
-      color: var(--secondary-text); /* Icon color, can be customized */
-    }
-    .nav-header-button.active { /* Example active style if needed, though not used by default for these */
-      background-color: var(--accent);
-      color: white;
-      border-color: var(--accent);
-    }
-    .nav-header-button.active i {
-        color: white;
-    }
-
-
-    .horizontal-scroll-container {
-      display: flex;
-      overflow-x: auto;
-      padding-bottom: 8px;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-    }
-    .horizontal-scroll-container::-webkit-scrollbar {
-      display: none;
-    }
-
-    .btn-ripple {
-      position: relative;
-      overflow: hidden;
-    }
-    .btn-ripple > .ripple-general {
-      position: absolute;
-      border-radius: 50%;
-      background-color: rgba(0, 0, 0, 0.1);
-      transform: scale(0);
-      animation: general-ripple-effect 0.6s linear;
-      pointer-events: none;
-    }
-    .btn-ripple.light-ripple > .ripple-general {
-      background-color: rgba(255, 255, 255, 0.3);
-    }
-
-    @keyframes general-ripple-effect {
-      to {
-        transform: scale(4);
-        opacity: 0;
-      }
-    }
-    .lucide {
-        width: 1em;
-        height: 1em;
-        stroke-width: 2;
-        fill: none;
-        stroke: currentColor;
+    li {
+      padding: 5px 0;
+      border-bottom: 1px solid #eee;
     }
   </style>
 </head>
-
 <body>
 
-  <main id="home" class="page visible">
-    <header class="header-bg p-3 border-b border-gray-200" style="position: sticky; top: 0; z-index: 200;">
-        <div class="flex justify-between items-center mb-3">
-            <img src="https://placehold.co/100x30/0063d3/ffffff?text=MaBoutique" alt="Logo MaBoutique" class="h-7" onerror="this.onerror=null;this.src='https://placehold.co/100x30/cccccc/505050?text=Logo';">
-            <div class="relative btn-ripple rounded-full p-1 cursor-pointer" onclick="console.log('Cart clicked')">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" class="lucide lucide-shopping-cart search-icon-color"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.16"/></svg>
-                <span class="absolute -top-1 -right-1 ebay-red-notification text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">1</span>
-            </div>
-        </div>
-        <div class="relative flex items-center">
-            <div class="absolute left-3 top-1/2 -translate-y-1/2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" class="lucide lucide-search search-icon-color"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            </div>
-            <input type="text" placeholder="Rechercher un téléphone, accessoire..." class="w-full bg-gray-100 border border-gray-300 rounded-full py-2.5 pl-10 pr-16 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ebay-blue-color)] focus:border-transparent">
-            <div class="absolute right-3 top-1/2 -translate-y-1/2 flex space-x-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" class="lucide lucide-mic search-icon-color btn-ripple rounded-full p-0.5 cursor-pointer" onclick="console.log('Mic clicked')"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" class="lucide lucide-camera search-icon-color btn-ripple rounded-full p-0.5 cursor-pointer" onclick="console.log('Camera clicked')"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
-            </div>
-        </div>
-        <div class="mt-3 horizontal-scroll-container">
-            <a href="#selling" data-hash="selling" class="nav-header-button btn-ripple">
-                <i class="bi bi-tag-fill"></i> Selling
-            </a>
-            <a href="#deals" data-hash="deals" class="nav-header-button btn-ripple">
-                <i class="bi bi-lightning-fill"></i> Deals
-            </a>
-            <a href="#categories" data-hash="categories" class="nav-header-button btn-ripple">
-                <i class="bi bi-grid-fill"></i> Categories
-            </a>
-            </div>
-    </header>
+<h1>Scanner avec ZXing (Webcam)</h1>
 
-    <div class="content-bg-div p-4 space-y-6">
-        <section class="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white btn-ripple light-ripple rounded-lg cursor-pointer" onclick="console.log('iPhone Banner clicked')">
-            <h2 class="text-2xl font-bold mb-2">iPhone 15 Pro Max</h2>
-            <p class="text-sm mb-4">Titane. Si robuste. Si léger. Si Pro.</p>
-            <button class="bg-white text-blue-700 font-semibold py-2 px-5 rounded-full text-sm btn-ripple">
-                Découvrir Maintenant
-            </button>
-        </section>
+<div id="reader"></div>
 
-        <section>
-            <h3 class="text-lg font-semibold mb-3 text-gray-800">Parcourir par Catégorie (Contenu Page Accueil)</h3>
-            <div class="horizontal-scroll-container space-x-3">
-                <div class="category-card card-bg rounded-lg p-3 flex flex-col items-center space-y-2 btn-ripple cursor-pointer min-w-[100px]" onclick="console.log('Category: Smartphones')">
-                    <div class="bg-blue-100 p-3 rounded-full">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" class="lucide lucide-smartphone text-[var(--ebay-blue-color)]"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
-                    </div>
-                    <span class="text-xs font-medium text-gray-700">Smartphones</span>
-                </div>
-                <div class="category-card card-bg rounded-lg p-3 flex flex-col items-center space-y-2 btn-ripple cursor-pointer min-w-[100px]" onclick="console.log('Category: Accessoires')">
-                    <div class="bg-green-100 p-3 rounded-full">
-                         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" class="lucide lucide-headphones text-green-500"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>
-                    </div>
-                    <span class="text-xs font-medium text-gray-700">Accessoires</span>
-                </div>
-                 <div class="category-card card-bg rounded-lg p-3 flex flex-col items-center space-y-2 btn-ripple cursor-pointer min-w-[100px]" onclick="console.log('Category: Chargeurs')">
-                    <div class="bg-yellow-100 p-3 rounded-full">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" class="lucide lucide-battery-charging text-yellow-500"><path d="M15 7h1a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-2"/><path d="M6 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h1"/><path d="m11 7-3 5h4l-3 5"/><path d="M22 11v2"/></svg>
-                    </div>
-                    <span class="text-xs font-medium text-gray-700">Chargeurs</span>
-                </div>
-                <div class="category-card card-bg rounded-lg p-3 flex flex-col items-center space-y-2 btn-ripple cursor-pointer min-w-[100px]" onclick="console.log('Category: Coques')">
-                    <div class="bg-purple-100 p-3 rounded-full">
-                         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" class="lucide lucide-shield text-purple-500"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    </div>
-                    <span class="text-xs font-medium text-gray-700">Coques</span>
-                </div>
-            </div>
-        </section>
+<h3>Codes détectés :</h3>
+<ul id="resultList"></ul>
 
-        <section>
-            <div class="flex justify-between items-center mb-3">
-                <h3 class="text-lg font-semibold text-gray-800">Produits Populaires</h3>
-                <a href="#" class="text-sm font-medium ebay-blue-text">Voir tout</a>
-            </div>
-            <div class="horizontal-scroll-container space-x-4">
-                <div class="product-card card-bg rounded-lg p-3 space-y-2 flex-shrink-0 btn-ripple cursor-pointer min-w-[140px]" onclick="console.log('Product: Smartphone X')">
-                    <img src="https://placehold.co/150x150/e0e0e0/707070?text=T%C3%A9l%C3%A9phone+X" alt="Image d'un téléphone" class="rounded-md w-full aspect-square object-cover" onerror="this.onerror=null;this.src='https://placehold.co/150x150/e0e0e0/707070?text=Image+Indisponible';">
-                    <h4 class="text-sm font-medium text-gray-700 truncate">Super Smartphone X</h4>
-                    <p class="text-xs text-gray-500">Le dernier cri</p>
-                    <p class="text-md font-semibold text-gray-900">699 €</p>
-                    <button class="w-full bg-[var(--ebay-blue-color)] text-white text-xs py-2 rounded-md font-semibold btn-ripple light-ripple">
-                        Ajouter au Panier
-                    </button>
-                </div>
-                <div class="product-card card-bg rounded-lg p-3 space-y-2 flex-shrink-0 btn-ripple cursor-pointer min-w-[140px]" onclick="console.log('Product: Écouteurs Pro')">
-                    <img src="https://placehold.co/150x150/cccccc/505050?text=%C3%89couteurs+Pro" alt="Image d'écouteurs" class="rounded-md w-full aspect-square object-cover" onerror="this.onerror=null;this.src='https://placehold.co/150x150/cccccc/505050?text=Image+Indisponible';">
-                    <h4 class="text-sm font-medium text-gray-700 truncate">Écouteurs Sans Fil Pro</h4>
-                    <p class="text-xs text-gray-500">Son immersif</p>
-                    <p class="text-md font-semibold text-gray-900">149 €</p>
-                    <button class="w-full bg-[var(--ebay-blue-color)] text-white text-xs py-2 rounded-md font-semibold btn-ripple light-ripple">
-                        Ajouter au Panier
-                    </button>
-                </div>
-                <div class="product-card card-bg rounded-lg p-3 space-y-2 flex-shrink-0 btn-ripple cursor-pointer min-w-[140px]" onclick="console.log('Product: Chargeur Rapide')">
-                    <img src="https://placehold.co/150x150/dddddd/606060?text=Chargeur+Rapide" alt="Image d'un chargeur" class="rounded-md w-full aspect-square object-cover" onerror="this.onerror=null;this.src='https://placehold.co/150x150/dddddd/606060?text=Image+Indisponible';">
-                    <h4 class="text-sm font-medium text-gray-700 truncate">Chargeur Ultra Rapide</h4>
-                    <p class="text-xs text-gray-500">USB-C 65W</p>
-                    <p class="text-md font-semibold text-gray-900">39 €</p>
-                    <button class="w-full bg-[var(--ebay-blue-color)] text-white text-xs py-2 rounded-md font-semibold btn-ripple light-ripple">
-                        Ajouter au Panier
-                    </button>
-                </div>
-            </div>
-        </section>
+<script type="module">
+  import { BrowserMultiFormatReader } from 'https://cdn.jsdelivr.net/npm/@zxing/library@0.19.1/esm/index.min.js';
 
-        <section class="bg-red-500 p-6 text-white btn-ripple light-ripple rounded-lg cursor-pointer" onclick="console.log('Offer Banner clicked')">
-            <h2 class="text-xl font-bold mb-1">Offre Flash !</h2>
-            <p class="text-sm mb-3">-30% sur une sélection d'accessoires</p>
-            <button class="bg-white text-red-600 font-semibold py-2 px-5 rounded-full text-sm btn-ripple">
-                Profiter de l'offre
-            </button>
-        </section>
-        <div style="height: 300px; background: #e2e8f0; border-radius: 0.5rem; display:flex; align-items:center; justify-content:center; color: #718096;">Espace de test scroll</div>
-    </div>
-  </main>
+  const codeReader = new BrowserMultiFormatReader();
+  const resultList = document.getElementById("resultList");
 
-  <main id="search" class="page">
-    <h1>Recherche</h1>
-    <p>Utilisez la barre de recherche ci-dessous pour trouver vos produits.</p>
-    <input type="search" placeholder="Rechercher un produit..." style="width: 100%; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border-color); margin-top: 1rem;">
-  </main>
+  codeReader.listVideoInputDevices()
+    .then(videoInputDevices => {
+      const selectedDeviceId = videoInputDevices[0].deviceId;
 
-  <main id="messages" class="page">
-    <h1>Messages</h1>
-    <p>Ici, vous trouverez vos notifications et communications.</p>
-    <div style="margin-top: 1rem; padding: 1rem; background-color: #f9f9f9; border-radius: 0.5rem;">
-        <p><strong>Notification :</strong> Votre commande #12345 a été expédiée !</p>
-        <small>Il y a 2 heures</small>
-    </div>
-    <div style="margin-top: 1rem; padding: 1rem; background-color: #f9f9f9; border-radius: 0.5rem;">
-        <p><strong>Support Client :</strong> Bonjour, comment pouvons-nous vous aider ?</p>
-        <small>Hier</small>
-    </div>
-  </main>
-
-  <main id="account" class="page">
-    <h1>Mon Compte</h1>
-    <p>Gérez vos informations personnelles, commandes et préférences.</p>
-    <ul style="list-style: none; padding: 0; margin-top:1rem;">
-        <li style="padding: 0.75rem 0; border-bottom: 1px solid var(--border-color);">Mes commandes</li>
-        <li style="padding: 0.75rem 0; border-bottom: 1px solid var(--border-color);">Mes adresses</li>
-        <li style="padding: 0.75rem 0; border-bottom: 1px solid var(--border-color);">Moyens de paiement</li>
-        <li style="padding: 0.75rem 0;">Déconnexion</li>
-    </ul>
-  </main>
-
-  <main id="selling" class="page">
-    <h1>Page Selling</h1>
-    <p>Contenu de la page "Selling" à venir ici.</p>
-    <p>Vous pourriez lister ici des articles que l'utilisateur vend, ou des outils pour vendeurs.</p>
-  </main>
-
-  <main id="deals" class="page">
-    <h1>Page Deals</h1>
-    <p>Contenu de la page "Deals" (Promotions) à venir ici.</p>
-    <p>Affichez ici les meilleures offres, les ventes flash, etc.</p>
-  </main>
-
-  <main id="categories" class="page">
-    <h1>Page Categories</h1>
-    <p>Contenu de la page "Categories" à venir ici.</p>
-    <p>Présentez ici une vue d'ensemble de toutes les catégories de produits disponibles.</p>
-  </main>
-  <main id="not-found" class="page" style="text-align:center; justify-content:center; align-items:center;">
-    <div>
-      <i class="bi bi-emoji-frown" style="font-size: 3rem; color: var(--secondary-text); margin-bottom: 1rem;"></i>
-      <h2>Page non trouvée</h2>
-      <p style="color: var(--secondary-text); margin-bottom: 1.5rem;">Désolé, la page que vous cherchez n'existe pas.</p>
-      <a href="#home" data-hash="home" class="nav-link" style="color: var(--accent); text-decoration:underline; flex-direction: row; gap: 0.5em;">
-        <span class="nav-icon-container" style="width:auto; height:auto; background:transparent; border-radius:0;">
-          <i class="bi bi-house-door-fill" style="color: var(--accent);"></i> </span>
-        <span>Retour à l'accueil</span>
-      </a>
-    </div>
-  </main>
-
-  <nav aria-label="Navigation principale">
-    <div class="nav-inner">
-      <a href="#home" data-hash="home" class="nav-link active" aria-label="Accueil" data-icon-outline="bi-house-door" data-icon-fill="bi-house-door-fill">
-        <span class="nav-icon-container">
-          <i class="bi bi-house-door"></i>
-        </span>
-        <span>Accueil</span>
-      </a>
-      <a href="#search" data-hash="search" class="nav-link" aria-label="Recherche" data-icon-outline="bi-search" data-icon-fill="bi-search">
-        <span class="nav-icon-container">
-          <i class="bi bi-search"></i>
-        </span>
-        <span>Recherche</span>
-      </a>
-      <a href="#messages" data-hash="messages" class="nav-link" aria-label="Messages" data-icon-outline="bi-chat-dots" data-icon-fill="bi-chat-dots-fill">
-        <span class="nav-icon-container">
-          <i class="bi bi-chat-dots"></i>
-        </span>
-        <span>Messages</span>
-      </a>
-      <a href="#account" data-hash="account" class="nav-link" aria-label="Compte" data-icon-outline="bi-person" data-icon-fill="bi-person-fill">
-        <span class="nav-icon-container">
-          <i class="bi bi-person"></i>
-        </span>
-        <span>Compte</span>
-      </a>
-    </div>
-  </nav>
-
-<script>
-(function() {
-  const allPages = document.querySelectorAll('main.page');
-  const navLinks = document.querySelectorAll('nav .nav-link');
-
-  function updateNavIcon(navLinkElement, isActive) {
-    const iconElement = navLinkElement.querySelector('.nav-icon-container i');
-    if (!iconElement) return;
-
-    const outlineIconClass = navLinkElement.dataset.iconOutline;
-    const fillIconClass = navLinkElement.dataset.iconFill;
-
-    if (isActive) {
-      iconElement.className = `bi ${fillIconClass}`;
-      iconElement.style.color = 'var(--accent)';
-    } else {
-      iconElement.className = `bi ${outlineIconClass}`;
-      iconElement.style.color = 'var(--icon-default-color)';
-    }
-  }
-
-  function showOnlyPage(pageIdToShow) {
-    let pageFound = false;
-    allPages.forEach(p => {
-      const isVisible = p.id === pageIdToShow;
-      p.classList.toggle('visible', isVisible);
-      if (isVisible) {
-        pageFound = true;
-      }
-    });
-
-    if (!pageFound) {
-      allPages.forEach(p => p.classList.toggle('visible', p.id === 'not-found'));
-      pageIdToShow = 'not-found';
-    }
-    
-    navLinks.forEach(el => {
-      const linkHash = el.dataset.hash;
-      if (linkHash) {
-        const isActive = linkHash === pageIdToShow;
-        el.classList.toggle('active', isActive);
-        updateNavIcon(el, isActive);
-      }
-    });
-
-    const activePageElement = document.getElementById(pageIdToShow);
-    if (activePageElement) {
-      activePageElement.scrollTop = 0;
-    }
-  }
-
-  function route() {
-    const hashKey = location.hash.slice(1) || 'home';
-    showOnlyPage(hashKey);
-  }
-
-  window.addEventListener('hashchange', route);
-  window.addEventListener('load', () => {
-    route();
-    document.body.style.visibility = 'visible';
-    const initialActiveLink = document.querySelector('nav .nav-link.active');
-    if (initialActiveLink) {
-        updateNavIcon(initialActiveLink, true);
-    }
-  });
-
-  document.body.addEventListener('click', e => {
-    const navLinkElement = e.target.closest('.nav-link'); // For bottom nav
-    const navHeaderButtonElement = e.target.closest('.nav-header-button'); // For new header buttons
-
-    if (navLinkElement && navLinkElement.closest('nav')) {
-      const targetHash = navLinkElement.dataset.hash;
-      if (targetHash && (location.hash !== '#' + targetHash)) {
-          location.hash = targetHash;
-      }
-      
-      const iconContainer = navLinkElement.querySelector('.nav-icon-container');
-      if (iconContainer) {
-        const rect = iconContainer.getBoundingClientRect();
-        const rippleSize = Math.max(iconContainer.offsetWidth, iconContainer.offsetHeight) * 1.5;
-        const rippleSpan = document.createElement('span');
-        rippleSpan.className = 'ripple';
-        rippleSpan.style.width = rippleSpan.style.height = rippleSize + 'px';
-        rippleSpan.style.left = (iconContainer.offsetWidth / 2 - rippleSize / 2) + 'px';
-        rippleSpan.style.top = (iconContainer.offsetHeight / 2 - rippleSize / 2) + 'px';
-
-        const existingRipple = iconContainer.querySelector('.ripple');
-        if (existingRipple) existingRipple.remove();
-
-        iconContainer.appendChild(rippleSpan);
-        rippleSpan.addEventListener('animationend', () => rippleSpan.remove(), { once: true });
-      }
-    } else if (navHeaderButtonElement) { // Handle clicks on new header buttons
-        const targetHash = navHeaderButtonElement.dataset.hash;
-        if (targetHash && (location.hash !== '#' + targetHash)) {
-            location.hash = targetHash; // This will trigger hashchange and route()
+      codeReader.decodeFromVideoDevice(selectedDeviceId, 'reader', (result, err) => {
+        if (result) {
+          const li = document.createElement("li");
+          li.textContent = result.text;
+          resultList.insertBefore(li, resultList.firstChild);
+          if (navigator.vibrate) navigator.vibrate(100);
         }
-        // Ripple effect for these buttons is handled by the general .btn-ripple listener
-    }
-  });
-
-  document.addEventListener('DOMContentLoaded', () => {
-    const generalRippleButtons = document.querySelectorAll('.btn-ripple');
-    generalRippleButtons.forEach(button => {
-        button.addEventListener('click', function (event) {
-            if (event.target.closest('.nav-link')) return; 
-            // Check if the click is on a nav-header-button, if so, the navigation is handled above.
-            // The ripple effect should still apply.
-            
-            // The following condition was to prevent nested ripples, 
-            // but for nav-header-button, it might be simpler.
-            // if (event.target !== this && event.target.closest('.btn-ripple') !== this) {
-            //     if (event.target.classList.contains('btn-ripple')) return;
-            // }
-
-            const rect = button.getBoundingClientRect();
-            const rippleSpan = document.createElement('span');
-            rippleSpan.classList.add('ripple-general');
-
-            const size = Math.max(rect.width, rect.height) * 2;
-            rippleSpan.style.width = rippleSpan.style.height = size + 'px';
-            rippleSpan.style.left = (event.clientX - rect.left - size / 2) + 'px';
-            rippleSpan.style.top = (event.clientY - rect.top - size / 2) + 'px';
-
-            const existingRipple = button.querySelector('.ripple-general');
-            if (existingRipple) existingRipple.remove();
-
-            button.appendChild(rippleSpan);
-            rippleSpan.addEventListener('animationend', () => {
-                if (rippleSpan.parentElement) {
-                    rippleSpan.remove();
-                }
-            }, { once: true });
-        });
+      });
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Impossible d'accéder à la caméra.");
     });
-
-    // Removed the category chip specific logic as it's no longer used
-    // const categoryChipsContainer = document.querySelector('#home .horizontal-scroll-container');
-    // if (categoryChipsContainer) { ... }
-    
-    console.log("E-commerce application initialized.");
-  });
-
-})();
 </script>
+
 </body>
 </html>
