@@ -47,49 +47,47 @@
             // 2. Configurez la bibliothèque avec VOTRE clé de licence
             try {
                 // Clé de licence que vous avez fournie
-                await Scandit.configure("Ar72HhGeN0GBDrF5vfmMd2whXHRbJRuq9R9lqrguSAyBagTna2IH9oleNhSrSiYx03FNBl9SWD80abJjYTnwGbhFukudVmZ30WaqePAuYiU2IbanXwM/MBAuwXtgfhJOvmC8wMhNpGShQchprV7Kx19mz1adFTiqa0yk62BpQtFOfjhzEnatbHNyB+tzRTLpD22gLixmtYaIaeKVGmCjgGxhnTaAayMhH17GBXdH1R9QUHpKoUuYSrl0w0usXheMwU2TgNZqHvq8Z6fiKH7PFFZK+QUTWXsB/kX0asZJOP61auY7bHSVYaBUS3WvV6DXFmxndJl0n4HKQ3bpMHVlX014+x6LMX1AwWchTw1FWuveQ/VHul5yYh5dRF7UffpBb1G+wMhrlSfKeq/Kz3iBPElFEZaQcS33PT0wm1lp8uoLZHwfU1nFQ0J5RglHeGVWr2/pXe1OtnTsSA4rkl3f+ntETxh/AlL0xkYzOrlx/7L+dvPkQEk4cmIJ7pz8a5bGBTBez+dD+CpxbxYITh+jlKYOp3MF8b2TAJ7u8JyDqxocw+LEUbCJY985CxwRzV8+cUiEfv14mO+pZwVWyF7d6DpFct2c2/OdkjZsIMg4A/dZZIoQmo62fe/GfHqv9PI2Axq0bALC4fX+9kQYJwhFTHex9YjEmRxHrgpTSiPJ88Z/jYzPbeLJqro0vtVJO2fL6YvFQ1zyrjy9iDpihTwte20Z9BNZu/WillCYFVCBsdl/Wj/wE+dkxODVVVZFButINtT/zTIXuC20z1BSqxP5Efhrbbm1pi512AeMzkC2SanSuydRZes4Dx1B42NyfZAI1v698618IlFS+mRPwpDMMMYv/pfJTc+hbHTAicpfca2z+7icWh8T4tdrVZ16r9sEdaY6U85J2geyARTQmkT9XrX9PsFxKWUoTAEAD0xr4XV5aPuQaMwpEfzojr48PtUJoSC4GqqmREeXR2XQG6Ih/zxDD53kWg+AYoM+Fi1IVwzbSjTHDfGg6ZbK3nlnhVc58M3GBYyE60Rbfp3m44u/BfrZ2wM+WhlwMP80vpFKTReA50lVc9vZ95a9njWg8jeJrG3nee8EMaEsazipCYUpJYuyRJm7wwZ9WPpGeOvozz/BRxyuEpLQ9kpDNY3WrZgOd3gvdJLrnVxGmfoN79XRzUvT1hFc6iLrVUvj2neL7dcNhT31UqSVt7AxTXOV3eosQ6M=", {
-                    engineLocation: "https://unpkg.com/scandit-sdk@5.x/build/"
-                });
-            } catch (error) {
-                console.error("Erreur de configuration de Scandit:", error);
-                alert("Erreur de clé de licence. Avez-vous bien configuré le domaine (ex: localhost) dans votre compte Scandit ?");
-                return;
-            }
-
-            // 3. Créez les paramètres de scan
-            const scanSettings = new Scandit.ScanSettings({
-                enabledSymbologies: [Scandit.Symbology.Code128, Scandit.Symbology.Code39],
-                codeDuplicateFilter: 1000 
-            });
-
-            // 4. Créez le lecteur de codes-barres
-            const barcodePicker = await Scandit.BarcodePicker.create(
-                document.getElementById('scandit-barcode-picker'), {
-                    scanSettings: scanSettings
+                await Scandit.configure("Ar72HhGeN0GBDrF5vfmMd2whXHRbJRuq9R9lqrguSAyBagTna2IH9oleNhSrSiYx03FNBl9SWD80abJjYTnwGbhFukudVmZ30WaqePAuYiU2IbanXwM/MBAuwXtgfhJOvmC8wMhNpGShQchprV7Kx19mz1adFTiqa0yk62BpQtFOfjhzEnatbHNyB+tzRTLpD22gLixmtYaIaeKVGmCjgGxhnTaAayMhH17GBXdH1R9QUHpKoUuYSrl0w0usXheMwU2TgNZqHvq8Z6fiKH7PFFZK+QUTWXsB/kX0asZJOP61auY7bHSVYaBUS3WvV6DXFmxndJl0n4HKQ3bpMHVlX014+x6LMX1AwWchTw1FWuveQ/VHul5yYh5dRF7UffpBb1G+wMhrlSfKeq/Kz3iBPElFEZaQcS33PT0wm1lp8uoLZHwfU1nFQ0J5RglHeGVWr2/pXe1OtnTsSA4rkl3f+ntETxh/AlL0xkYzOrlx/7L+dvPkQEk4cmIJ7pz8a5bGBTBez+dD+CpxbxYITh+jlKYOp3MF8b2TAJ7u8JyDqxocw+LEUbCJY985CxwRzV8+cUiEfv14mO+pZwVWyF7d6DpFct2c2/OdkjZsIMg4A/dZZIoQmo62fe/GfHqv9PI2Axq0bALC4fX+9kQYJwhRTHex9YjEmRxHrgpTSiPJ88Z/jYzPbeLJqro0vtVJO2fL6YvFQ1zyrjy9iDpihTwte20Z9BNZu/WillCYFVCBsdl/Wj/wE+dkxODVVVZFButINtT/zTIXuC20z1BSqxP5Efhrbbm1pi512AeMzkC2SanSuydRZes4Dx1B42NyfZAI1v698618IlFS+mRPwpDMMMYv/pfJTc+hbHTAicpfca2z+7icWh8T4tdrVZ16r9sEdaY6U85J2geyARTQmkT9XrX9PsFxKWUoTAEAD0xr4XV5aPuQaMwpEf0ojr48PtUJoSC4GqqmREeXR2XQG6Ih/zxDD53kWg+AYoM+Fi1IVwzbSjTHDfGg6ZbK3nlnhVc58M3GBYyE60Rbfp3m44u/BfrZ2wM+WhlwMP80vpFKTReA50lVc9vZ95a9njWg8jeJrG3nee8EMaEsazipCYUpJYuyRJm7wwZ9WPpGeOvozz/BRxyuEpLQ9kpDNY3WrZgOd3gvdJLrnVxGmfoN79XRzUvT1hFc6iLrVUvj2neL7dcNhT31UqSVt7AxTXOV3eosQ6M=", {
+                        engineLocation: "https://unpkg.com/scandit-sdk@5.x/build/"
+                    });
+                } catch (error) {
+                    console.error("Erreur de configuration de Scandit:", error);
+                    alert("Erreur de clé de licence. Avez-vous bien configuré le domaine (ex: localhost) dans votre compte Scandit ?");
+                    return;
                 }
-            );
 
-            // 5. Définissez l'action lors d'un scan réussi
-            barcodePicker.on("scan", (scanResult) => {
-                const scannedCode = scanResult.barcodes[0];
-                const resultDiv = document.getElementById('scan-result');
-                resultDiv.innerText = `Résultat : ${scannedCode.data}`;
-                barcodePicker.pauseScanning();
-                setTimeout(() => {
-                    barcodePicker.resumeScanning();
-                    resultDiv.innerText = "Pointez la caméra sur un code-barres IMEI";
-                }, 2000);
+                // 3. Créez les paramètres de scan
+                const scanSettings = new Scandit.ScanSettings({
+                    enabledSymbologies: [Scandit.Symbology.Code128, Scandit.Symbology.Code39],
+                    codeDuplicateFilter: 1000 
+                });
+
+                // 4. Créez le lecteur de codes-barres
+                const barcodePicker = await Scandit.BarcodePicker.create(
+                    document.getElementById('scandit-barcode-picker'), {
+                        scanSettings: scanSettings
+                    }
+                );
+
+                // 5. Définissez l'action lors d'un scan réussi
+                barcodePicker.on("scan", (scanResult) => {
+                    const scannedCode = scanResult.barcodes[0];
+                    const resultDiv = document.getElementById('scan-result');
+                    resultDiv.innerText = `Résultat : ${scannedCode.data}`;
+                    barcodePicker.pauseScanning();
+                    setTimeout(() => {
+                        barcodePicker.resumeScanning();
+                        resultDiv.innerText = "Pointez la caméra sur un code-barres IMEI";
+                    }, 2000);
+                });
+            }
+        // Lance le scanner uniquement après que le DOM soit complètement chargé
+        window.addEventListener("load", () => {
+            runScanner().catch(error => {
+                console.error("Erreur lors de l'initialisation du scanner:", error);
+                alert("Le scanner n'a pas pu démarrer. Vérifiez la console pour les erreurs.");
             });
-        }
-// Lance le scanner uniquement après que le DOM soit complètement chargé
-window.addEventListener("load", () => {
-    runScanner().catch(error => {
-        console.error("Erreur lors de l'initialisation du scanner:", error);
-        alert("Le scanner n'a pas pu démarrer. Vérifiez la console pour les erreurs.");
-    });
-});
-
-
+        });
     </script>
 </body>
 </html>
