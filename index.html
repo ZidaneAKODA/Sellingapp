@@ -1,114 +1,72 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-    <title>Scanner Professionnel avec Scandit</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>Scanner IMEI - Smart 9</title>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <style>
         body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
+            font-family: Arial, sans-serif;
+            padding: 20px;
         }
-        /* Ce conteneur prendra toute la page pour afficher la caméra */
-        #scandit-barcode-picker {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+        #reader {
+            width: 100%;
+            max-width: 400px;
+            margin: auto;
         }
-        /* Style pour afficher le résultat par-dessus la vidéo */
-        #scan-result {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            font-size: 1.2em;
+        #result {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
             text-align: center;
-            z-index: 100;
         }
     </style>
 </head>
 <body>
 
-    <div id="scandit-barcode-picker"></div>
+    <h2>Scanner IMEI - Smart 9 (64GB + 4GB RAM)</h2>
 
-    <div id="scan-result">Pointez la caméra sur un code-barres IMEI</div>
-
-    <script src="https://unpkg.com/scandit-sdk@5.x"></script>
+    <div id="reader"></div>
+    <div id="result">Scannez un IMEI...</div>
 
     <script>
-        // Function to check if Scandit SDK is loaded
-        function isScanditLoaded() {
-            return typeof Scandit !== 'undefined' && typeof Scandit.configure === 'function';
+        const imeiValides = [
+            "353067550782504",
+            "353067559894599"
+        ];
+
+        function onScanSuccess(decodedText, decodedResult) {
+            const resultDiv = document.getElementById("result");
+
+            if (imeiValides.includes(decodedText.trim())) {
+                resultDiv.style.color = "green";
+                resultDiv.innerText = IMEI reconnu : ${decodedText};
+            } else {
+                resultDiv.style.color = "red";
+                resultDiv.innerText = Erreur : IMEI non reconnu (${decodedText});
+            }
         }
 
-        // Utilisation d'une fonction async pour gérer le chargement de la bibliothèque
-        async function runScanner() {
-            // Wait for Scandit to be defined if it's not already
-            if (!isScanditLoaded()) {
-                console.log("Scandit SDK not yet loaded, waiting...");
-                await new Promise(resolve => {
-                    const checkInterval = setInterval(() => {
-                        if (isScanditLoaded()) {
-                            clearInterval(checkInterval);
-                            resolve();
-                        }
-                    }, 100); // Check every 100ms
-                });
-                console.log("Scandit SDK is now loaded.");
-            }
+        function onScanFailure(error) {
+            // On peut ignorer les erreurs temporaires de scan
+        }
 
-            // 2. Configurez la bibliothèque avec VOTRE clé de licence
-            try {
-                // Clé de licence que vous avez fournie
-                await Scandit.configure("Ar72HhGeN0GBDrF5vfmMd2whXHRbJRuq9R9lqrguSAyBagTna2IH9oleNhSrSiYx03FNBl9SWD80abJjYTnwGbhFukudVmZ30WaqePAuYiU2IbanXwM/MBAuwXtgfhJOvmC8wMhNpGShQchprV7Kx19mz1adFTiqa0yk62BpQtFOfjhzEnatbHNyB+tzRTLpD22gLixmtYaIaeKVGmCjgGxhnTaAayMhH17GBXdH1R9QUHpKoUuYSrl0w0usXheMwU2TgNZqHvq8Z6fiKH7PFFZK+QUTWXsB/kX0asZJOP61auY7bHSVYaBUS3WvV6DXFmxndJl0n4HKQ3bpMHVlX014+x6LMX1AwWchTw1FWuveQ/VHul5yYh5dRF7UffpBb1G+wMhrlSfKeq/Kz3iBPElFEZaQcS33PT0wm1lp8uoLZHwfU1nFQ0J5RglHeGVWr2/pXe1OtnTsSA4rkl3f+ntETxh/AlL0xkYzOrlx/7L+dvPkQEk4cmIJ7pz8a5bGBTBez+dD+CpxbxYITh+jlKYOp3MF8b2TAJ7u8JyDqxocw+LEUbCJY985CxwRzV8+cUiEfv14mO+pZwVWyF7d6DpFct2c2/OdkjZsIMg4A/dZZIoQmo62fe/GfHqv9PI2Axq0bALC4fX+9kQYJwhRTHex9YjEmRxHrgpTSiPJ88Z/jYzPbeLJqro0vtVJO2fL6YvFQ1zyrjy9iDpihTwte20Z9BNZu/WillCYFVCBsdl/Wj/wE+dkxODVVVZFButINtT/zTIXuC20z1BSqxP5Efhrbbm1pi512AeMzkC2SanSuydRZes4Dx1B42NyfZAI1v698618IlFS+mRPwpDMMMYv/pfJTc+hbHTAicpfca2z+7icWh8T4tdrVZ16r9sEdaY6U85J2geyARTQmkT9XrX9PsFxKWUoTAEAD0xr4XV5aPuQaMwpEf0ojr48PtUJoSC4GqqmREeXR2XQG6Ih/zxDD53kWg+AYoM+Fi1IVwzbSjTHDfGg6ZbK3nlnhVc58M3GBYyE60Rbfp3m44u/BfrZ2wM+WhlwMP80vpFKTReA50lVc9vZ95a9njWg8jeJrG3nee8EMaEsazipCYUpJYuyRJm7wwZ9WPpGeOvozz/BRxyuEpLQ9kpDNY3WrZgOd3gvdJLrnVxGmfoN79XRzUvT1hFc6iLrVUvj2neL7dcNhT31UqSVt7AxTXOV3eosQ6M=", {
-                        engineLocation: "https://unpkg.com/scandit-sdk@5.x/build/"
-                    });
-                } catch (error) {
-                    console.error("Erreur de configuration de Scandit:", error);
-                    alert("Erreur de clé de licence. Avez-vous bien configuré le domaine (ex: localhost) dans votre compte Scandit ?");
-                    return;
-                }
+        const html5QrCode = new Html5Qrcode("reader");
+        const config = { fps: 10, qrbox: 250 };
 
-                // 3. Créez les paramètres de scan
-                const scanSettings = new Scandit.ScanSettings({
-                    enabledSymbologies: [Scandit.Symbology.Code128, Scandit.Symbology.Code39],
-                    codeDuplicateFilter: 1000 
-                });
-
-                // 4. Créez le lecteur de codes-barres
-                const barcodePicker = await Scandit.BarcodePicker.create(
-                    document.getElementById('scandit-barcode-picker'), {
-                        scanSettings: scanSettings
-                    }
+        Html5Qrcode.getCameras().then(cameras => {
+            if (cameras && cameras.length) {
+                html5QrCode.start(
+                    { facingMode: "environment" },
+                    config,
+                    onScanSuccess,
+                    onScanFailure
                 );
-
-                // 5. Définissez l'action lors d'un scan réussi
-                barcodePicker.on("scan", (scanResult) => {
-                    const scannedCode = scanResult.barcodes[0];
-                    const resultDiv = document.getElementById('scan-result');
-                    resultDiv.innerText = `Résultat : ${scannedCode.data}`;
-                    barcodePicker.pauseScanning();
-                    setTimeout(() => {
-                        barcodePicker.resumeScanning();
-                        resultDiv.innerText = "Pointez la caméra sur un code-barres IMEI";
-                    }, 2000);
-                });
             }
-        
-        // Lance le scanner uniquement après que le DOM soit complètement chargé
-        // AND after Scandit SDK is confirmed to be loaded
-        window.addEventListener("load", () => {
-            runScanner().catch(error => {
-                console.error("Erreur lors de l'initialisation du scanner:", error);
-                alert("Le scanner n'a pas pu démarrer. Vérifiez la console pour les erreurs.");
-            });
+        }).catch(err => {
+            document.getElementById("result").innerText = "Erreur : Caméra inaccessible.";
         });
     </script>
+
 </body>
 </html>
