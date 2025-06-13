@@ -1,6 +1,109 @@
 <!DOCTYPE html>
 
-<html lang="fr">
+<html lang="fr"><!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>
+    Dynamsoft Barcode Scanner Sample - Hello World (Decode via Camera)
+  </title>
+
+  <!-- Include Dynamsoft Barcode Reader Bundle via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/dynamsoft-barcode-reader-bundle@10.5.3000/dist/dbr.bundle.js"></script>
+
+  <style>
+    /* Reset default margin and padding, and apply border-box sizing */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Ensure html and body take full viewport size */
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      font-family: sans-serif;
+    }
+
+    /* Style for the scanner title */
+    .barcode-scanner-title {
+      height: 80px;
+      text-align: center;
+      font-size: 20px;
+      padding: 20px 0;
+      background-color: #f8f9fa;
+      color: #343a40;
+    }
+
+    /* Container where the barcode scanner will be rendered */
+    .barcode-scanner-view {
+      width: 100%;
+      height: calc(100% - 140px);
+      /* Adjusted height to make space for the result */
+    }
+
+    /* Container for displaying the scan result */
+    #result-container {
+      height: 60px;
+      line-height: 60px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      color: #28a745;
+      background-color: #e9ecef;
+    }
+  </style>
+</head>
+
+<body>
+  <h1 class="barcode-scanner-title">
+    Hello World (Scan One Single Barcode via Camera)
+  </h1>
+  <!-- This div will host the barcode scanner's camera view -->
+  <div class="barcode-scanner-view"></div>
+
+  <!-- This new div will display the result of the scan -->
+  <div id="result-container">Awaiting scan...</div>
+
+  <script>
+    // Configuration object for initializing the BarcodeScanner instance.
+    let config = {
+      license: "DLS2eyJoYW5kc2hha2VDb2RlIjoiMTA0MTIyNDk4LVRYbFhaV0pRY205cSIsIm1haW5TZXJ2ZXJVUkwiOiJodHRwczovL21kbHMuZHluYW1zb2Z0b25saW5lLmNvbSIsIm9yZ2FuaXphdGlvbklEIjoiMTA0MTIyNDk4Iiwic3RhbmRieVNlcnZlclVSTCI6Imh0dHBzOi8vc2Rscy5keW5hbXNvZnRvbmxpbmUuY29tIiwiY2hlY2tDb2RlIjotMTYyMTI2MTU4OH0=", // Replace with your Dynamsoft license key
+      container: ".barcode-scanner-view", // Specify where to render the scanner UI
+    };
+
+    // Get the element where we will display the result
+    const resultContainer = document.getElementById("result-container");
+
+    // Create a new instance of the Dynamsoft Barcode Scanner
+    const barcodeScanner = new Dynamsoft.BarcodeScanner(config);
+
+    // Launch the scanner and handle the scanned result
+    barcodeScanner.launch().then((result) => {
+        // --- THIS IS THE MODIFIED PART ---
+        // Check if a barcode was actually found
+        if (result.barcodeResults.length > 0) {
+            // Display the first detected barcode's text in our result container
+            console.log(result.barcodeResults[0]);
+            resultContainer.textContent = "Result: " + result.barcodeResults[0].text;
+        } else {
+            resultContainer.textContent = "No barcode detected.";
+        }
+    }).catch((error) => {
+        // Handle potential errors, like camera access denied
+        console.error(error);
+        resultContainer.textContent = "Error: " + error.message;
+        resultContainer.style.color = "red";
+    });
+  </script>
+</body>
+
+</html>
+
 
 <head>
 
