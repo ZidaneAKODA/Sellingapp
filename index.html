@@ -2242,6 +2242,437 @@ function displaySalesHistory(salesList) {
 
 </script>
 
+<section id="screen-dettes-fournisseurs" class="screen">
+    <style>
+        /* Styles spécifiques pour l'écran Dettes Fournisseurs */
+        #screen-dettes-fournisseurs {
+            background-color: var(--bg-color); /* Utilise la couleur de fond globale */
+            padding: 15px;
+        }
+
+        #screen-dettes-fournisseurs header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        #screen-dettes-fournisseurs header h1 {
+            font-size: 22px;
+            color: var(--primary-color);
+            margin: 0 auto; /* Centre le titre */
+        }
+
+        #screen-dettes-fournisseurs .btn-refresh {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .summary-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .summary-card h2 {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .summary-card p {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        /* Style pour chaque carte de dette fournisseur */
+        .dette-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column; /* Organise le contenu en colonne */
+            position: relative;
+            border-left: 4px solid #FF9800; /* Jaune/Orange pour "en cours" */
+        }
+
+        .dette-card.paid {
+            border-left-color: #4CAF50; /* Vert si payé */
+        }
+
+        .dette-card .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 15px;
+        }
+
+        .dette-card .info-row strong {
+            color: var(--text-color);
+        }
+
+        .dette-card .info-row span {
+            color: #555;
+        }
+
+        .dette-card .payment-progress {
+            width: 100%;
+            height: 6px;
+            background-color: #e0e0e0;
+            border-radius: 3px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .dette-card .progress-bar-dette {
+            height: 100%;
+            background-color: #4CAF50; /* Vert de progression */
+            width: 0%; /* Sera ajusté par JS */
+        }
+
+        .dette-card .pay-button {
+            background-color: var(--accent-color); /* Orange vif pour le bouton Payer */
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            cursor: pointer;
+            align-self: flex-end; /* Aligne le bouton à droite dans la colonne */
+            font-size: 14px;
+        }
+
+        /* Styles pour le modal de paiement de dette */
+        #modalPaiementDette .modal-content h2 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        #modalPaiementDette .modal-content p {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        #modalPaiementDette .modal-content label {
+            font-weight: 500;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        #modalPaiementDette .modal-content input,
+        #modalPaiementDette .modal-content select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+        }
+
+        #modalPaiementDette .btn-modern.primary {
+            width: 100%;
+        }
+
+        /* Cache la bottom-nav quand le modal est actif */
+        #modalPaiementDette.modal ~ .bottom-nav-pro {
+            display: none;
+        }
+    </style>
+
+    <header>
+        <button class="back-btn" onclick="window.location.hash='menu'">
+            <i data-lucide="arrow-left"></i> Retour
+        </button>
+        <h1>Dettes Fournisseurs</h1>
+        <button class="btn-refresh" onclick="chargerDettesFournisseurs()">
+            <i data-lucide="rotate-ccw"></i> Actualiser
+        </button>
+    </header>
+
+    <div class="container">
+        <div class="summary-card">
+            <h2>Total Dû</h2>
+            <p id="totalDuesAmount">0 FCFA</p>
+        </div>
+
+        <div class="list-container" id="dettesFournisseursList">
+            <p style="text-align:center;">Chargement des dettes...</p>
+        </div>
+    </div>
+
+    <div id="modalPaiementDette" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fermerModalPaiementDette()">&times;</span>
+            <h2>Enregistrer un Paiement</h2>
+            <form id="formEnregistrerPaiement" class="vente-form">
+                <p>Fournisseur: <strong id="modalDetteFournisseur"></strong></p>
+                <p>Montant dû initial: <span id="modalDetteTotalInitial"></span> FCFA</p>
+                <p>Montant restant: <span id="modalDetteRestant"></span> FCFA</p>
+
+                <label for="montantPaiementDette">Montant du Paiement (FCFA)</label>
+                <input type="number" id="montantPaiementDette" placeholder="Montant à payer" required step="100" />
+
+                <label for="comptePaiementDette">Payer depuis le compte</label>
+                <select id="comptePaiementDette" required></select>
+
+                <button type="submit" class="btn-modern primary">Enregistrer Paiement</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Variable pour stocker la dette actuellement sélectionnée pour le paiement
+        let currentDetteToPay = null;
+
+        // --- Fonctions pour la page "Dettes Fournisseurs" ---
+
+        /**
+         * Charge et affiche la liste des approvisionnements impayés (crédit)
+         * et met à jour le total des dettes.
+         */
+        async function chargerDettesFournisseurs() {
+            const container = document.getElementById("dettesFournisseursList");
+            const totalDuesAmountEl = document.getElementById("totalDuesAmount");
+            container.innerHTML = '<p style="text-align:center;">Chargement des dettes...</p>';
+            totalDuesAmountEl.textContent = 'Chargement...';
+
+            let totalDues = 0;
+
+            try {
+                const snapshot = await dbFirestore.collection("approvisionnement")
+                    .where("paymentMethod", "==", "credit")
+                    .orderBy("timestamp", "desc")
+                    .get();
+
+                container.innerHTML = ""; // Clear loading message
+
+                if (snapshot.empty) {
+                    container.innerHTML = '<p style="text-align:center; padding: 20px;">Aucune dette fournisseur en cours. Tout est payé !</p>';
+                    totalDuesAmountEl.textContent = '0 FCFA';
+                    return;
+                }
+
+                snapshot.forEach(doc => {
+                    const dette = doc.data();
+                    dette.id = doc.id; // Store document ID
+
+                    // Defensive check: Assume 'cash' if paymentMethod is undefined or null for old data that might sneak in
+                    const actualPaymentMethod = dette.paymentMethod || 'cash';
+                    const actualIsPaid = dette.isPaid === undefined ? (actualPaymentMethod === 'cash') : dette.isPaid;
+                    const actualRemainingAmount = dette.remainingAmount === undefined ? (actualPaymentMethod === 'credit' ? dette.totalCost : 0) : dette.remainingAmount;
+
+                    const remaining = parseFloat(actualRemainingAmount || 0);
+                    const totalInitial = parseFloat(dette.totalCost || 0);
+
+                    // Only show if it's a credit purchase AND still unpaid (remaining > 0)
+                    if (actualPaymentMethod === 'credit' && remaining > 0) {
+                        totalDues += remaining;
+
+                        const percentagePaid = totalInitial > 0 ? ((totalInitial - remaining) / totalInitial) * 100 : 0;
+                        const statusClass = remaining === 0 ? 'paid' : ''; // This class will now only apply to fully paid credit entries
+
+                        const card = document.createElement("div");
+                        card.className = `dette-card ${statusClass}`;
+                        card.innerHTML = `
+                            <div class="info-row">
+                                <strong>Fournisseur:</strong> <span>${dette.fournisseur}</span>
+                            </div>
+                            <div class="info-row">
+                                <strong>Article(s):</strong> <span>${dette.items ? dette.items.length : 0}</span>
+                            </div>
+                            <div class="info-row">
+                                <strong>Date d'achat:</strong> <span>${new Date(dette.timestamp).toLocaleDateString('fr-FR')}</span>
+                            </div>
+                            <div class="info-row">
+                                <strong>Montant initial:</strong> <span>${parseFloat(dette.totalCost).toLocaleString('fr-FR')} FCFA</span>
+                            </div>
+                            <div class="info-row" style="font-weight: bold; color: ${remaining > 0 ? '#dc3545' : '#4CAF50'};">
+                                <strong>Montant restant:</strong> <span id="remaining-${dette.id}">${remaining.toLocaleString('fr-FR')} FCFA</span>
+                            </div>
+                            <div class="payment-progress">
+                                <div class="progress-bar-dette" style="width: ${percentagePaid.toFixed(0)}%;"></div>
+                            </div>
+                            <button class="pay-button" onclick="ouvrirModalPaiementDette('${dette.id}')">
+                                Payer <i data-lucide="wallet"></i>
+                            </button>
+                        `;
+                        container.appendChild(card);
+                    }
+                });
+
+                totalDuesAmountEl.textContent = totalDues.toLocaleString('fr-FR') + ' FCFA';
+                lucide.createIcons(); // Re-render lucide icons
+            } catch (error) {
+                console.error("Erreur lors du chargement des dettes fournisseurs:", error);
+                container.innerHTML = '<p style="text-align:center; color:red;">Erreur de chargement des dettes.</p>';
+                totalDuesAmountEl.textContent = 'Erreur';
+            }
+        }
+
+        /**
+         * Ouvre le modal de paiement pour une dette spécifique.
+         * @param {string} approId - L'ID du document d'approvisionnement à payer.
+         */
+        async function ouvrirModalPaiementDette(approId) {
+            showSaleLoader(); // Show generic loader while fetching data
+            try {
+                const doc = await dbFirestore.collection("approvisionnement").doc(approId).get();
+                if (!doc.exists) {
+                    alert("Dette non trouvée.");
+                    hideSaleLoader();
+                    return;
+                }
+                const dette = doc.data();
+                dette.id = doc.id; // Store the ID for later use
+
+                currentDetteToPay = dette; // Store the entire document data
+
+                document.getElementById("modalDetteFournisseur").textContent = dette.fournisseur;
+                document.getElementById("modalDetteTotalInitial").textContent = parseFloat(dette.totalCost || 0).toLocaleString('fr-FR');
+                document.getElementById("modalDetteRestant").textContent = parseFloat(dette.remainingAmount || 0).toLocaleString('fr-FR');
+                document.getElementById("montantPaiementDette").value = parseFloat(dette.remainingAmount || 0).toFixed(0); // Pre-fill with remaining amount
+                document.getElementById("montantPaiementDette").max = parseFloat(dette.remainingAmount || 0).toFixed(0); // Set max value
+
+                // Fill payment accounts dropdown for the modal
+                remplirTousSelectComptes(document.getElementById("comptePaiementDette"));
+
+                document.getElementById("modalPaiementDette").style.display = "flex";
+                hideSaleLoader();
+            } catch (error) {
+                console.error("Erreur lors de l'ouverture du modal de paiement:", error);
+                alert("Impossible d'ouvrir le formulaire de paiement.");
+                hideSaleLoader();
+            }
+        }
+
+        /**
+         * Ferme le modal de paiement de dette.
+         */
+        function fermerModalPaiementDette() {
+            document.getElementById("modalPaiementDette").style.display = "none";
+            currentDetteToPay = null; // Clear the stored debt
+            document.getElementById("formEnregistrerPaiement").reset(); // Reset form fields
+        }
+
+        /**
+         * Enregistre le paiement contre une dette fournisseur.
+         */
+        document.getElementById("formEnregistrerPaiement").addEventListener("submit", async function(e) {
+            e.preventDefault();
+
+            if (!currentDetteToPay) {
+                alert("Aucune dette sélectionnée pour le paiement.");
+                return;
+            }
+
+            const paiementAmount = parseFloat(document.getElementById("montantPaiementDette").value);
+            const compteId = document.getElementById("comptePaiementDette").value;
+
+            const remainingBeforePayment = parseFloat(currentDetteToPay.remainingAmount || currentDetteToPay.totalCost || 0);
+
+            if (isNaN(paiementAmount) || paiementAmount <= 0) {
+                alert("Veuillez entrer un montant de paiement valide.");
+                return;
+            }
+            if (paiementAmount > remainingBeforePayment) {
+                alert(`Le montant du paiement (${paiementAmount.toLocaleString()} FCFA) dépasse le solde dû (${remainingBeforePayment.toLocaleString()} FCFA).`);
+                return;
+            }
+            if (!compteId) {
+                alert("Veuillez sélectionner un compte pour le paiement.");
+                return;
+            }
+
+            showSaleLoader();
+            try {
+                const approRef = dbFirestore.collection("approvisionnement").doc(currentDetteToPay.id);
+                const now = new Date();
+
+                // Use a transaction for atomicity: update debt and record treasury movement
+                await dbFirestore.runTransaction(async t => {
+                    const doc = await t.get(approRef);
+                    if (!doc.exists) {
+                        throw new Error("Document de dette introuvable pour la transaction.");
+                    }
+                    const data = doc.data();
+                    const currentRemaining = parseFloat(data.remainingAmount || data.totalCost || 0);
+
+                    if (paiementAmount > currentRemaining) {
+                        throw new Error("Le montant du paiement a dépassé le solde dû lors de la transaction.");
+                    }
+
+                    const newRemaining = currentRemaining - paiementAmount;
+                    const newIsPaid = newRemaining <= 0;
+
+                    t.update(approRef, {
+                        remainingAmount: newRemaining,
+                        isPaid: newIsPaid
+                    });
+
+                    // Log this payment in a sub-collection for this specific procurement
+                    t.set(approRef.collection("payments").doc(), {
+                        amount: paiementAmount,
+                        date: now.toISOString(),
+                        timestamp: now.getTime(),
+                        compteId: compteId,
+                        type: 'credit_payment'
+                    });
+
+                    // Record as a functional expense (outflow from company funds)
+                    const depenseRef = dbFirestore.collection("depenses").doc();
+                    t.set(depenseRef, {
+                        montant: paiementAmount,
+                        description: `Paiement dette fournisseur: ${currentDetteToPay.fournisseur}`,
+                        type: "depense fonctionnelle",
+                        timestamp: now.getTime(),
+                        date: now.toISOString(),
+                        dateString: now.toLocaleDateString("fr-FR")
+                    });
+
+                    // Record as a treasury movement (outflow from selected account)
+                    // Note: enregistrerMouvementTresorerie is a global function, usually not part of the transaction directly,
+                    // but called immediately after a successful commit.
+                    // For a full atomic transaction including treasury, you'd need to modify enregistrerMouvementTresorerie
+                    // to accept a transaction object, which is more complex.
+                    // For now, it's safer to call it outside the transaction.
+                });
+
+                // Call the global treasury movement function outside the current transaction
+                await enregistrerMouvementTresorerie({
+                    compteId: compteId,
+                    type: 'paiement_dette_fournisseur',
+                    sens: 'out',
+                    montant: paiementAmount,
+                    description: `Paiement dette fournisseur: ${currentDetteToPay.fournisseur}`,
+                    refId: currentDetteToPay.id
+                });
+
+
+                alert("Paiement enregistré avec succès !");
+                fermerModalPaiementDette();
+                chargerDettesFournisseurs(); // Refresh the list
+                updateBalanceDisplay(); // Update treasury display
+            } catch (error) {
+                console.error("Erreur lors de l'enregistrement du paiement:", error);
+                alert("Erreur lors de l'enregistrement du paiement: " + error.message);
+            } finally {
+                hideSaleLoader();
+            }
+        });
+
+    </script>
+</section>
+
     <!-- Screen 6: Menu Principal (Thème Clair) -->
     <section id="screen-menu" class="screen">
       <div class="menu">
@@ -2268,6 +2699,9 @@ function displaySalesHistory(salesList) {
           <div class="section" onclick="window.location.hash='clients'">
             <i data-lucide="users"></i>
             Clients
+          </div>
+           <div class="section" onclick="window.location.hash='dettes-fournisseurs'">
+            <i data-lucide="receipt-text"></i> Dettes Fournisseurs
           </div>
           <div class="section" onclick="window.location.hash='vendeurs'">
             <i data-lucide="users"></i>
@@ -3795,6 +4229,7 @@ dbFirestore.collection("stock")
 }
 
 // New function to handle the visibility of the account selection
+// New function to handle the visibility of the account selection
 function togglePaymentAccount() {
     const paymentMethod = document.getElementById("paymentMethodApproBasket").value;
     const accountSelectionContainer = document.getElementById("accountSelectionContainer");
@@ -3808,10 +4243,9 @@ function togglePaymentAccount() {
         compteSelectAppro.removeAttribute('required'); // No longer required for credit
         compteSelectAppro.value = ''; // Clear selection if previously made
     }
-    // Update the dropdown options to reflect selected state if needed
-    remplirTousSelectComptes();
+    // Update the dropdown options to reflect selected state if needed (optional, but good for clarity)
+    remplirTousSelectComptes(); // Re-fill to update required status visually for the default selection
 }
-
 
   function updatePanierApprovisionnement() {
   const container = document.getElementById("panierApproContent");
@@ -5520,6 +5954,7 @@ case 'article-detail':
 
     case 'approvisionnement':
         chargerApprovisionnements();
+        togglePaymentAccount(); // Ensure payment method UI is correct on entry
         break;
     case 'profit':
       updateProfitScreen(); // Appellez ici la fonction qui met à jour et affiche les détails du profit
@@ -5546,6 +5981,10 @@ case 'article-detail':
   case 'start-day':
       // rien de spécial à faire
       break;
+
+  case 'dettes-fournisseurs':
+            chargerDettesFournisseurs();
+            break;
 
   }
 }
@@ -6666,28 +7105,32 @@ function loadComptes() {
 }
 
 // ── Commence ici ──
-function remplirTousSelectComptes() {
-  document.querySelectorAll('[id^="compteSelect"]').forEach(sel => {
-    sel.innerHTML = '';
+// Function to fill all account select elements with cached accounts
+function remplirTousSelectComptes(specificSelectElement = null) {
+    const selectsToFill = specificSelectElement
+        ? [specificSelectElement] // Fill only the provided element
+        : document.querySelectorAll('[id^="compteSelect"]'); // Fill all elements matching the selector
 
-    /* ➜ option “vide” d’abord */
-    const placeholder = document.createElement('option');
-    placeholder.value      = '';
-    placeholder.textContent = '— Choisir un compte —';
-    placeholder.disabled    = true;
-    placeholder.selected    = true;          // rien n’est choisi par défaut
-    sel.appendChild(placeholder);
+    selectsToFill.forEach(sel => {
+        sel.innerHTML = '';
 
-    /* ➜ puis les comptes réels */
-    comptesCache.forEach(c => {
-      const opt   = document.createElement('option');
-      opt.value   = c.id;                    // caisse | momo | banque
-      opt.textContent = `${c.nom} – ${c.solde.toLocaleString()} XOF`;
-      sel.appendChild(opt);
+        /* ➜ option “vide” d’abord */
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = '— Choisir un compte —';
+        placeholder.disabled = true;
+        placeholder.selected = true;
+        sel.appendChild(placeholder);
+
+        /* ➜ puis les comptes réels */
+        comptesCache.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c.id;
+            opt.textContent = `${c.nom} – ${c.solde.toLocaleString()} XOF`;
+            sel.appendChild(opt);
+        });
     });
-  });
 }
-
 // ── Termine ici ──
 /** Met à jour l'affichage des soldes de chaque compte dans #accounts-balances */
 function majCartesTresorerie() {
