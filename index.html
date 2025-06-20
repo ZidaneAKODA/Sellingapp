@@ -6332,27 +6332,27 @@ async function recordCreditPayment(approId, outstandingAmount) {
     </ion-content>
 
     <ion-modal id="searchBottomSheetV2" initialBreakpoint="0.6" :breakpoints="[0, 0.6, 0.8]" handleBehavior="cycle" mode="ios">
-        <div class="ion-padding">
-            <h2 class="bottom-sheet-title" id="bottomSheetTitleV2">Rechercher...</h2>
+    <div class="ion-padding">
+        <h2 class="bottom-sheet-title" id="bottomSheetTitleV2">Rechercher...</h2>
 
-            <div class="search-bar-container">
-                <ion-icon name="search-outline" class="search-icon"></ion-icon>
-                <ion-input class="search-input" placeholder="Rechercher"></ion-input>
-                <ion-button class="add-button">
-                    <ion-icon name="add-outline"></ion-icon>
-                </ion-button>
-            </div>
-
-            <div class="no-result-found">
-                <div class="no-result-illustration"></div>
-                <p>Aucun résultat trouvé</p>
-            </div>
-
-            <ion-button expand="block" fill="clear" id="closeBottomSheetBtnV2">
-                Fermer
+        <div class="search-bar-container">
+            <ion-icon name="search-outline" class="search-icon"></ion-icon>
+            <ion-input class="search-input" placeholder="Rechercher"></ion-input>
+            <ion-button class="add-button">
+                <ion-icon name="add-outline"></ion-icon>
             </ion-button>
         </div>
-    </ion-modal>
+
+        <div class="no-result-found">
+            <div class="no-result-illustration"></div>
+            <p>Aucun résultat trouvé</p>
+        </div>
+
+        <ion-button expand="block" fill="clear" id="closeBottomSheetBtnV2">
+            Fermer
+        </ion-button>
+    </div>
+</ion-modal>
 </section>
 
 <style>
@@ -6539,18 +6539,51 @@ async function recordCreditPayment(approId, outstandingAmount) {
         font-weight: 600;
         margin-top: 1.5rem; /* Increased top margin */
     }
+    #screen-nouvel-achat-v2.active ~ .bottom-nav-pro {
+    display: none;
+}
 
-    /* Bottom Sheet (ion-modal) styles - these remain global as modals render outside the main flow */
-    ion-modal#searchBottomSheetV2 {
-        --height: auto;
-        --border-radius: 1rem 1rem 0 0;
-        --box-shadow: none;
-    }
+/* Styles pour le bottom sheet (ion-modal) */
+ion-modal#searchBottomSheetV2 {
+    /* Laisser 'auto' pour la hauteur ou définir une hauteur maximale si le contenu est très grand */
+    --height: auto; /* Permet à la hauteur de s'ajuster au contenu ou aux breakpoints */
 
-    ion-modal#searchBottomSheetV2 .ion-padding {
-        padding: 1.5rem;
-    }
+    /* Coins arrondis UNIQUEMENT en haut pour un effet bottom sheet */
+    --border-radius: 1rem 1rem 0 0; /* Arrondit les coins supérieurs */
 
+    /* S'assurer qu'il n'y a pas d'ombre qui ferait flotter la modale */
+    --box-shadow: none; /* Supprime l'ombre par défaut si présente */
+
+    /* Définir une largeur de 100% pour qu'elle couvre tout l'écran */
+    --width: 100%; /* S'assure que la modale prend toute la largeur */
+
+    /* Positionnement au bas (utile si les breakpoints ne sont pas encore actifs ou si une fallback est nécessaire) */
+    /* Ces propriétés sont généralement gérées par Ionic avec les breakpoints, mais peuvent aider à la compréhension */
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    /* Assurez-vous que l'arrière-plan du backdrop est transparent ou semi-transparent */
+    --backdrop-opacity: 0.4; /* Ajustez selon le degré d'opacité souhaité pour l'arrière-plan */
+}
+
+/* Ajustements pour le contenu interne si nécessaire, pour qu'il s'adapte bien */
+ion-modal#searchBottomSheetV2 .ion-padding {
+    padding: 1.5rem; /* Gardez votre padding interne */
+    /* Optionnel : ajouter un max-height pour le contenu scrollable si la modale ne prend pas 100% de la hauteur */
+    max-height: 80vh; /* Exemple: Contenu ne dépasse pas 80% de la hauteur du viewport */
+    overflow-y: auto; /* Permet de scroller si le contenu dépasse la hauteur */
+}
+
+/* Si vous voulez une "poignée" glissante en haut comme dans les apps natives */
+ion-modal#searchBottomSheetV2::part(handle) {
+    background: #ccc; /* Couleur de la poignée */
+    height: 5px; /* Hauteur de la poignée */
+    width: 40px; /* Largeur de la poignée */
+    border-radius: 5px; /* Arrondi de la poignée */
+    margin-top: 8px; /* Marge au-dessus de la poignée */
+}
     .bottom-sheet-title {
         font-weight: 700;
         font-size: 1.25rem;
