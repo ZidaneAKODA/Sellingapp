@@ -3916,6 +3916,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     <i data-lucide="truck"></i>
                     <span>Livraisons</span>
                 </li>
+                 <li class="menu-list-item" onclick="window.location.hash='nouvel-achat-v2'">
+            <i data-lucide="archive"></i> <span>Nouvel Achat (V2)</span>
+        </li>
             </ul>
         </div>
 
@@ -5137,6 +5140,7 @@ function logDepenseRemboursement({ collection, montant, description, type = "", 
 }
 
 </script>
+
 <section id="screen-approvisionnement" class="screen">
 
     <ion-header class="ion-no-border">
@@ -5251,234 +5255,483 @@ function logDepenseRemboursement({ collection, montant, description, type = "", 
 
 </section>
 <style>
-  /* =========================================================
-     NOUVEAUX STYLES POUR L'ÉCRAN D'APPROVISIONNEMENT (Ionic)
-     ========================================================= */
 
-  #screen-approvisionnement {
-    --ion-background-color: var(--bg-color, #f5f7fa); /* Utilisez votre variable de couleur de fond */
-    padding: 0; /* Ionic gère le padding interne de ion-content */
-  }
+    /*
+     * All styles are specifically scoped to #screen-approvisionnement to ensure
+     * no inherited styles from Code B or Ionic defaults interfere,
+     * fully adopting Code A's flat design.
+     */
 
-  #screen-approvisionnement ion-header {
-    box-shadow: none; /* Pas d'ombre sur l'en-tête */
-    border-bottom: 1px solid var(--ion-color-step-150, #e0e0e0); /* Ligne de séparation fine */
-  }
+    #screen-approvisionnement {
+        font-family: 'Inter', sans-serif;
+        --ion-background-color: #F8F8F8; /* Very light gray background for a flat look */
+        color: #333; /* Default text color */
+        padding: 0;
+        /* Ensure no lingering borders or shadows on the main screen container */
+        border: none !important;
+        box-shadow: none !important;
+    }
 
-  #screen-approvisionnement ion-toolbar {
-    --background: var(--white); /* Fond blanc pour la toolbar */
-    --border-width: 0 !important; /* Pas de bordure par défaut */
-    --box-shadow: none !important; /* Pas d'ombre */
-    padding-left: 10px;
-    padding-right: 10px;
-  }
+    /* Header Styling */
+    #screen-approvisionnement ion-header {
+        box-shadow: none !important;
+        --box-shadow: none !important;
+        --border: none !important;
+    }
 
-  #screen-approvisionnement ion-title {
-    font-weight: 600;
-    color: var(--text-color, #333);
-    font-size: 18px;
-    padding-inline-start: 0;
-  }
+    #screen-approvisionnement ion-toolbar {
+        --background: #EFEFFF; /* Header background color */
+        --color: #333; /* Default text color */
+        box-shadow: none !important;
+        --box-shadow: none !important;
+        border-bottom: 1px solid #E0E0E0; /* Thin line to separate header */
+        --border-width: 0 !important;
+        --border-style: none !important;
+        --border-color: transparent !important;
+        padding-inline-start: 0.5rem; /* Match general content padding */
+        padding-inline-end: 0.5rem; /* Match general content padding */
+    }
 
-  #screen-approvisionnement ion-buttons ion-button {
-    --color: var(--text-color, #333); /* Couleur des icônes */
-    font-size: 1.5em;
-    --padding-end: 8px;
-    --padding-start: 8px;
-  }
+    #screen-approvisionnement ion-title {
+        font-weight: 600;
+        font-size: 1.15rem;
+        padding-inline-start: 0; /* Remove Ionic's default title padding */
+        padding-inline-end: 0;
+    }
 
-  #screen-approvisionnement ion-content {
-    --padding-top: 15px;
-    --padding-bottom: 15px;
-    --padding-start: 15px;
-    --padding-end: 15px;
-  }
+    #screen-approvisionnement ion-buttons ion-button {
+        --color: #333; /* Darker color for back button */
+        font-size: 1.5em; /* Keep existing icon size */
+        --padding-end: 8px;
+        --padding-start: 8px;
+        box-shadow: none !important;
+        --box-shadow: none !important;
+        --background: transparent !important;
+    }
 
-  /* Style général des cartes (remplace .form-section, .panier-approvisionnement, .approvisionnement-history) */
-  #screen-approvisionnement .form-card {
-    --background: var(--white);
-    border-radius: var(--border-radius); /* Utilise votre variable globale */
-    box-shadow: var(--shadow); /* Utilise votre variable globale */
-    margin-bottom: 15px; /* Espace entre les cartes */
-    margin-left: 0; /* Annule la marge par défaut des ion-card */
-    margin-right: 0; /* Annule la marge par défaut des ion-card */
-  }
+    /* Main Content Area */
+    #screen-approvisionnement ion-content {
+        --padding-top: 1rem;
+        --padding-bottom: 1rem;
+        --padding-start: 0.5rem; /* Reduced left/right spacing */
+        --padding-end: 0.5rem;  /* Reduced left/right spacing */
+    }
 
-  #screen-approvisionnement ion-card-header {
-    padding-bottom: 0; /* Ajustez selon l'espacement désiré */
-  }
+    /* Form Card General Styling */
+    #screen-approvisionnement .form-card {
+        background-color: white;
+        padding: 1rem; /* Internal padding for the card */
+        border-radius: 0.5rem; /* Slight rounding for corners */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Elevation effect */
+        border: 1px solid #E0E0E0;
+        margin-left: 0; /* Override Ionic default card margin */
+        margin-right: 0; /* Override Ionic default card margin */
+        margin-bottom: 1.2rem; /* Spacing between cards */
+    }
 
-  #screen-approvisionnement ion-card-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--text-color, #333);
-    text-align: left; /* Aligne le titre à gauche */
-    padding: 10px 16px; /* Padding interne pour le titre */
-  }
+    #screen-approvisionnement ion-card-header {
+        padding-top: 0; /* Control padding via .form-card */
+        padding-bottom: 0;
+        margin-bottom: 1rem; /* Space between title and first item */
+    }
 
-  #screen-approvisionnement ion-card-content {
-    padding-top: 10px; /* Espace entre le titre et le contenu du formulaire */
-  }
+    #screen-approvisionnement ion-card-title {
+        font-size: 1rem; /* Match items-header font size */
+        font-weight: 600; /* Match items-header font weight */
+        color: #1F2937; /* Match items-header color */
+        text-align: left;
+        padding: 0; /* Control padding via parent .form-card */
+    }
 
-  /* Styles des ion-item pour les champs de formulaire */
-  #screen-approvisionnement ion-item {
-    --background: transparent; /* Fond transparent pour l'item */
-    --border-color: var(--ion-color-step-150, #ccc); /* Ligne de séparation douce */
-    --border-width: 0 0 1px 0; /* Ligne seulement en bas */
-    --padding-start: 0; /* Pas de padding par défaut à gauche */
-    --padding-end: 0; /* Pas de padding par défaut à droite */
-    --inner-padding-end: 0; /* Pas de padding interne à droite */
-    margin-bottom: 15px; /* Espace entre les champs */
-  }
+    #screen-approvisionnement ion-card-content {
+        padding-top: 0; /* Control padding via parent .form-card */
+        padding-left: 0;
+        padding-right: 0;
+        padding-bottom: 0;
+    }
 
-  #screen-approvisionnement ion-item.item-has-focus {
-    --border-color: var(--primary-color, #006064); /* Ligne colorée au focus */
-    --border-width: 0 0 2px 0; /* Ligne plus épaisse au focus */
-  }
+    /* Default ion-item for Form Fields */
+    #screen-approvisionnement ion-item {
+        --background: transparent !important; /* Force transparent background */
+        --border-radius: 0 !important; /* No border radius for a clean line */
+        margin-bottom: 1.2rem; /* Default spacing for standalone inputs */
+        box-shadow: none !important;
+        border: none !important; /* Remove all default borders */
+        border-bottom: 1px solid #D1D5DB !important; /* ONLY bottom border as a separator */
+        padding: 0.6rem 0 !important; /* Adjusted padding to align with the new design */
+        align-items: center;
+        --highlight-height: 0 !important; /* Crucial: Removes Ionic's default underline highlight */
+        --detail-icon-display: none !important; /* Removes default detail arrow if any */
+        --inner-border-width: 0 !important; /* Removes Ionic's internal border */
+        --padding-start: 0 !important; /* Ensure content starts at the edge */
+        --padding-end: 0 !important;
+        --inner-padding-end: 0 !important; /* For items with content slotted end */
+        --border-color: transparent !important; /* Ensure border color is not affecting */
+    }
 
-  /* Styles des ion-input et ion-select */
-  #screen-approvisionnement ion-input,
-  #screen-approvisionnement ion-select {
-    --padding-start: 0; /* Supprime le padding par défaut si le label est "floating" */
-    --padding-end: 0;
-    font-size: 16px;
-    color: var(--text-color, #333);
-    padding-top: 5px; /* Ajuste le padding pour le label flottant */
-    padding-bottom: 5px; /* Ajuste le padding pour le label flottant */
-  }
+    /* Adjust ion-item spacing when inside specific cards to make it compact */
+    #screen-approvisionnement .form-inputs-card ion-item,
+    #screen-approvisionnement .payment-method-card ion-item {
+        margin-bottom: 0.4rem; /* Reduced spacing for a more compact look */
+        padding: 0.4rem 0 !important; /* Adjusted padding as well */
+        border-bottom: 1px solid #D1D5DB !important; /* Ensure underline is still there */
+    }
 
-  /* Ajustements pour les boutons de quantité */
-  #screen-approvisionnement ion-item[lines="none"] .item-native {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-  }
+    /* Remove bottom border for the last ion-item inside a card */
+    #screen-approvisionnement .form-inputs-card ion-item:last-of-type,
+    #screen-approvisionnement .payment-method-card ion-item:last-of-type,
+    #screen-approvisionnement #panierApproContent ion-item:last-of-type {
+        margin-bottom: 0 !important;
+        border-bottom: none !important;
+    }
 
-  #screen-approvisionnement ion-item[lines="none"] ion-input {
-    text-align: center;
-    --padding-start: 8px;
-    --padding-end: 8px;
-  }
+    /* Label and Icon Styling for ion-item */
+    #screen-approvisionnement ion-item ion-label {
+        color: #4B5563;
+    }
 
-  #screen-approvisionnement ion-item[lines="none"] ion-button {
-    --background: var(--ion-color-light, #f0f0f0);
-    --background-activated: var(--ion-color-step-200, #e0e0e0);
-    --border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    font-size: 20px;
-    --box-shadow: none;
-    margin: 0 5px;
-  }
+    #screen-approvisionnement ion-item ion-icon {
+        color: #6B7280;
+    }
 
-  #screen-approvisionnement ion-item[lines="none"] ion-icon {
-    font-size: 20px;
-    color: var(--primary-color);
-  }
+    /* Field labels in BLUE */
+    #screen-approvisionnement .field-label {
+        color: #2563EB; /* text-blue-600 */
+        font-size: 0.875rem; /* text-sm */
+        margin-bottom: 0.25rem; /* Reduced margin for a more compact look */
+        display: block; /* Ensures the label takes full width */
+        font-weight: 500; /* Slightly bolder to stand out */
+    }
 
-  /* Bouton "Ajouter l'article" */
-  #screen-approvisionnement ion-button[fill="outline"] {
-    --background: transparent;
-    --color: var(--primary-color);
-    --border-color: var(--primary-color);
-    --border-width: 1px;
-    --box-shadow: none;
-  }
+    /* Asterisk * in RED */
+    #screen-approvisionnement .required-asterisk {
+        color: red;
+        margin-left: 2px; /* Small space after the label */
+    }
 
-  #screen-approvisionnement ion-button[fill="outline"]:hover {
-    --background: var(--primary-color);
-    --color: var(--white);
-  }
+    /* Input and Select Styling */
+    #screen-approvisionnement ion-input,
+    #screen-approvisionnement ion-select {
+        --color: #374151; /* Text color for inputs */
+        --placeholder-color: #9CA3AF;
+        font-size: 1rem;
+        --padding-start: 0 !important;
+        --padding-end: 0 !important;
+        --padding-top: 0 !important;
+        --padding-bottom: 0 !important;
+        flex: 1; /* Allows input/select to take available space */
+        /* Ensure no intrinsic borders or backgrounds on the input/select itself */
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        outline: none !important; /* Crucial: Remove browser default focus outline */
+    }
 
-  /* Panier d'achat - items */
-  #screen-approvisionnement #panierApproContent ion-item {
-    --background: var(--ion-color-step-50, #f9f9f9); /* Fond légèrement gris pour chaque item du panier */
-    border-radius: 8px;
-    margin-bottom: 8px;
-    --border-width: 0; /* Pas de ligne de séparation par défaut sur ces items */
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    padding-top: 5px;
-    padding-bottom: 5px;
-  }
+    /* Specific custom-input class for consistency */
+    #screen-approvisionnement ion-input.custom-input,
+    #screen-approvisionnement ion-select.custom-input {
+        --background: transparent !important;
+        --border-width: 0 !important;
+        --padding-start: 0 !important;
+        --padding-end: 0 !important;
+    }
+    
+    /* Ensure ion-select appearance matches ion-input for text alignment and color */
+    #screen-approvisionnement ion-select {
+        text-align: left;
+        width: 100%;
+        justify-content: flex-start;
+    }
+    
+    #screen-approvisionnement ion-select::part(text) {
+        color: #374151;
+    }
 
-  #screen-approvisionnement #panierApproContent ion-item h2 {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-color);
-  }
+    /* Quantity Control */
+    #screen-approvisionnement .quantity-control {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        border: none;
+        background-color: transparent;
+        padding: 0;
+    }
+    #screen-approvisionnement .quantity-control ion-button {
+        --background: transparent !important;
+        --background-activated: #E8E8E8 !important; /* Adjusted for a flat design */
+        --color: #333 !important; /* Darker color for buttons */
+        --border-radius: 0.3rem !important;
+        box-shadow: none !important;
+        min-width: 48px; /* Increased for better touch target */
+        height: 48px; /* Increased for better touch target */
+        font-size: 1.5rem; /* Increased for icon visibility */
+        font-weight: bold;
+        padding: 0 !important;
+        margin: 0 5px; /* Keep some margin around buttons */
+    }
+    #screen-approvisionnement .quantity-control ion-button ion-icon {
+        font-size: 2rem; /* Make the icon larger and visible */
+        color: #333; /* Darker color for icons */
+        width: 2rem;
+        height: 2rem;
+    }
+    #screen-approvisionnement .quantity-control ion-input {
+        text-align: center;
+        --padding-start: 0 !important;
+        --padding-end: 0 !important;
+        --padding-top: 0 !important;
+        --padding-bottom: 0 !important;
+        font-size: 1.2rem; /* Slightly larger for visibility */
+        color: #333;
+        flex-grow: 1;
+        max-width: 70px; /* Limits the width of the quantity input */
+    }
 
-  #screen-approvisionnement #panierApproContent ion-item p {
-    font-size: 14px;
-    color: #666;
-  }
+    /* Main Action Buttons */
+    #screen-approvisionnement .primary-button {
+        --background: #2563EB !important;
+        --background-activated: #1E50B7 !important;
+        --border-radius: 0.5rem !important;
+        box-shadow: none !important;
+        height: 3.2rem; /* Slightly larger for a primary button */
+        font-weight: 600;
+        margin-top: 1.5rem; /* Increased top margin */
+        --color: white !important; /* Ensure text is white */
+        text-transform: none !important; /* Remove Ionic default uppercase */
+    }
 
-  #screen-approvisionnement #panierApproContent ion-item ion-button {
-    --background: transparent;
-    --color: var(--ion-color-danger, #dc3545);
-    --box-shadow: none;
-    --padding-end: 0;
-    --padding-start: 0;
-    margin: 0;
-  }
+    /* Items List Section */
+    #screen-approvisionnement .items-section {
+        margin-top: 2rem;
+        background-color: white;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        border: 1px solid #E0E0E0;
+    }
 
-  #screen-approvisionnement #panierApproContent ion-item ion-icon {
-    font-size: 20px;
-  }
+    #screen-approvisionnement .items-header {
+        display: flex;
+        justify-content: space-between;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #E0E0E0;
+        margin-bottom: 1rem;
+    }
 
-  /* Styles pour la liste de suggestions */
-  #screen-approvisionnement .suggestion-list {
-    position: relative; /* Ajusté à relative pour être dans le flux de l'ion-item */
-    background: var(--white);
-    border: none;
-    max-height: 150px;
-    overflow-y: auto;
-    width: 100%;
-    display: none;
-    margin-top: -15px; /* Pour remonter et coller sous l'input */
-    box-shadow: var(--shadow);
-    border-radius: var(--border-radius);
-    z-index: 10; /* Assure qu'elle est au-dessus des autres éléments */
-  }
+    #screen-approvisionnement .items-header h3 {
+        font-weight: 600;
+        font-size: 1rem;
+        color: #1F2937;
+        margin: 0;
+    }
 
-  #screen-approvisionnement .suggestion-item {
-    padding: 8px 10px;
-    cursor: pointer;
-    font-size: 15px;
-    color: var(--text-color);
-  }
+    #screen-approvisionnement .item-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #F3F4F6; /* Lighter border between items */
+    }
 
-  #screen-approvisionnement .suggestion-item:hover {
-    background: var(--ion-color-step-50, #f0f0f0);
-  }
+    #screen-approvisionnement .item-details {
+        flex-grow: 1;
+    }
 
-  #screen-approvisionnement .suggestion-item.add-new-supplier {
-    background-color: var(--ion-color-step-100, #e0f2f7);
-    color: var(--primary-color);
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 14px;
-    transition: background-color 0.2s ease;
-  }
+    #screen-approvisionnement .item-name {
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 0.2rem;
+        display: flex;
+        align-items: center;
+    }
 
-  #screen-approvisionnement .suggestion-item.add-new-supplier:hover {
-    background-color: var(--ion-color-step-150, #cce9ef);
-  }
+    #screen-approvisionnement .item-delete-icon {
+        color: #EF4444; /* Red for delete icon */
+        font-size: 1.2rem;
+        margin-right: 0.5rem;
+        cursor: pointer;
+    }
 
-  #screen-approvisionnement .suggestion-item.add-new-supplier ion-icon {
-    font-size: 16px;
-    color: var(--primary-color);
-  }
+    #screen-approvisionnement .item-qty-price {
+        font-size: 0.875rem;
+        color: #6B7280;
+        margin-bottom: 0.2rem;
+    }
 
-  /* Pour les champs de formulaire à deux colonnes */
-  #screen-approvisionnement .ion-item-2-cols {
-    display: flex;
-    gap: 15px;
-    /* Assurez-vous que le flex:1 est sur les ion-item internes */
-  }
+    #screen-approvisionnement .item-sku {
+        font-size: 0.75rem;
+        color: #9CA3AF;
+    }
+
+    #screen-approvisionnement .item-amount {
+        font-weight: 600;
+        color: #1F2937;
+        font-size: 1rem;
+        margin-left: 1rem; /* Space between details and amount */
+    }
+
+    /* Summary Rows */
+    #screen-approvisionnement .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        font-size: 0.95rem;
+        color: #374151;
+    }
+
+    #screen-approvisionnement .summary-row.total {
+        font-weight: 700;
+        font-size: 1.1rem;
+        border-top: 1px solid #E0E0E0; /* Separator for total */
+        padding-top: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    #screen-approvisionnement .adjustment-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        font-size: 0.95rem;
+        color: #374151;
+    }
+
+    #screen-approvisionnement .adjustment-row ion-icon {
+        color: #6B7280;
+        margin-right: 0.5rem;
+    }
+
+    #screen-approvisionnement .adjustment-input {
+        --background: transparent !important;
+        --border-width: 0 !important;
+        text-align: right; /* Align input text to the right */
+        width: 100px; /* Adjust width as needed */
+        font-size: 0.95rem;
+        color: #374151;
+        padding-right: 0 !important; /* Remove internal padding */
+        outline: none !important; /* Remove browser default focus outline */
+        box-shadow: none !important;
+    }
+
+    /* Payment Method Section */
+    #screen-approvisionnement .payment-method-card {
+        margin-top: 2rem; /* Space above this card */
+        margin-bottom: 1rem; /* Space below this card before final buttons/content */
+        background-color: white;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        border: 1px solid #E0E0E0;
+    }
+
+    /* Suggestion List (for search fields) */
+    #screen-approvisionnement .suggestion-list {
+        position: relative;
+        background: white;
+        border: none;
+        max-height: 150px;
+        overflow-y: auto;
+        width: 100%;
+        display: none; /* Controlled by JS */
+        margin-top: -15px; /* To move it up and stick it under the input */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Match card shadow */
+        border-radius: 0.5rem; /* Match card border-radius */
+        z-index: 10;
+    }
+
+    #screen-approvisionnement .suggestion-item {
+        padding: 8px 10px;
+        cursor: pointer;
+        font-size: 15px;
+        color: #333; /* Default text color */
+    }
+
+    #screen-approvisionnement .suggestion-item:hover {
+        background: #F3F4F6; /* Lighter hover background */
+    }
+
+    #screen-approvisionnement .suggestion-item.add-new-supplier {
+        background-color: #EFEFFF; /* Lighter blue background */
+        color: #2563EB; /* Blue for add new */
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 14px;
+        transition: background-color 0.2s ease;
+    }
+
+    #screen-approvisionnement .suggestion-item.add-new-supplier:hover {
+        background-color: #E0E0E0; /* Slightly darker on hover */
+    }
+
+    #screen-approvisionnement .suggestion-item.add-new-supplier ion-icon {
+        font-size: 16px;
+        color: #2563EB;
+    }
+
+    /* Datetime Button/Modal Styles (included for completeness as they were in Code A, though not directly used in Code B HTML) */
+    #screen-approvisionnement ion-datetime-button {
+        --padding-start: 0 !important;
+        --padding-end: 0 !important;
+        --padding-top: 0 !important;
+        --padding-bottom: 0 !important;
+        font-size: 1rem;
+        text-align: left;
+        color: #374151;
+        width: 100%;
+        justify-content: flex-start;
+        --border-radius: 0 !important;
+        --background: transparent !important;
+        --background-activated: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+        outline: none !important;
+    }
+
+    #screen-approvisionnement ion-datetime-button::part(native) {
+        padding-inline-start: 0 !important;
+        padding-inline-end: 0 !important;
+        justify-content: flex-start;
+        background: transparent !important;
+    }
+
+    #screen-approvisionnement ion-datetime-button::part(text) {
+        color: #374151;
+    }
+
+    #screen-approvisionnement .datetime-modal-buttons {
+        display: flex;
+        justify-content: flex-end;
+        padding: 16px;
+        border-top: 1px solid #E0E0E0;
+        gap: 16px;
+    }
+
+    #screen-approvisionnement .datetime-modal-buttons ion-button {
+        --background: transparent !important;
+        --background-activated: transparent !important;
+        --color: #2563EB !important;
+        --border-radius: 0 !important;
+        box-shadow: none !important;
+        font-weight: 500;
+        height: auto;
+        min-width: unset;
+        padding: 0 !important;
+        text-transform: uppercase;
+        outline: none !important;
+    }
+
+    #screen-approvisionnement .datetime-modal-buttons ion-button.cancel-btn {
+        --color: #6B7280 !important;
+    }
+
+    #screen-approvisionnement .datetime-modal-buttons ion-button.ok-btn {
+        --color: #2563EB !important;
+    }
 </style>
+
 
 <script>
   // Variable globale pour stocker les articles ajoutés au panier d'approvisionnement
@@ -5954,6 +6207,1239 @@ async function recordCreditPayment(approId, outstandingAmount) {
 }
 
   
+</script>
+
+<section id="screen-nouvel-achat-v2" class="screen">
+    <ion-header class="ion-no-border">
+        <ion-toolbar>
+            <ion-buttons slot="start">
+                <ion-button onclick="window.history.back()">
+                    <ion-icon name="arrow-back-outline"></ion-icon>
+                </ion-button>
+            </ion-buttons>
+            <ion-title>Nouvel Achat</ion-title>
+            <ion-buttons slot="end">
+                <ion-button class="save-draft" onclick="saveDraftPurchaseV2()">ENREGISTRER BROUILLON</ion-button>
+                <ion-icon name="ellipsis-vertical-outline" size="medium"></ion-icon>
+            </ion-buttons>
+        </ion-toolbar>
+    </ion-header>
+
+    <ion-content fullscreen class="ion-padding">
+        <div class="form-inputs-card">
+            <ion-item id="dateFieldItemV2" lines="none">
+                <ion-label position="stacked" class="field-label">Date<span class="required-asterisk">*</span></ion-label>
+                <ion-datetime-button datetime="dueOnReceiptDatetimePickerV2"></ion-datetime-button>
+                <ion-icon slot="end" name="calendar-outline"></ion-icon>
+                <ion-modal id="dueOnReceiptDatetimeV2" keep-contents-mounted="true">
+                    <ion-datetime id="dueOnReceiptDatetimePickerV2" presentation="date"></ion-datetime>
+                    <div class="datetime-modal-buttons">
+                        <ion-button class="cancel-btn" onclick="document.getElementById('dueOnReceiptDatetimeV2').dismiss()">Annuler</ion-button>
+                        <ion-button class="ok-btn" onclick="confirmDateSelectionV2()">OK</ion-button>
+                    </div>
+                </ion-modal>
+            </ion-item>
+
+            <ion-item id="supplierFieldV2" lines="none" class="clickable-item" button>
+                <ion-label position="stacked" class="field-label">Fournisseur<span class="required-asterisk">*</span></ion-label>
+                <ion-input class="custom-input" placeholder="Sélectionner un fournisseur" readonly></ion-input>
+                <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+            </ion-item>
+
+            <ion-item id="categoryFieldV2" lines="none" class="clickable-item" button>
+                <ion-label position="stacked" class="field-label">Catégorie<span class="required-asterisk">*</span></ion-label>
+                <ion-input class="custom-input" placeholder="Sélectionner une catégorie" readonly></ion-input>
+                <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+            </ion-item>
+
+            <ion-item id="itemDesignationFieldV2" lines="none" class="clickable-item" button>
+                <ion-label position="stacked" class="field-label">Désignation article<span class="required-asterisk">*</span></ion-label>
+                <ion-input class="custom-input" placeholder="Rechercher un article" readonly></ion-input>
+                <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+            </ion-item>
+
+            <ion-item lines="none">
+                <ion-label position="stacked" class="field-label">Quantité<span class="required-asterisk">*</span></ion-label>
+                <div class="quantity-control">
+                    <ion-button fill="clear" id="decreaseQtyBtnV2">
+                        <ion-icon name="remove-outline"></ion-icon>
+                    </ion-button>
+                    <ion-input type="number" value="1" id="quantityInputV2" class="custom-input"></ion-input>
+                    <ion-button fill="clear" id="increaseQtyBtnV2">
+                        <ion-icon name="add-outline"></ion-icon>
+                    </ion-button>
+                </div>
+            </ion-item>
+
+            <ion-item lines="none">
+                <ion-label position="stacked" class="field-label">Prix d'achat unitaire<span class="required-asterisk">*</span></ion-label>
+                <ion-input type="number" placeholder="Saisir le prix" id="unitPriceInputV2" class="custom-input"></ion-input>
+            </ion-item>
+        </div>
+
+        <ion-item lines="none">
+            <ion-label position="stacked" class="field-label">Coût total</ion-label>
+            <ion-input type="number" value="0.00" readonly id="totalCostInputV2" class="custom-input"></ion-input>
+        </ion-item>
+
+        <ion-button expand="block" class="primary-button" id="addItemButtonV2">
+            Ajouter l'article
+        </ion-button>
+
+        <div class="items-section">
+            <div class="items-header">
+                <h3>Items</h3>
+                <h3>Amount</h3>
+            </div>
+            <div id="addedItemsListV2">
+                </div>
+
+            <div class="summary-row">
+                <span>Sub Total</span>
+                <span id="subTotalAmountV2">0.00</span>
+            </div>
+
+            <div class="adjustment-row">
+                <ion-icon name="information-circle-outline"></ion-icon>
+                <span>Frais de transport</span>
+                <ion-input class="custom-input adjustment-input" placeholder="0.00" type="number" id="shippingCostInputV2" style="text-align: right;"></ion-input>
+            </div>
+
+            <div class="summary-row total">
+                <span>Total (XOF)</span>
+                <span id="finalTotalAmountV2">0.00</span>
+            </div>
+        </div>
+
+        <div class="payment-method-card">
+            <ion-item id="paymentMethodFieldV2" lines="none" class="clickable-item" button>
+                <ion-label position="stacked" class="field-label">Sélectionner un moyen de paiement<span class="required-asterisk">*</span></ion-label>
+                <ion-input class="custom-input" placeholder="Cash ou Crédit" readonly></ion-input>
+                <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+            </ion-item>
+
+            <ion-item id="deductionAccountFieldV2" lines="none" class="clickable-item" button style="display: none;">
+                <ion-label position="stacked" class="field-label">Compte de déduction<span class="required-asterisk">*</span></ion-label>
+                <ion-input class="custom-input" placeholder="Caisse, Momo ou Banque" readonly></ion-input>
+                <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+            </ion-item>
+        </div>
+        
+        <ion-button expand="block" class="primary-button" onclick="finaliserAchatV2()" style="margin-top: 20px;">
+            Enregistrer l'Achat
+        </ion-button>
+
+    </ion-content>
+
+    <ion-modal id="searchBottomSheetV2" initialBreakpoint="0.6" :breakpoints="[0, 0.6, 0.8]" handleBehavior="cycle" mode="ios">
+        <div class="ion-padding">
+            <h2 class="bottom-sheet-title" id="bottomSheetTitleV2">Rechercher...</h2>
+
+            <div class="search-bar-container">
+                <ion-icon name="search-outline" class="search-icon"></ion-icon>
+                <ion-input class="search-input" placeholder="Rechercher"></ion-input>
+                <ion-button class="add-button">
+                    <ion-icon name="add-outline"></ion-icon>
+                </ion-button>
+            </div>
+
+            <div class="no-result-found">
+                <div class="no-result-illustration"></div>
+                <p>Aucun résultat trouvé</p>
+            </div>
+
+            <ion-button expand="block" fill="clear" id="closeBottomSheetBtnV2">
+                Fermer
+            </ion-button>
+        </div>
+    </ion-modal>
+</section>
+
+<style>
+    /* Styles scoped to the screen-nouvel-achat-v2 section */
+    #screen-nouvel-achat-v2 {
+        font-family: 'Inter', sans-serif; /* Use Inter font for this new screen */
+        --ion-background-color: #F8F8F8; /* Very light gray background */
+        color: #333; /* Default text color */
+        padding: 0; /* Remove default padding, handled by ion-content */
+    }
+
+    #screen-nouvel-achat-v2 ion-header {
+        box-shadow: none !important;
+        --box-shadow: none !important;
+        --border: none !important;
+    }
+
+    #screen-nouvel-achat-v2 ion-toolbar {
+        --background: #EFEFFF; /* Header background color */
+        --color: #333; /* Default text color */
+        box-shadow: none !important;
+        --box-shadow: none !important;
+        border-bottom: 1px solid #E0E0E0; /* Thin line to separate header */
+        --border-width: 0;
+        --border-style: none;
+        --border-color: transparent;
+        padding-inline-start: 10px; /* Adjust padding for toolbar */
+        padding-inline-end: 10px;
+    }
+
+    #screen-nouvel-achat-v2 ion-title {
+        font-weight: 600;
+        font-size: 1.15rem;
+    }
+
+    #screen-nouvel-achat-v2 ion-button.save-draft {
+        --color: #555;
+        text-transform: uppercase;
+        font-weight: 500;
+        --padding-end: 0;
+        --padding-start: 0;
+        --min-width: unset;
+    }
+
+    #screen-nouvel-achat-v2 ion-content {
+        --padding-top: 1rem;
+        --padding-bottom: 1rem;
+        --padding-start: 0.5rem; /* Reduced left/right spacing */
+        --padding-end: 0.5rem;  /* Reduced left/right spacing */
+    }
+
+    /* Default style for ion-item for form fields - now with only bottom border */
+    #screen-nouvel-achat-v2 ion-item {
+        --background: transparent; /* Transparent background */
+        --border-radius: 0; /* No border radius for a clean line */
+        margin-bottom: 1.2rem; /* Default spacing for standalone inputs */
+        box-shadow: none;
+        border: none;
+        border-bottom: 1px solid #D1D5DB; /* Only bottom border as a separator */
+        padding: 0.6rem 0; /* Adjusted padding to align with the new design */
+        align-items: center;
+        --highlight-height: 0; /* Removes Ionic's default highlight */
+        --detail-icon-display: none;
+        --inner-border-width: 0; /* Removes Ionic's internal border */
+    }
+
+    /* Specific styling for ion-datetime-button to look like an input */
+    #screen-nouvel-achat-v2 ion-datetime-button {
+        /* Remove internal button padding for a tighter fit with the underline design */
+        --padding-start: 0;
+        --padding-end: 0;
+        --padding-top: 0;
+        --padding-bottom: 0;
+        font-size: 1rem;
+        text-align: left; /* Align text to the left */
+        color: #374151; /* Text color */
+        width: 100%; /* Take full width */
+        justify-content: flex-start; /* Align content to the start */
+        --border-radius: 0; /* No border radius */
+        --background: transparent; /* Make background transparent */
+        --background-activated: transparent; /* Make background transparent on activation */
+    }
+
+    /* Style for the date value inside the datetime button */
+    #screen-nouvel-achat-v2 ion-datetime-button::part(native) {
+        padding-inline-start: 0;
+        padding-inline-end: 0;
+        justify-content: flex-start; /* Ensure the text starts at the left */
+        background: transparent; /* Ensure native part background is transparent */
+    }
+
+    #screen-nouvel-achat-v2 ion-datetime-button::part(text) {
+        color: #374151; /* Match input text color */
+    }
+
+    #screen-nouvel-achat-v2 ion-item ion-label {
+        color: #4B5563;
+    }
+
+    #screen-nouvel-achat-v2 ion-item ion-icon {
+        color: #6B7280;
+    }
+
+    /* Field labels in BLUE */
+    #screen-nouvel-achat-v2 .field-label {
+        color: #101011; /* text-blue-600 */
+        font-size: 1.175rem; /* text-sm */
+        margin-bottom: 0.25rem; /* Reduced margin for a more compact look */
+        display: block; /* Ensures the label takes full width */
+        font-weight: 500; /* Slightly bolder to stand out */
+    }
+
+    /* Asterisk * in RED */
+    #screen-nouvel-achat-v2 .required-asterisk {
+        color: red;
+        margin-left: 2px; /* Small space after the label */
+    }
+
+    #screen-nouvel-achat-v2 ion-input {
+        --color: #374151; /* Text color for inputs */
+        --placeholder-color: #9CA3AF;
+        font-size: 1rem;
+        --padding-start: 0;
+        --padding-end: 0;
+        --padding-top: 0;
+        --padding-bottom: 0;
+        flex: 1; /* Allows input to take available space */
+    }
+
+    #screen-nouvel-achat-v2 ion-input.custom-input {
+        --background: transparent;
+        --border-width: 0;
+        --padding-start: 0;
+        --padding-end: 0;
+    }
+
+    /* Specific styles for Quantity field */
+    #screen-nouvel-achat-v2 .quantity-control {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        border: none; /* No borders here either */
+        background-color: transparent;
+        padding: 0;
+    }
+    #screen-nouvel-achat-v2 .quantity-control ion-button {
+        --background: transparent;
+        --background-activated: #E8E8E8; /* Adjusted for a flat design */
+        --color: #333; /* Darker color for buttons */
+        --border-radius: 0.3rem;
+        box-shadow: none;
+        min-width: 48px; /* Increased for better touch target */
+        height: 48px; /* Increased for better touch target */
+        font-size: 1.5rem; /* Increased for icon visibility */
+        font-weight: bold;
+        padding: 0;
+    }
+    #screen-nouvel-achat-v2 .quantity-control ion-button ion-icon { /* Targets the icon inside the button */
+        font-size: 2rem; /* Make the icon larger and visible */
+        color: #333; /* Darker color for icons */
+        width: 2rem;
+        height: 2rem;
+    }
+    #screen-nouvel-achat-v2 .quantity-control ion-input {
+        text-align: center;
+        --padding-start: 0;
+        --padding-end: 0;
+        --padding-top: 0;
+        --padding-bottom: 0;
+        font-size: 1.2rem; /* Slightly larger for visibility */
+        color: #333;
+        flex-grow: 1;
+        max-width: 70px; /* Limits the width of the quantity input */
+    }
+
+    /* Main buttons */
+    #screen-nouvel-achat-v2 ion-button.primary-button {
+        --background: #2563EB;
+        --background-activated: #1E50B7;
+        --border-radius: 0.5rem;
+        box-shadow: none;
+        height: 3.2rem; /* Slightly larger for a primary button */
+        font-weight: 600;
+        margin-top: 1.5rem; /* Increased top margin */
+    }
+
+    /* Bottom Sheet (ion-modal) styles - these remain global as modals render outside the main flow */
+    ion-modal#searchBottomSheetV2 {
+        --height: auto;
+        --border-radius: 1rem 1rem 0 0;
+        --box-shadow: none;
+    }
+
+    ion-modal#searchBottomSheetV2 .ion-padding {
+        padding: 1.5rem;
+    }
+
+    .bottom-sheet-title {
+        font-weight: 700;
+        font-size: 1.25rem;
+        color: #1F2937;
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .search-bar-container {
+        display: flex;
+        align-items: center;
+        background-color: #F3F4F6;
+        border-radius: 9999px;
+        padding: 0.75rem 1rem;
+        margin-bottom: 2rem;
+        border: none; /* No border on the search bar */
+        box-shadow: none;
+    }
+
+    .search-icon {
+        color: #6B7280;
+        margin-right: 0.75rem;
+        font-size: 1.25rem;
+    }
+
+    .search-input {
+        flex-grow: 1;
+        --background: transparent;
+        --color: #374151;
+        --placeholder-color: #6B7280;
+    }
+
+    .add-button {
+        --background: #1F2937;
+        --background-activated: #374151;
+        --border-radius: 9999px;
+        --padding-start: 0.75rem;
+        --padding-end: 0.75rem;
+        --height: 2.5rem;
+        --width: 2.5rem;
+        box-shadow: none;
+    }
+
+    .add-button ion-icon {
+        color: white;
+        font-size: 1.5rem;
+    }
+
+    .no-result-found {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding-top: 2.5rem;
+        padding-bottom: 2.5rem;
+    }
+
+    .no-result-illustration {
+        width: 150px;
+        height: 150px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B0B0B0' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2L2 7l10 5 10-5-10-5z'/%3E%3Cpath d='M2 17l10 5 10-5M2 12l10 5 10-5'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+        opacity: 0.6;
+        margin-bottom: 1rem;
+    }
+
+    .no-result-found p {
+        color: #4B5563;
+        font-size: 1.125rem;
+    }
+
+    /* Close button for the bottom sheet */
+    ion-button#closeBottomSheetBtnV2 {
+        margin-top: 1.5rem;
+        --background: #E0E0E0;
+        --background-activated: #D0D0D0;
+        --color: #1F2937;
+        --border-radius: 0.5rem;
+        box-shadow: none;
+        height: 2.8rem; /* Slightly larger */
+        font-weight: 500;
+    }
+
+    /* Styles for the new form inputs section (card) */
+    #screen-nouvel-achat-v2 .form-inputs-card {
+        margin-bottom: 1.2rem; /* Reduced space after this card for more content below */
+        background-color: white;
+        padding: 1rem; /* Internal padding for the card */
+        border-radius: 0.5rem; /* Arrondi léger pour les coins */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Effet d'élévation */
+        border: 1px solid #E0E0E0;
+    }
+
+    /* Adjust ion-item spacing when inside the new card to make it compact */
+    #screen-nouvel-achat-v2 .form-inputs-card ion-item {
+        margin-bottom: 0.4rem; /* Reduced spacing for a more compact look */
+        padding: 0.4rem 0; /* Adjusted padding as well */
+        border-bottom: 1px solid #D1D5DB; /* Ensure underline is still there */
+    }
+
+    /* Remove bottom border for the last ion-item inside the card */
+    #screen-nouvel-achat-v2 .form-inputs-card ion-item:last-of-type {
+        margin-bottom: 0;
+        border-bottom: none;
+    }
+
+    /* Styles for the items list section (existing card) */
+    #screen-nouvel-achat-v2 .items-section {
+        margin-top: 2rem;
+        background-color: white; /* Background for the whole section */
+        padding: 1rem;
+        border-radius: 0.5rem; /* Arrondi léger pour les coins */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Effet d'élévation */
+        border: 1px solid #E0E0E0; /* Light border for the section */
+    }
+
+    #screen-nouvel-achat-v2 .items-header {
+        display: flex;
+        justify-content: space-between;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #E0E0E0;
+        margin-bottom: 1rem;
+    }
+
+    #screen-nouvel-achat-v2 .items-header h3 {
+        font-weight: 600;
+        font-size: 1rem;
+        color: #1F2937;
+        margin: 0;
+    }
+
+    #screen-nouvel-achat-v2 .item-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #F3F4F6; /* Lighter border between items */
+    }
+
+    #screen-nouvel-achat-v2 .item-row:last-of-type {
+        border-bottom: none; /* No border for the last item */
+    }
+
+    #screen-nouvel-achat-v2 .item-details {
+        flex-grow: 1;
+    }
+
+    #screen-nouvel-achat-v2 .item-name {
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 0.2rem;
+        display: flex;
+        align-items: center;
+    }
+
+    #screen-nouvel-achat-v2 .item-delete-icon {
+        color: #EF4444; /* Red for delete icon */
+        font-size: 1.2rem;
+        margin-right: 0.5rem;
+        cursor: pointer;
+    }
+
+    #screen-nouvel-achat-v2 .item-qty-price {
+        font-size: 0.875rem;
+        color: #6B7280;
+        margin-bottom: 0.2rem;
+    }
+
+    #screen-nouvel-achat-v2 .item-sku {
+        font-size: 0.75rem;
+        color: #9CA3AF;
+    }
+
+    #screen-nouvel-achat-v2 .item-amount {
+        font-weight: 600;
+        color: #1F2937;
+        font-size: 1rem;
+        margin-left: 1rem; /* Space between details and amount */
+    }
+
+    #screen-nouvel-achat-v2 .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        font-size: 0.95rem;
+        color: #374151;
+    }
+
+    #screen-nouvel-achat-v2 .summary-row.total {
+        font-weight: 700;
+        font-size: 1.1rem;
+        border-top: 1px solid #E0E0E0; /* Separator for total */
+        padding-top: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    #screen-nouvel-achat-v2 .adjustment-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        font-size: 0.95rem;
+        color: #374151;
+    }
+
+    #screen-nouvel-achat-v2 .adjustment-row ion-icon {
+        color: #6B7280;
+        margin-right: 0.5rem;
+    }
+
+    #screen-nouvel-achat-v2 .adjustment-input {
+        --background: transparent;
+        --border-width: 0;
+        text-align: right; /* Align input text to the right */
+        width: 100px; /* Adjust width as needed */
+        font-size: 0.95rem;
+        color: #374151;
+        padding-right: 0; /* Remove internal padding */
+    }
+
+    /* Styles for the new payment method section (card) */
+    #screen-nouvel-achat-v2 .payment-method-card {
+        margin-top: 2rem; /* Space above this card */
+        margin-bottom: 1rem; /* Space below this card before final buttons/content */
+        background-color: white;
+        padding: 1rem;
+        border-radius: 0.5rem; /* Arrondi léger pour les coins */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Effet d'élévation */
+        border: 1px solid #E0E0E0;
+    }
+
+    /* Adjusted ion-item spacing when inside the payment method card */
+    #screen-nouvel-achat-v2 .payment-method-card ion-item {
+        --background: transparent;
+        --border-radius: 0;
+        margin-bottom: 0.8rem; /* Small margin between items in this card */
+        box-shadow: none;
+        border: none;
+        border-bottom: 1px solid #D1D5DB; /* Keep underline for each item */
+        padding: 0.6rem 0;
+        align-items: center;
+        --highlight-height: 0;
+        --detail-icon-display: none;
+        --inner-border-width: 0;
+    }
+
+    /* Remove bottom border for the last ion-item inside the card */
+    #screen-nouvel-achat-v2 .payment-method-card ion-item:last-of-type {
+        margin-bottom: 0;
+        border-bottom: none; /* No border for the last item */
+    }
+
+    /* Styles for datetime modal buttons - these remain global as modals render outside the main flow */
+    .datetime-modal-buttons {
+        display: flex;
+        justify-content: flex-end; /* Align buttons to the right */
+        padding: 16px;
+        border-top: 1px solid #E0E0E0;
+        gap: 16px; /* Space between buttons */
+    }
+
+    .datetime-modal-buttons ion-button {
+        --background: transparent; /* Make background transparent */
+        --background-activated: transparent; /* Changed: Make background transparent on activation */
+        --color: #2563EB; /* Set text color to blue */
+        --border-radius: 0; /* No border radius */
+        box-shadow: none; /* Remove shadow */
+        font-weight: 500;
+        height: auto; /* Allow height to adjust to content */
+        min-width: unset; /* Remove minimum width */
+        padding: 0; /* Changed: Remove padding to make it more like raw text */
+        text-transform: uppercase; /* Uppercase text as in the image */
+    }
+
+    .datetime-modal-buttons ion-button.cancel-btn {
+        --color: #6B7280; /* A slightly softer grey for cancel */
+    }
+
+    .datetime-modal-buttons ion-button.ok-btn {
+        --color: #2563EB; /* Blue for OK button */
+    }
+</style>
+
+<script>
+    // Variables globales pour le nouvel écran d'achat V2
+    let addedItemsV2 = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // References to form fields for V2
+        const dateFieldItemV2 = document.getElementById('dateFieldItemV2');
+        const dueOnReceiptDatetimePickerV2 = document.getElementById('dueOnReceiptDatetimePickerV2');
+        const dueOnReceiptDatetimeV2 = document.getElementById('dueOnReceiptDatetimeV2');
+
+        const supplierFieldV2 = document.getElementById('supplierFieldV2');
+        const supplierInputV2 = supplierFieldV2.querySelector('.custom-input');
+
+        const categoryFieldV2 = document.getElementById('categoryFieldV2');
+        const categoryInputV2 = categoryFieldV2.querySelector('.custom-input');
+
+        const itemDesignationFieldV2 = document.getElementById('itemDesignationFieldV2');
+        const itemDesignationInputV2 = itemDesignationFieldV2.querySelector('.custom-input');
+
+        const quantityInputV2 = document.getElementById('quantityInputV2');
+        const decreaseQtyBtnV2 = document.getElementById('decreaseQtyBtnV2');
+        const increaseQtyBtnV2 = document.getElementById('increaseQtyBtnV2');
+        const unitPriceInputV2 = document.getElementById('unitPriceInputV2');
+        const totalCostInputV2 = document.getElementById('totalCostInputV2');
+        const addItemButtonV2 = document.getElementById('addItemButtonV2');
+
+        // Items list and summary references for V2
+        const itemsSectionV2 = document.querySelector('#screen-nouvel-achat-v2 .items-section');
+        const addedItemsListV2 = document.getElementById('addedItemsListV2');
+        const subTotalAmountSpanV2 = document.getElementById('subTotalAmountV2');
+        const shippingCostInputV2 = document.getElementById('shippingCostInputV2');
+        const finalTotalAmountSpanV2 = document.getElementById('finalTotalAmountV2');
+
+        // Payment Method field references for V2
+        const paymentMethodFieldV2 = document.getElementById('paymentMethodFieldV2');
+        const paymentMethodInputV2 = paymentMethodFieldV2.querySelector('.custom-input');
+
+        // Deduction Account references for V2
+        const deductionAccountFieldV2 = document.getElementById('deductionAccountFieldV2');
+        const deductionAccountInputV2 = deductionAccountFieldV2.querySelector('.custom-input');
+
+        // Set initial date to today
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = (today.getMonth() + 1).toString().padStart(2, '0');
+        const day = today.getDate().toString().padStart(2, '0');
+        const formattedDate = `${year}-${month}-${day}`;
+        if (dueOnReceiptDatetimePickerV2) {
+            dueOnReceiptDatetimePickerV2.value = formattedDate;
+        }
+
+        // --- Logic for opening the Bottom Sheet ---
+        if (supplierFieldV2) {
+            supplierFieldV2.addEventListener('click', async () => {
+                const modal = await createSearchBottomSheetV2("fournisseurs", "Sélectionner un Fournisseur");
+                modal.present();
+                modal.onDidDismiss().then((data) => {
+                    if (data && data.detail && data.detail.data) {
+                        supplierInputV2.value = data.detail.data;
+                    }
+                });
+            });
+        }
+
+        if (itemDesignationFieldV2) {
+            itemDesignationFieldV2.addEventListener('click', async () => {
+                const selectedCategory = categoryInputV2.value;
+                if (!selectedCategory) {
+                    showToast("Veuillez d'abord sélectionner une catégorie.", "warning");
+                    return;
+                }
+                const modal = await createSearchBottomSheetV2("stock", "Rechercher un Article", selectedCategory);
+                modal.present();
+                modal.onDidDismiss().then((data) => {
+                    if (data && data.detail && data.detail.data) {
+                        itemDesignationInputV2.value = data.detail.data;
+                    }
+                });
+            });
+        }
+
+        // --- Logic for opening the Date picker from the entire ion-item ---
+        if (dateFieldItemV2) {
+            dateFieldItemV2.addEventListener('click', () => {
+                dueOnReceiptDatetimeV2.present();
+            });
+        }
+
+        // --- Function to confirm date selection ---
+        window.confirmDateSelectionV2 = () => {
+            dueOnReceiptDatetimeV2.dismiss();
+        };
+
+        // --- Logic for closing the Bottom Sheet ---
+        if (document.getElementById('closeBottomSheetBtnV2')) {
+            document.getElementById('closeBottomSheetBtnV2').addEventListener('click', () => {
+                document.getElementById('searchBottomSheetV2').dismiss();
+            });
+        }
+
+        // --- Category selection logic using ion-alert ---
+        if (categoryFieldV2) {
+            categoryFieldV2.addEventListener('click', async () => {
+                const alert = document.createElement('ion-alert');
+                alert.header = 'Sélectionner une catégorie';
+                alert.buttons = [
+                    { text: 'Annuler', role: 'cancel', cssClass: 'secondary' },
+                    {
+                        text: 'OK',
+                        handler: (selectedCategory) => {
+                            if (selectedCategory) {
+                                categoryInputV2.value = selectedCategory;
+                            }
+                        },
+                    },
+                ];
+                alert.inputs = [
+                    { name: 'category', type: 'radio', label: 'Téléphones', value: 'telephones', checked: categoryInputV2.value === 'telephones' },
+                    { name: 'category', type: 'radio', label: 'Accessoires', value: 'accessoires', checked: categoryInputV2.value === 'accessoires' },
+                ];
+                document.body.appendChild(alert);
+                await alert.present();
+            });
+        }
+
+        // --- Payment Method selection logic using ion-alert ---
+        if (paymentMethodFieldV2) {
+            paymentMethodFieldV2.addEventListener('click', async () => {
+                const alert = document.createElement('ion-alert');
+                alert.header = 'Sélectionner un moyen de paiement';
+                alert.buttons = [
+                    { text: 'Annuler', role: 'cancel', cssClass: 'secondary' },
+                    {
+                        text: 'OK',
+                        handler: (selectedMethod) => {
+                            if (selectedMethod) {
+                                paymentMethodInputV2.value = selectedMethod;
+                                if (selectedMethod === 'Cash') {
+                                    deductionAccountFieldV2.style.display = 'flex';
+                                } else {
+                                    deductionAccountFieldV2.style.display = 'none';
+                                    deductionAccountInputV2.value = '';
+                                }
+                            }
+                        },
+                    },
+                ];
+                alert.inputs = [
+                    { name: 'paymentMethod', type: 'radio', label: 'Cash', value: 'Cash', checked: paymentMethodInputV2.value === 'Cash' },
+                    { name: 'paymentMethod', type: 'radio', label: 'Crédit', value: 'Crédit', checked: paymentMethodInputV2.value === 'Crédit' },
+                ];
+                document.body.appendChild(alert);
+                await alert.present();
+            });
+        }
+
+        // --- Deduction Account selection logic using ion-alert ---
+        if (deductionAccountFieldV2) {
+            deductionAccountFieldV2.addEventListener('click', async () => {
+                const alert = document.createElement('ion-alert');
+                alert.header = 'Sélectionner un compte de déduction';
+                alert.buttons = [
+                    { text: 'Annuler', role: 'cancel', cssClass: 'secondary' },
+                    {
+                        text: 'OK',
+                        handler: (selectedAccount) => {
+                            if (selectedAccount) {
+                                deductionAccountInputV2.value = selectedAccount;
+                            }
+                        },
+                    },
+                ];
+                alert.inputs = [
+                    { name: 'deductionAccount', type: 'radio', label: 'Caisse', value: 'caisse', checked: deductionAccountInputV2.value === 'caisse' },
+                    { name: 'deductionAccount', type: 'radio', label: 'Momo', value: 'momo', checked: deductionAccountInputV2.value === 'momo' },
+                    { name: 'deductionAccount', type: 'radio', label: 'Banque', value: 'banque', checked: deductionAccountInputV2.value === 'banque' },
+                ];
+                document.body.appendChild(alert);
+                await alert.present();
+            });
+        }
+
+        // --- Quantity selector logic ---
+        if (quantityInputV2) {
+            if (quantityInputV2.value === "" || quantityInputV2.value === "0") {
+                quantityInputV2.value = "1";
+            }
+            decreaseQtyBtnV2.addEventListener('click', () => {
+                let currentQty = parseInt(quantityInputV2.value);
+                if (isNaN(currentQty)) currentQty = 1;
+                if (currentQty > 1) {
+                    quantityInputV2.value = (currentQty - 1).toString();
+                    calculateTotalCostV2();
+                }
+            });
+            increaseQtyBtnV2.addEventListener('click', () => {
+                let currentQty = parseInt(quantityInputV2.value);
+                if (isNaN(currentQty)) currentQty = 0;
+                quantityInputV2.value = (currentQty + 1).toString();
+                calculateTotalCostV2();
+            });
+            quantityInputV2.addEventListener('blur', () => {
+                let value = parseInt(quantityInputV2.value);
+                if (isNaN(value) || value < 1) {
+                    quantityInputV2.value = "1";
+                } else {
+                    quantityInputV2.value = value.toString();
+                }
+                calculateTotalCostV2();
+            });
+        }
+
+        // --- Total Cost calculation logic for individual item ---
+        function calculateTotalCostV2() {
+            const quantity = parseFloat(quantityInputV2.value) || 0;
+            const unitPrice = parseFloat(unitPriceInputV2.value) || 0;
+            const totalCost = (quantity * unitPrice).toFixed(2);
+            totalCostInputV2.value = totalCost;
+        }
+
+        if (quantityInputV2) quantityInputV2.addEventListener('input', calculateTotalCostV2);
+        if (unitPriceInputV2) unitPriceInputV2.addEventListener('input', calculateTotalCostV2);
+
+        // Initial call for individual item total cost
+        calculateTotalCostV2();
+
+        // --- Logic for adding items to the list ---
+        if (addItemButtonV2) {
+            addItemButtonV2.addEventListener('click', () => {
+                const itemName = itemDesignationInputV2.value;
+                const category = categoryInputV2.value;
+                const supplier = supplierInputV2.value;
+                const quantity = parseFloat(quantityInputV2.value);
+                const unitPrice = parseFloat(unitPriceInputV2.value);
+                const totalCost = parseFloat(totalCostInputV2.value);
+
+                if (!supplier || !itemName || !category || isNaN(quantity) || quantity <= 0 || isNaN(unitPrice) || unitPrice <= 0) {
+                    const toast = document.createElement('ion-toast');
+                    toast.message = 'Veuillez remplir correctement les champs Fournisseur, Désignation, Catégorie, Quantité et Prix unitaire.';
+                    toast.duration = 2000;
+                    toast.color = 'danger';
+                    document.body.appendChild(toast);
+                    toast.present();
+                    return;
+                }
+
+                const newItem = {
+                    id: Date.now(), // Unique ID for the item
+                    name: itemName,
+                    category: category,
+                    supplier: supplier,
+                    quantity: quantity,
+                    unitPrice: unitPrice,
+                    total: totalCost,
+                    imeis: [] // Initialize empty IMEIs array
+                };
+
+                // Check if it's a phone and requires IMEI scan
+                if (newItem.category.toLowerCase() === 'telephones') {
+                    if (quantity > 0) { // Only proceed to scan if quantity is greater than 0
+                         // Store the item temporarily and launch scan
+                        currentApproItemForScan = newItem;
+                        lancerScanDynamsoft(currentApproItemForScan);
+                    } else {
+                        showToast("La quantité doit être supérieure à zéro pour scanner les IMEI.", "warning");
+                    }
+                } else {
+                    addedItemsV2.push(newItem);
+                    renderAddedItemsV2();
+                    calculateSummaryV2();
+                    showToast(`${newItem.name} ajouté au panier.`);
+                }
+
+                // Clear item input fields after adding
+                itemDesignationInputV2.value = '';
+                quantityInputV2.value = '1';
+                unitPriceInputV2.value = '';
+                totalCostInputV2.value = '0.00';
+                calculateTotalCostV2(); // Recalculate to reset the total cost display
+            });
+        }
+
+        window.renderAddedItemsV2 = () => {
+            addedItemsListV2.innerHTML = ''; // Clear previous list
+            if (addedItemsV2.length > 0) {
+                itemsSectionV2.style.display = 'block'; // Show the section
+                addedItemsV2.forEach(item => {
+                    const itemRow = document.createElement('div');
+                    itemRow.classList.add('item-row');
+                    itemRow.setAttribute('data-id', item.id);
+
+                    let imeiStatus = '';
+                    if (item.category.toLowerCase() === 'telephones') {
+                        if (item.imeis && item.imeis.length === item.quantity) {
+                            imeiStatus = `<div style="color: green; font-size: 0.75rem; margin-top: 4px;">(${item.imeis.length} IMEI scannés)</div>`;
+                        } else if (item.imeis && item.imeis.length > 0) {
+                             imeiStatus = `<div style="color: orange; font-size: 0.75rem; margin-top: 4px;">(${item.imeis.length}/${item.quantity} IMEI scannés)</div>`;
+                        } else {
+                            imeiStatus = `<div style="color: red; font-size: 0.75rem; margin-top: 4px;">(Aucun IMEI scanné)</div>`;
+                        }
+                    }
+
+                    itemRow.innerHTML = `
+                        <div class="item-details">
+                            <div class="item-name">
+                                <ion-icon name="close-circle" class="item-delete-icon" onclick="deleteItemV2(${item.id})"></ion-icon>
+                                <span>${item.name}</span>
+                            </div>
+                            <div class="item-qty-price">${item.quantity} x ${item.unitPrice.toFixed(2)}</div>
+                            ${imeiStatus}
+                        </div>
+                        <div class="item-amount">${item.total.toFixed(2)}</div>
+                    `;
+                    addedItemsListV2.appendChild(itemRow);
+                });
+            } else {
+                itemsSectionV2.style.display = 'none'; // Hide the section if no items
+            }
+        };
+
+        // Function to delete an item
+        window.deleteItemV2 = (idToDelete) => {
+            addedItemsV2 = addedItemsV2.filter(item => item.id !== idToDelete);
+            renderAddedItemsV2();
+            calculateSummaryV2();
+            showToast("Article supprimé du panier.");
+        };
+
+        // --- Summary Calculation Logic ---
+        window.calculateSummaryV2 = () => {
+            let subTotal = addedItemsV2.reduce((sum, item) => sum + item.total, 0);
+            subTotalAmountSpanV2.textContent = subTotal.toFixed(2);
+
+            let shippingCostValue = parseFloat(shippingCostInputV2.value) || 0;
+
+            let finalTotal = subTotal + shippingCostValue;
+            finalTotalAmountSpanV2.textContent = finalTotal.toFixed(2);
+        };
+
+        // Event listeners for summary calculations
+        if (shippingCostInputV2) {
+            shippingCostInputV2.addEventListener('input', calculateSummaryV2);
+        }
+
+        // Initial render and calculation
+        renderAddedItemsV2();
+        calculateSummaryV2();
+    }); // End DOMContentLoaded
+
+    // This function is called from the main script when IMEI scanning is complete
+    // It is specific to adding a PHONE item from the scanner to the V2 purchase cart.
+    window.addScannedPhoneToPurchaseV2 = (itemWithImeis) => {
+        addedItemsV2.push(itemWithImeis);
+        renderAddedItemsV2();
+        calculateSummaryV2();
+        showToast(`${itemWithImeis.name} (${itemWithImeis.imeis.length} IMEI) ajouté au panier.`);
+    };
+
+    // Placeholder for save draft
+    window.saveDraftPurchaseV2 = () => {
+        showToast("Fonction 'Enregistrer Brouillon' à implémenter pour V2.");
+    };
+
+    // Firestore interaction and finalization logic for V2
+    // (This part will largely reuse or adapt logic from your existing finaliserApprovisionnement and related Firestore functions)
+    window.finaliserAchatV2 = async () => {
+        if (addedItemsV2.length === 0) {
+            showToast("Le panier d'achats est vide.", "error");
+            return;
+        }
+
+        const purchaseDateInput = document.getElementById("dueOnReceiptDatetimePickerV2");
+        const purchaseDate = purchaseDateInput ? purchaseDateInput.value : new Date().toISOString().split('T')[0]; // Fallback to today if not found
+
+        const supplier = document.getElementById("supplierFieldV2").querySelector('.custom-input').value.trim();
+        const paymentMethod = document.getElementById("paymentMethodFieldV2").querySelector('.custom-input').value.trim();
+        const deductionAccount = document.getElementById("deductionAccountFieldV2").querySelector('.custom-input').value.trim();
+        const shippingCost = parseFloat(document.getElementById("shippingCostInputV2").value) || 0;
+        const finalTotal = parseFloat(document.getElementById("finalTotalAmountV2").textContent); // Get calculated final total
+
+        if (!supplier) {
+            showToast("Veuillez sélectionner un fournisseur.", "error");
+            return;
+        }
+        if (!paymentMethod) {
+            showToast("Veuillez sélectionner un moyen de paiement.", "error");
+            return;
+        }
+        if (paymentMethod === 'Cash' && !deductionAccount) {
+            showToast("Veuillez sélectionner un compte de déduction pour le paiement en espèces.", "error");
+            return;
+        }
+
+        showSaleLoader(); // Reuse existing loader
+
+        try {
+            const batch = dbFirestore.batch();
+            const now = firebase.firestore.FieldValue.serverTimestamp();
+
+            // 1. Check/Add Supplier (adapt from existing logic)
+            const supplierQuery = dbFirestore.collection("fournisseurs").where("name", "==", supplier);
+            const supplierSnapshot = await supplierQuery.get();
+            if (supplierSnapshot.empty) {
+                batch.set(dbFirestore.collection("fournisseurs").doc(), {
+                    name: supplier,
+                    createdAt: now
+                });
+            }
+
+            // 2. Update Stock and add stock history (adapt from existing logic)
+            for (const item of addedItemsV2) {
+                const stockQuery = await dbFirestore.collection("stock").where("name", "==", item.name).get();
+                let stockDocRef;
+                let newStock;
+                if (stockQuery.empty) {
+                    stockDocRef = dbFirestore.collection("stock").doc();
+                    newStock = item.quantity;
+                    const icon = item.category.toLowerCase() === "accessoires" ? "🎧" : "📱";
+                    batch.set(stockDocRef, {
+                        name: item.name,
+                        category: item.category,
+                        stock: newStock,
+                        price: item.unitPrice, // For new items, initial price is purchase price
+                        icon: icon,
+                        createdAt: now
+                    });
+                } else {
+                    stockDocRef = stockQuery.docs[0].ref;
+                    const stockData = stockQuery.docs[0].data();
+                    const oldStock = parseFloat(stockData.stock) || 0;
+                    const oldPrice = parseFloat(stockData.price) || 0;
+                    newStock = oldStock + item.quantity;
+                    const newAveragePrice = newStock > 0 ? ((oldStock * oldPrice) + (item.quantity * item.unitPrice)) / newStock : item.unitPrice;
+                    batch.update(stockDocRef, {
+                        stock: newStock,
+                        price: newAveragePrice
+                    });
+                }
+                // Log stock history
+                batch.set(stockDocRef.collection("history").doc(), {
+                    timestamp: now,
+                    change: +item.quantity,
+                    newStock: newStock,
+                    type: 'approvisionnement'
+                });
+
+                // Handle IMEIs for phones
+                if (item.category.toLowerCase() === 'telephones' && item.imeis && item.imeis.length > 0) {
+                    item.imeis.forEach(imei => {
+                        const imeiDocRef = stockDocRef.collection("imeis").doc(imei);
+                        batch.set(imeiDocRef, { status: "disponible", dateEntree: now });
+                    });
+                }
+            }
+
+            // 3. Record the main procurement transaction (in 'approvisionnement' collection)
+            const newPurchaseRef = dbFirestore.collection("approvisionnement").doc();
+            batch.set(newPurchaseRef, {
+                date: purchaseDate,
+                fournisseur: supplier,
+                items: addedItemsV2.map(item => ({
+                    produit: item.name,
+                    category: item.category,
+                    quantite: item.quantity,
+                    prixAchat: item.unitPrice,
+                    coutTotal: item.total,
+                    imeis: item.imeis || [] // Include IMEIs in purchase record
+                })),
+                timestamp: firebase.firestore.Timestamp.fromDate(new Date(purchaseDate)),
+                paymentMethod: paymentMethod.toLowerCase(), // 'cash' or 'crédit'
+                isPaid: paymentMethod.toLowerCase() === 'cash',
+                remainingAmount: paymentMethod.toLowerCase() === 'crédit' ? finalTotal : 0,
+                totalCost: finalTotal,
+                shippingCost: shippingCost
+            });
+
+            // 4. Record treasury movement if cash payment (adapt from existing logic)
+            if (paymentMethod.toLowerCase() === 'cash') {
+                await enregistrerMouvementTresorerie({
+                    compteId: deductionAccount,
+                    type: 'paiement_fournisseur',
+                    sens: 'out',
+                    montant: finalTotal, // Deduct the final total from account
+                    description: `Achat auprès de ${supplier}`,
+                    refId: newPurchaseRef.id
+                });
+            }
+
+            await batch.commit();
+
+            showToast("Achat enregistré avec succès !");
+
+            // Reset and navigate
+            addedItemsV2 = [];
+            renderAddedItemsV2(); // Clear the display
+            document.getElementById("supplierFieldV2").querySelector('.custom-input').value = '';
+            document.getElementById("categoryFieldV2").querySelector('.custom-input').value = '';
+            document.getElementById("itemDesignationFieldV2").querySelector('.custom-input').value = '';
+            document.getElementById("quantityInputV2").value = '1';
+            document.getElementById("unitPriceInputV2").value = '';
+            document.getElementById("totalCostInputV2").value = '0.00';
+            document.getElementById("shippingCostInputV2").value = '0.00';
+            document.getElementById("paymentMethodFieldV2").querySelector('.custom-input').value = '';
+            document.getElementById("deductionAccountFieldV2").querySelector('.custom-input').value = '';
+            document.getElementById("deductionAccountFieldV2").style.display = 'none'; // Hide if not cash
+
+            // Update dashboards
+            updateBalanceDisplay();
+            updateStockSummary();
+            chargerApprovisionnements('all'); // Refresh the purchases history screen
+            window.location.hash = 'approvisionnement-historique'; // Navigate to purchases history
+
+        } catch (error) {
+            console.error("Erreur lors de la finalisation de l'achat (V2): ", error);
+            showToast("Erreur lors de l'enregistrement de l'achat: " + error.message, "error");
+        } finally {
+            hideSaleLoader();
+        }
+    };
+
+    // Helper function to create the search bottom sheet modal
+    async function createSearchBottomSheetV2(collectionName, title, filterCategory = null) {
+        const searchBottomSheet = document.getElementById('searchBottomSheetV2');
+        const bottomSheetTitle = document.getElementById('bottomSheetTitleV2');
+        const searchInput = searchBottomSheet.querySelector('.search-input');
+        const searchAddButton = searchBottomSheet.querySelector('.add-button');
+        const noResultFoundSection = searchBottomSheet.querySelector('.no-result-found');
+
+        bottomSheetTitle.textContent = title;
+        searchInput.value = '';
+        noResultFoundSection.style.display = 'flex'; // Show no result by default
+
+        // Clear previous event listeners to avoid duplicates
+        const oldSearchHandler = searchInput._searchHandler;
+        if (oldSearchHandler) {
+            searchInput.removeEventListener('input', oldSearchHandler);
+        }
+        const oldAddHandler = searchAddButton._addHandler;
+        if (oldAddHandler) {
+            searchAddButton.removeEventListener('click', oldAddHandler);
+        }
+
+        // Create a dedicated list container for search results within the modal
+        let resultsList = searchBottomSheet.querySelector('.search-results-list');
+        if (!resultsList) {
+            resultsList = document.createElement('ion-list');
+            resultsList.className = 'search-results-list';
+            resultsList.style.marginTop = '1rem';
+            resultsList.style.marginBottom = '1rem';
+            searchBottomSheet.querySelector('.ion-padding').insertBefore(resultsList, noResultFoundSection);
+        }
+        resultsList.innerHTML = ''; // Clear previous results
+
+        const performSearch = async () => {
+            const query = searchInput.value.trim().toLowerCase();
+            resultsList.innerHTML = ''; // Clear previous results
+            noResultFoundSection.style.display = 'none'; // Hide no result initially
+
+            let items = [];
+            if (collectionName === "fournisseurs") {
+                const snapshot = await dbFirestore.collection("fournisseurs").get();
+                items = snapshot.docs.map(doc => doc.data().name);
+            } else if (collectionName === "stock") {
+                const snapshot = await dbFirestore.collection("stock").get();
+                items = snapshot.docs
+                    .filter(doc => (filterCategory ? doc.data().category === filterCategory : true))
+                    .map(doc => doc.data().name);
+            }
+
+            const filteredItems = items.filter(item => item.toLowerCase().includes(query));
+
+            if (filteredItems.length === 0) {
+                noResultFoundSection.style.display = 'flex';
+            } else {
+                filteredItems.forEach(item => {
+                    const ionItem = document.createElement('ion-item');
+                    ionItem.textContent = item;
+                    ionItem.setAttribute('button', 'true');
+                    ionItem.onclick = () => {
+                        searchBottomSheet.dismiss(item); // Pass selected item back
+                    };
+                    resultsList.appendChild(ionItem);
+                });
+            }
+        };
+
+        // Attach new event listeners
+        const debouncedPerformSearch = debounce(performSearch, 300);
+        searchInput.addEventListener('input', debouncedPerformSearch);
+        searchInput._searchHandler = debouncedPerformSearch; // Store handler for removal
+
+        searchAddButton.addEventListener('click', () => {
+            const newItemName = searchInput.value.trim();
+            if (newItemName) {
+                // Confirm addition logic (can use ion-alert or similar)
+                searchBottomSheet.dismiss(newItemName); // Pass new item back
+            } else {
+                showToast("Veuillez saisir un nom à ajouter.", "warning");
+            }
+        });
+        searchAddButton._addHandler = searchAddButton.onclick; // Store handler for removal
+
+        return searchBottomSheet;
+    }
 </script>
 <section id="screen-scan-dynamsoft" class="screen">
   <header>
@@ -7641,6 +9127,25 @@ case 'article-detail':
     case 'fournisseur-credit-detail':
       // L'appel à showSupplierDebtDetailsPage peuple déjà l'écran, donc pas de logique ici.
       break;
+       case 'nouvel-achat-v2':
+            // Clear all form fields and reset quantities
+            document.getElementById("dateFieldItemV2").querySelector('ion-datetime-button').datetime = new Date().toISOString().split('T')[0];
+            document.getElementById("supplierFieldV2").querySelector('.custom-input').value = '';
+            document.getElementById("categoryFieldV2").querySelector('.custom-input').value = '';
+            document.getElementById("itemDesignationFieldV2").querySelector('.custom-input').value = '';
+            document.getElementById("quantityInputV2").value = '1';
+            document.getElementById("unitPriceInputV2").value = '';
+            document.getElementById("totalCostInputV2").value = '0.00';
+            document.getElementById("shippingCostInputV2").value = '0.00';
+            document.getElementById("paymentMethodFieldV2").querySelector('.custom-input').value = '';
+            document.getElementById("deductionAccountFieldV2").querySelector('.custom-input').value = '';
+            document.getElementById("deductionAccountFieldV2").style.display = 'none'; // Hide deduction account by default
+
+            addedItemsV2 = []; // Clear the purchase items array
+            renderAddedItemsV2(); // Render empty list
+            calculateSummaryV2(); // Recalculate summary
+
+            break;
   }
 }
 
