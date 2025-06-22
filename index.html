@@ -51,6 +51,7 @@
             --box-shadow: none !important;
             box-shadow: none !important;
             --border-width: 0 !important;
+            /* Le header du menu latéral reste bleu primaire */
         }
 
         /* Cache toutes les pages par défaut */
@@ -58,7 +59,6 @@
             display: none;
             height: 100%;
             flex-direction: column;
-            width: 100%; /* Ensure page content takes full width */
         }
 
         /* Le conteneur principal doit être flexible pour que le contenu s'affiche correctement */
@@ -66,7 +66,6 @@
             display: flex;
             flex-direction: column;
             height: 100%;
-            width: 100%; /* Ensure main content takes full width */
         }
 
         /* Style pour la barre de navigation personnalisée */
@@ -77,18 +76,28 @@
             width: 100%;
         }
         .custom-nav a {
-            /* Changement de couleur pour être visible sur fond clair */
-            color: var(--ion-color-primary);
+            color: #000; /* Icônes et texte en noir par défaut */
             text-decoration: none;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 4px 12px;
             font-size: 0.8rem;
+            transition: color 0.2s ease-in-out; /* Ajoute une transition pour une animation fluide */
         }
         .custom-nav a ion-icon {
             font-size: 1.8em;
             margin-bottom: 2px;
+            color: #000; /* S'assurer que l'icône est noire par défaut */
+            transition: color 0.2s ease-in-out; /* Ajoute une transition pour une animation fluide */
+        }
+
+        /* Style pour les liens actifs dans la barre de navigation personnalisée */
+        .custom-nav a.active {
+            color: var(--ion-color-primary); /* Texte en bleu quand actif */
+        }
+        .custom-nav a.active ion-icon {
+            color: var(--ion-color-primary); /* Icône en bleu quand active */
         }
 
         /* Style pour les liens dans le menu latéral */
@@ -117,35 +126,6 @@
             text-align: center;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             max-width: 80%;
-            width: 100%; /* Ensure content box can take full width up to max-width */
-        }
-        /* Ensure ion-content fills available space */
-        ion-content {
-            --padding-start: 0px !important;
-            --padding-end: 0px !important;
-            --padding-top: 0px !important;
-            --padding-bottom: 0px !important;
-            width: 100%;
-        }
-        /* Ensure ion-list takes full width */
-        ion-list {
-            width: 100%;
-        }
-        /* Ensure main content of pages fills available width */
-        .page-content main {
-            width: 100%;
-        }
-
-        /* Adjust padding for ion-padding to ensure content alignment */
-        .ion-padding {
-            padding-left: 16px;
-            padding-right: 16px;
-        }
-
-        /* Specific adjustments for ion-modal content to stretch correctly */
-        ion-modal ion-content {
-            --padding-start: 16px !important;
-            --padding-end: 16px !important;
         }
     </style>
 </head>
@@ -192,7 +172,8 @@
             <!-- Page Accueil -->
             <section id="accueil-page" class="page-content">
                 <ion-header>
-                    <ion-toolbar color="primary">
+                    <!-- Header de la page d'accueil en blanc pur avec une fine bordure inférieure -->
+                    <ion-toolbar color="white" class="border-b border-gray-300">
                         <ion-buttons slot="start">
                             <ion-button class="menu-button">
                                 <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
@@ -207,7 +188,7 @@
                     </ion-toolbar>
                 </ion-header>
                 <ion-content class="ion-padding">
-                    <main class="p-4 w-full"> <!-- Added w-full for full width -->
+                    <main class="p-4">
                         <section class="grid grid-cols-2 gap-4 mb-6">
                             <div class="bg-blue-50 p-4 rounded-lg">
                                 <p class="text-sm text-gray-600">Total Receivables</p>
@@ -337,7 +318,8 @@
             <!-- Page Ventes -->
             <section id="ventes-page" class="page-content">
                 <ion-header>
-                    <ion-toolbar color="primary">
+                    <!-- Header de la page Ventes en blanc pur avec une fine bordure inférieure -->
+                    <ion-toolbar color="white" class="border-b border-gray-300">
                         <ion-buttons slot="start">
                             <ion-button class="menu-button">
                                 <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
@@ -355,7 +337,7 @@
                     <ion-list-header>
                         <ion-label>Ventes Récentes</ion-label>
                     </ion-list-header>
-                    <ion-list id="sales-list"> <!-- Removed inset="true" for full width -->
+                    <ion-list inset="true" id="sales-list">
                         <!-- Les éléments de vente seront chargés dynamiquement ici -->
                     </ion-list>
                     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
@@ -451,7 +433,8 @@
             <!-- Page Achat -->
             <section id="achat-page" class="page-content">
                 <ion-header>
-                    <ion-toolbar color="primary">
+                    <!-- Header de la page Achats en blanc pur avec une fine bordure inférieure -->
+                    <ion-toolbar color="white" class="border-b border-gray-300">
                         <ion-buttons slot="start">
                             <ion-button class="menu-button">
                                 <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
@@ -469,7 +452,7 @@
                     <ion-list-header>
                         <ion-label>Achats Récents</ion-label>
                     </ion-list-header>
-                    <ion-list id="purchases-list"> <!-- Removed inset="true" for full width -->
+                    <ion-list inset="true" id="purchases-list">
                         <!-- Les éléments d'achat seront chargés dynamiquement ici -->
                     </ion-list>
                     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
@@ -545,7 +528,7 @@
                         window.deletePurchase = (id) => {
                             if (!window.purchasesData) window.purchasesData = [];
                             window.purchasesData = window.purchasesData.filter(purchase => purchase.id !== id);
-                            window.showMessageBox("Achat supprimé avec succès!", 'success');
+                            window.showMessageBox("Achat supprimée avec succès!", 'success');
                             window.loadPurchases(); // Re-render the list after deleting
                         };
 
@@ -564,7 +547,8 @@
 
             <!-- Pied de page avec la navigation personnalisée -->
             <ion-footer>
-                <ion-toolbar color="light">
+                <!-- Footer en blanc pur avec une fine bordure supérieure -->
+                <ion-toolbar color="white" class="border-t border-gray-300">
                     <nav class="custom-nav">
                         <a href="#accueil">
                             <ion-icon name="home-outline"></ion-icon>
@@ -586,7 +570,7 @@
         <!-- Modales pour ajouter des ventes et des achats (globales car utilisées par plusieurs pages) -->
         <ion-modal id="add-sale-modal">
             <ion-header>
-                <ion-toolbar color="primary">
+                <ion-toolbar color="white" class="border-b border-gray-300">
                     <ion-title>Ajouter une Vente</ion-title>
                     <ion-buttons slot="end">
                         <ion-button onclick="document.getElementById('add-sale-modal').dismiss()">Fermer</ion-button>
@@ -612,7 +596,7 @@
 
         <ion-modal id="add-purchase-modal">
             <ion-header>
-                <ion-toolbar color="primary">
+                <ion-toolbar color="white" class="border-b border-gray-300">
                     <ion-title>Ajouter un Achat</ion-title>
                     <ion-buttons slot="end">
                         <ion-button onclick="document.getElementById('add-purchase-modal').dismiss()">Fermer</ion-button>
@@ -727,15 +711,33 @@
                     document.getElementById('accueil-page').style.display = 'flex';
                 }
 
+                // Réinitialise tous les liens de navigation du pied de page et les icônes
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    const icon = link.querySelector('ion-icon');
+                    if (icon) {
+                        const iconName = icon.name.replace('-outline', ''); // Supprime '-outline'
+                        icon.name = `${iconName}-outline`; // Remet à l'état outline
+                    }
+                });
+
+                // Active le lien et l'icône correspondants au hachage actuel
+                const currentNavLink = document.querySelector(`.custom-nav a[href="${hash}"]`);
+                if (currentNavLink) {
+                    currentNavLink.classList.add('active');
+                    const icon = currentNavLink.querySelector('ion-icon');
+                    if (icon) {
+                        const iconName = icon.name.replace('-outline', ''); // Supprime '-outline'
+                        icon.name = iconName; // Définit l'icône sur sa version pleine
+                    }
+                }
+
+
                 // Supprime la classe 'active' pour tous les liens de navigation du menu latéral
                 menuLinks.forEach(link => {
                     link.classList.remove('active');
                 });
 
-                // Supprime la classe 'active' pour tous les liens de navigation du pied de page
-                navLinks.forEach(link => {
-                    link.classList.remove('active');
-                });
 
                 // Charge les données spécifiques à la page active
                 if (hash === '#ventes' && window.loadSales) {
