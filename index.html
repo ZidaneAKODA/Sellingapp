@@ -9,8 +9,11 @@
     <link href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" rel="stylesheet">
     <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
     <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
 
-    <!-- Style personnalisé pour l'application -->
+    <!-- Styles globaux pour l'application -->
     <style>
         /* Cache toutes les pages par défaut */
         .page-content {
@@ -26,17 +29,6 @@
             height: 100%;
         }
         
-        /* Style pour les cartes sur la page d'accueil */
-        ion-card-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-        ion-card-subtitle {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--ion-color-primary);
-        }
-
         /* Style pour la barre de navigation personnalisée */
         .custom-nav {
             display: flex;
@@ -65,6 +57,27 @@
             color: inherit;
         }
 
+        /* Styles pour la boîte de message personnalisée */
+        .message-box-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+        .message-box-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 80%;
+        }
     </style>
 </head>
 <body>
@@ -87,7 +100,7 @@
                             <ion-label>Accueil</ion-label>
                         </ion-item>
                     </a>
-                     <!-- Lien vers les ventes -->
+                    <!-- Lien vers les ventes -->
                     <a href="#ventes" class="menu-link">
                         <ion-item button>
                             <ion-icon name="cash-outline" slot="start"></ion-icon>
@@ -108,7 +121,7 @@
         <!-- Contenu principal de l'application (pages + footer) -->
         <div class="ion-page" id="main-content">
             <!-- Page Accueil -->
-            <div id="accueil-page" class="page-content">
+            <section id="accueil-page" class="page-content">
                 <ion-header>
                     <ion-toolbar color="primary">
                         <ion-buttons slot="start">
@@ -119,46 +132,142 @@
                         <ion-title>Accueil</ion-title>
                         <ion-buttons slot="end">
                             <ion-button>
-                                <ion-icon slot="icon-only" name="ellipsis-vertical-outline"></ion-icon>
+                                <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
                             </ion-button>
                         </ion-buttons>
                     </ion-toolbar>
                 </ion-header>
                 <ion-content class="ion-padding">
-                    <ion-card>
-                        <ion-card-header>
-                            <ion-card-title>Bienvenue !</ion-card-title>
-                        </ion-card-header>
-                        <ion-card-content>
-                            <p>Ceci est votre tableau de bord. Naviguez entre les sections Achats et Ventes en utilisant les onglets ci-dessous.</p>
-                        </ion-card-content>
-                    </ion-card>
-                    <ion-grid>
-                        <ion-row>
-                            <ion-col size="12" size-md="6">
-                                <ion-card color="light">
-                                    <ion-card-header>
-                                        <ion-card-title>Total des Ventes</ion-card-title>
-                                        <ion-card-subtitle>1,250 €</ion-card-subtitle>
-                                    </ion-card-header>
-                                </ion-card>
-                            </ion-col>
-                            <ion-col size="12" size-md="6">
-                                <ion-card color="light">
-                                    <ion-card-header>
-                                        <ion-card-title>Total des Achats</ion-card-title>
-                                        <ion-card-subtitle>780 €</ion-card-subtitle>
-                                    </ion-card-header>
-                                </ion-card>
-                            </ion-col>
-                        </ion-row>
-                    </ion-grid>
+                    <main class="p-4">
+                        <section class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="bg-blue-50 p-4 rounded-lg">
+                                <p class="text-sm text-gray-600">Total Receivables</p>
+                                <div class="flex items-center justify-between mt-1">
+                                    <span id="total-receivables" class="text-2xl font-bold text-gray-800">XOF0</span>
+                                    <span class="material-icons text-gray-500">arrow_drop_down</span>
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="bg-pink-50 p-4 rounded-lg flex items-center justify-between">
+                                    <div>
+                                        <p class="text-2xl font-bold text-gray-800">0</p>
+                                        <p class="text-xs text-gray-600">Overdue Invoices</p>
+                                    </div>
+                                    <span class="material-icons text-gray-500">chevron_right</span>
+                                </div>
+                            </div>
+                            <div class="bg-blue-50 p-4 rounded-lg">
+                                <p class="text-sm text-gray-600">Total Payables</p>
+                                <div class="flex items-center justify-between mt-1">
+                                    <span id="total-payables" class="text-2xl font-bold text-gray-800">XOF0</span>
+                                    <span class="material-icons text-gray-500">arrow_drop_down</span>
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="bg-pink-50 p-4 rounded-lg flex items-center justify-between">
+                                    <div>
+                                        <p class="text-2xl font-bold text-gray-800">0</p>
+                                        <p class="text-xs text-gray-600">Overdue Bills</p>
+                                    </div>
+                                    <span class="material-icons text-gray-500">chevron_right</span>
+                                </div>
+                            </div>
+                        </section>
+                        <section class="mb-6">
+                            <h2 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                                <span class="material-icons text-yellow-500 mr-2">bolt</span>
+                                Quick Create
+                            </h2>
+                            <div class="grid grid-cols-4 gap-3">
+                                <button class="flex flex-col items-center p-3 bg-gray-100 rounded-lg hover:bg-gray-200">
+                                    <span class="material-icons text-blue-500 text-3xl mb-1">person_add</span>
+                                    <span class="text-xs text-gray-700">New Customer</span>
+                                </button>
+                                <button class="flex flex-col items-center p-3 bg-gray-100 rounded-lg hover:bg-gray-200">
+                                    <span class="material-icons text-green-500 text-3xl mb-1">description</span>
+                                    <span class="text-xs text-gray-700">New Invoice</span>
+                                </button>
+                                <button class="flex flex-col items-center p-3 bg-gray-100 rounded-lg hover:bg-gray-200">
+                                    <span class="material-icons text-red-500 text-3xl mb-1">receipt_long</span>
+                                    <span class="text-xs text-gray-700">New Bill</span>
+                                </button>
+                                <button class="flex flex-col items-center p-3 bg-gray-100 rounded-lg hover:bg-gray-200">
+                                    <span class="material-icons text-purple-500 text-3xl mb-1">chat_bubble_outline</span>
+                                    <span class="text-xs text-gray-700">New Expense</span>
+                                </button>
+                            </div>
+                        </section>
+                        <section>
+                            <div class="flex items-center justify-between mb-3">
+                                <h2 class="text-lg font-semibold text-gray-800 flex items-center">
+                                    <span class="material-icons text-gray-600 mr-2">show_chart</span>
+                                    Cash Flow
+                                </h2>
+                                <button class="text-sm text-gray-600 bg-white border border-gray-300 px-3 py-1 rounded-md flex items-center">
+                                    This Fiscal Year
+                                    <span class="material-icons text-sm ml-1">arrow_drop_down</span>
+                                </button>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow">
+                                <div class="h-48 relative">
+                                    <div class="absolute bottom-0 left-0 w-full h-full flex items-end">
+                                        <div class="absolute left-0 bottom-0 w-full h-40">
+                                            <div class="absolute text-xs text-gray-500" style="bottom: 0px; left: -25px;">0</div>
+                                            <div class="absolute text-xs text-gray-500" style="bottom: 35px; left: -30px;">-10K</div>
+                                            <div class="absolute text-xs text-gray-500" style="bottom: 70px; left: -30px;">-20K</div>
+                                            <div class="absolute w-0.5 h-full bg-blue-500" style="left: 5%; bottom: 0;"></div>
+                                            <div class="absolute w-full border-t border-dashed border-gray-300" style="bottom: 0px;"></div>
+                                            <div class="absolute w-full border-t border-dashed border-gray-300" style="bottom: 40px;"></div>
+                                            <div class="absolute w-full border-t border-dashed border-gray-300" style="bottom: 80px;"></div>
+                                            <div class="absolute w-full border-t border-dashed border-gray-300" style="bottom: 120px;"></div>
+                                            <svg class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
+                                                <path d="M 5 100 C 15 80, 25 20, 35 50 S 55 120, 65 70 S 85 30, 95 60" fill="none" stroke="#3B82F6" stroke-width="2"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <p class="text-center text-gray-500 mt-4">Cash flow chart data will be displayed here.</p>
+                                </div>
+                            </div>
+                        </section>
+                        <p id="user-id-display" class="text-xs text-gray-500 mt-4 text-center">User ID: N/A (Firebase non utilisé)</p>
+                    </main>
                 </ion-content>
-            </div>
+                <script>
+                    // Script spécifique à la page Accueil
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const totalReceivablesSpan = document.getElementById('total-receivables');
+                        const totalPayablesSpan = document.getElementById('total-payables');
+
+                        // Met à jour les totaux du tableau de bord à partir des données en mémoire
+                        window.updateDashboardTotals = () => {
+                            let totalReceivables = 0;
+                            if (window.salesData) { // Vérifie que window.salesData existe
+                                window.salesData.forEach(sale => {
+                                    totalReceivables += (parseFloat(sale.quantity) * parseFloat(sale.price));
+                                });
+                            }
+                            totalReceivablesSpan.textContent = `XOF${totalReceivables.toFixed(2)}`;
+
+                            let totalPayables = 0;
+                            if (window.purchasesData) { // Vérifie que window.purchasesData existe
+                                window.purchasesData.forEach(purchase => {
+                                    totalPayables += parseFloat(purchase.cost);
+                                });
+                            }
+                            totalPayablesSpan.textContent = `XOF${totalPayables.toFixed(2)}`;
+                        };
+
+                        // Mise à jour initiale si cette page est la première à être chargée
+                        if (window.location.hash === '' || window.location.hash === '#accueil') {
+                            window.updateDashboardTotals();
+                        }
+                    });
+                </script>
+            </section>
 
             <!-- Page Ventes -->
-            <div id="ventes-page" class="page-content">
-                 <ion-header>
+            <section id="ventes-page" class="page-content">
+                <ion-header>
                     <ion-toolbar color="primary">
                         <ion-buttons slot="start">
                             <ion-button class="menu-button">
@@ -177,26 +286,101 @@
                     <ion-list-header>
                         <ion-label>Ventes Récentes</ion-label>
                     </ion-list-header>
-                    <ion-list inset="true">
-                        <ion-item>
-                            <ion-icon name="phone-portrait-outline" slot="start"></ion-icon>
-                            <ion-label>
-                                <h2>Smartphone Pro</h2>
-                                <p>Quantité: 1, Prix: 850.00 €</p>
-                            </ion-label>
-                        </ion-item>
-                        <!-- ... autres items ... -->
+                    <ion-list inset="true" id="sales-list">
+                        <!-- Les éléments de vente seront chargés dynamiquement ici -->
                     </ion-list>
                     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-                        <ion-fab-button>
+                        <ion-fab-button id="add-sale-fab">
                             <ion-icon name="add-outline"></ion-icon>
                         </ion-fab-button>
                     </ion-fab>
                 </ion-content>
-            </div>
+                <script>
+                    // Script spécifique à la page Ventes
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const salesList = document.getElementById('sales-list');
+                        const addSaleFab = document.getElementById('add-sale-fab');
+                        const addSaleModal = document.getElementById('add-sale-modal');
+                        const saveSaleBtn = document.getElementById('save-sale-btn');
+
+                        // Charge les données de ventes depuis le tableau en mémoire et les affiche
+                        window.loadSales = () => {
+                            salesList.innerHTML = ''; // Efface la liste actuelle
+                            if (!window.salesData) window.salesData = []; // Assurez-vous que le tableau existe
+                            window.salesData.forEach((sale) => {
+                                const item = document.createElement('ion-item');
+                                item.innerHTML = `
+                                    <ion-icon name="phone-portrait-outline" slot="start"></ion-icon>
+                                    <ion-label>
+                                        <h2>${sale.name}</h2>
+                                        <p>Quantité: ${sale.quantity}, Prix: ${parseFloat(sale.price).toFixed(2)} €</p>
+                                        <p class="text-xs text-gray-500">${sale.timestamp.toLocaleString()}</p>
+                                    </ion-label>
+                                    <ion-buttons slot="end">
+                                        <ion-button color="danger" onclick="window.deleteSale(${sale.id})">
+                                            <ion-icon name="trash-outline"></ion-icon>
+                                        </ion-button>
+                                    </ion-buttons>
+                                `;
+                                salesList.appendChild(item);
+                            });
+                            if (window.updateDashboardTotals) window.updateDashboardTotals();
+                        };
+
+                        // Ajoute une nouvelle vente au tableau en mémoire
+                        saveSaleBtn.addEventListener('click', () => {
+                            const productName = document.getElementById('sale-product-name').value;
+                            const quantity = parseFloat(document.getElementById('sale-quantity').value);
+                            const price = parseFloat(document.getElementById('sale-price').value);
+
+                            if (!productName || isNaN(quantity) || isNaN(price) || quantity <= 0 || price <= 0) {
+                                window.showMessageBox("Veuillez remplir tous les champs correctement.", 'error');
+                                return;
+                            }
+
+                            if (!window.salesData) window.salesData = [];
+                            if (!window.nextSaleId) window.nextSaleId = 1;
+
+                            const newSale = {
+                                id: window.nextSaleId++,
+                                name: productName,
+                                quantity: quantity,
+                                price: price,
+                                timestamp: new Date()
+                            };
+                            window.salesData.push(newSale);
+                            window.showMessageBox("Vente enregistrée avec succès!", 'success');
+                            addSaleModal.dismiss();
+                            // Efface le formulaire et recharge les ventes
+                            document.getElementById('sale-product-name').value = '';
+                            document.getElementById('sale-quantity').value = '';
+                            document.getElementById('sale-price').value = '';
+                            window.loadSales(); // Re-render the list after adding
+                        });
+
+                        // Supprime une vente du tableau en mémoire
+                        window.deleteSale = (id) => {
+                            if (!window.salesData) window.salesData = [];
+                            window.salesData = window.salesData.filter(sale => sale.id !== id);
+                            window.showMessageBox("Vente supprimée avec succès!", 'success');
+                            window.loadSales(); // Re-render the list after deleting
+                        };
+
+                        // Écouteur d'événement pour ouvrir la modale d'ajout de vente
+                        addSaleFab.addEventListener('click', () => {
+                            addSaleModal.present();
+                        });
+
+                        // Charge les ventes si la page est active au chargement initial
+                        if (window.location.hash === '#ventes') {
+                            window.loadSales();
+                        }
+                    });
+                </script>
+            </section>
 
             <!-- Page Achat -->
-            <div id="achat-page" class="page-content">
+            <section id="achat-page" class="page-content">
                 <ion-header>
                     <ion-toolbar color="primary">
                         <ion-buttons slot="start">
@@ -205,7 +389,7 @@
                             </ion-button>
                         </ion-buttons>
                         <ion-title>Achats</ion-title>
-                         <ion-buttons slot="end">
+                        <ion-buttons slot="end">
                             <ion-button>
                                 <ion-icon slot="icon-only" name="ellipsis-vertical-outline"></ion-icon>
                             </ion-button>
@@ -216,29 +400,103 @@
                     <ion-list-header>
                         <ion-label>Achats Récents</ion-label>
                     </ion-list-header>
-                    <ion-list inset="true">
-                        <ion-item>
-                            <ion-icon name="server-outline" slot="start"></ion-icon>
-                             <ion-label>
-                                <h2>Stock de disques durs</h2>
-                                <p>Fournisseur: TechGlobal, Coût: 500.00 €</p>
-                            </ion-label>
-                        </ion-item>
-                         <!-- ... autres items ... -->
+                    <ion-list inset="true" id="purchases-list">
+                        <!-- Les éléments d'achat seront chargés dynamiquement ici -->
                     </ion-list>
                     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-                        <ion-fab-button color="secondary">
+                        <ion-fab-button color="secondary" id="add-purchase-fab">
                             <ion-icon name="add-outline"></ion-icon>
                         </ion-fab-button>
                     </ion-fab>
                 </ion-content>
-            </div>
+                <script>
+                    // Script spécifique à la page Achat
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const purchasesList = document.getElementById('purchases-list');
+                        const addPurchaseFab = document.getElementById('add-purchase-fab');
+                        const addPurchaseModal = document.getElementById('add-purchase-modal');
+                        const savePurchaseBtn = document.getElementById('save-purchase-btn');
+
+                        // Charge les données d'achats depuis le tableau en mémoire et les affiche
+                        window.loadPurchases = () => {
+                            purchasesList.innerHTML = ''; // Efface la liste actuelle
+                            if (!window.purchasesData) window.purchasesData = []; // Assurez-vous que le tableau existe
+                            window.purchasesData.forEach((purchase) => {
+                                const item = document.createElement('ion-item');
+                                item.innerHTML = `
+                                    <ion-icon name="server-outline" slot="start"></ion-icon>
+                                    <ion-label>
+                                        <h2>${purchase.name}</h2>
+                                        <p>Fournisseur: ${purchase.supplier}, Coût: ${parseFloat(purchase.cost).toFixed(2)} €</p>
+                                        <p class="text-xs text-gray-500">${purchase.timestamp.toLocaleString()}</p>
+                                    </ion-label>
+                                    <ion-buttons slot="end">
+                                        <ion-button color="danger" onclick="window.deletePurchase(${purchase.id})">
+                                            <ion-icon name="trash-outline"></ion-icon>
+                                        </ion-button>
+                                    </ion-buttons>
+                                `;
+                                purchasesList.appendChild(item);
+                            });
+                            if (window.updateDashboardTotals) window.updateDashboardTotals();
+                        };
+
+                        // Ajoute un nouvel achat au tableau en mémoire
+                        savePurchaseBtn.addEventListener('click', () => {
+                            const itemName = document.getElementById('purchase-item-name').value;
+                            const supplier = document.getElementById('purchase-supplier').value;
+                            const cost = parseFloat(document.getElementById('purchase-cost').value);
+
+                            if (!itemName || !supplier || isNaN(cost) || cost <= 0) {
+                                window.showMessageBox("Veuillez remplir tous les champs correctement.", 'error');
+                                return;
+                            }
+
+                            if (!window.purchasesData) window.purchasesData = [];
+                            if (!window.nextPurchaseId) window.nextPurchaseId = 1;
+
+                            const newPurchase = {
+                                id: window.nextPurchaseId++,
+                                name: itemName,
+                                supplier: supplier,
+                                cost: cost,
+                                timestamp: new Date()
+                            };
+                            window.purchasesData.push(newPurchase);
+                            window.showMessageBox("Achat enregistré avec succès!", 'success');
+                            addPurchaseModal.dismiss();
+                            // Efface le formulaire et recharge les achats
+                            document.getElementById('purchase-item-name').value = '';
+                            document.getElementById('purchase-supplier').value = '';
+                            document.getElementById('purchase-cost').value = '';
+                            window.loadPurchases(); // Re-render the list after adding
+                        });
+
+                        // Supprime un achat du tableau en mémoire
+                        window.deletePurchase = (id) => {
+                            if (!window.purchasesData) window.purchasesData = [];
+                            window.purchasesData = window.purchasesData.filter(purchase => purchase.id !== id);
+                            window.showMessageBox("Achat supprimé avec succès!", 'success');
+                            window.loadPurchases(); // Re-render the list after deleting
+                        };
+
+                        // Écouteur d'événement pour ouvrir la modale d'ajout d'achat
+                        addPurchaseFab.addEventListener('click', () => {
+                            addPurchaseModal.present();
+                        });
+
+                        // Charge les achats si la page est active au chargement initial
+                        if (window.location.hash === '#achat') {
+                            window.loadPurchases();
+                        }
+                    });
+                </script>
+            </section>
 
             <!-- Pied de page avec la navigation personnalisée -->
             <ion-footer>
-                <!-- Changement de couleur de 'primary' à 'light' -->
                 <ion-toolbar color="light">
-                     <nav class="custom-nav">
+                    <nav class="custom-nav">
                         <a href="#accueil">
                             <ion-icon name="home-outline"></ion-icon>
                             Accueil
@@ -255,14 +513,120 @@
                 </ion-toolbar>
             </ion-footer>
         </div>
+
+        <!-- Modales pour ajouter des ventes et des achats (globales car utilisées par plusieurs pages) -->
+        <ion-modal id="add-sale-modal">
+            <ion-header>
+                <ion-toolbar color="primary">
+                    <ion-title>Ajouter une Vente</ion-title>
+                    <ion-buttons slot="end">
+                        <ion-button onclick="document.getElementById('add-sale-modal').dismiss()">Fermer</ion-button>
+                    </ion-buttons>
+                </ion-toolbar>
+            </ion-header>
+            <ion-content class="ion-padding">
+                <ion-item>
+                    <ion-label position="floating">Nom du Produit</ion-label>
+                    <ion-input id="sale-product-name" type="text"></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label position="floating">Quantité</ion-label>
+                    <ion-input id="sale-quantity" type="number"></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label position="floating">Prix Unitaire (€)</ion-label>
+                    <ion-input id="sale-price" type="number"></ion-input>
+                </ion-item>
+                <ion-button expand="block" class="ion-margin-top" id="save-sale-btn">Enregistrer Vente</ion-button>
+            </ion-content>
+        </ion-modal>
+
+        <ion-modal id="add-purchase-modal">
+            <ion-header>
+                <ion-toolbar color="primary">
+                    <ion-title>Ajouter un Achat</ion-title>
+                    <ion-buttons slot="end">
+                        <ion-button onclick="document.getElementById('add-purchase-modal').dismiss()">Fermer</ion-button>
+                    </ion-buttons>
+                </ion-toolbar>
+            </ion-header>
+            <ion-content class="ion-padding">
+                <ion-item>
+                    <ion-label position="floating">Nom de l'Article</ion-label>
+                    <ion-input id="purchase-item-name" type="text"></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label position="floating">Fournisseur</ion-label>
+                    <ion-input id="purchase-supplier" type="text"></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label position="floating">Coût Total (€)</ion-label>
+                    <ion-input id="purchase-cost" type="number"></ion-input>
+                </ion-item>
+                <ion-button expand="block" class="ion-margin-top" id="save-purchase-btn">Enregistrer Achat</ion-button>
+            </ion-content>
+        </ion-modal>
+
     </ion-app>
 
+    <!-- Script principal de l'application (global) -->
     <script>
+        // Déclaration des variables globales pour les données et les IDs
+        window.salesData = [];
+        window.purchasesData = [];
+        window.nextSaleId = 1;
+        window.nextPurchaseId = 1;
+
         document.addEventListener('DOMContentLoaded', () => {
             const pages = document.querySelectorAll('.page-content');
             const menu = document.querySelector('ion-menu');
             const menuButtons = document.querySelectorAll('.menu-button');
             const menuLinks = document.querySelectorAll('.menu-link');
+            const navLinks = document.querySelectorAll('.custom-nav a'); // Sélectionne les liens du pied de page
+
+            /**
+             * Affiche une boîte de message personnalisée.
+             * @param {string} message - Le message à afficher.
+             * @param {string} type - Le type de message (par exemple, 'success', 'error', 'info').
+             */
+            window.showMessageBox = (message, type = 'info') => {
+                const overlay = document.createElement('div');
+                overlay.className = 'message-box-overlay';
+                overlay.style.backgroundColor = type === 'error' ? 'rgba(255, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.5)';
+
+                const content = document.createElement('div');
+                content.className = 'message-box-content';
+
+                const icon = document.createElement('ion-icon');
+                if (type === 'success') {
+                    icon.name = 'checkmark-circle-outline';
+                    icon.style.color = 'green';
+                } else if (type === 'error') {
+                    icon.name = 'close-circle-outline';
+                    icon.style.color = 'red';
+                } else {
+                    icon.name = 'information-circle-outline';
+                    icon.style.color = 'blue';
+                }
+                icon.style.fontSize = '4em';
+                icon.style.marginBottom = '10px';
+
+                const text = document.createElement('p');
+                text.textContent = message;
+                text.style.fontSize = '1.2em';
+                text.style.marginBottom = '20px';
+
+                const okButton = document.createElement('ion-button');
+                okButton.textContent = 'OK';
+                okButton.expand = 'block';
+                okButton.onclick = () => document.body.removeChild(overlay);
+
+                content.appendChild(icon);
+                content.appendChild(text);
+                content.appendChild(okButton);
+                overlay.appendChild(content);
+                document.body.appendChild(overlay);
+            };
 
             // --- Logique pour ouvrir le menu ---
             menuButtons.forEach(button => {
@@ -275,7 +639,7 @@
             });
 
             // --- Fonction pour naviguer entre les pages ---
-            const navigate = () => {
+            window.navigate = () => {
                 let hash = window.location.hash || '#accueil';
                 if (hash === '#') hash = '#accueil';
 
@@ -293,13 +657,34 @@
                 } else {
                     document.getElementById('accueil-page').style.display = 'flex';
                 }
+
+                // Supprime la classe 'active' pour tous les liens de navigation du menu latéral
+                menuLinks.forEach(link => {
+                    link.classList.remove('active');
+                });
+
+                // Supprime la classe 'active' pour tous les liens de navigation du pied de page
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                });
+
+                // Charge les données spécifiques à la page active
+                if (hash === '#ventes' && window.loadSales) {
+                    window.loadSales();
+                } else if (hash === '#achat' && window.loadPurchases) {
+                    window.loadPurchases();
+                } 
+                // updateDashboardTotals est toujours appelé après les autres, ou si la page d'accueil est active.
+                if (window.updateDashboardTotals) {
+                    window.updateDashboardTotals();
+                }
             };
 
             // Écoute les changements de hash dans l'URL
-            window.addEventListener('hashchange', navigate);
+            window.addEventListener('hashchange', window.navigate);
 
             // Affiche la bonne page au chargement initial
-            navigate();
+            window.navigate();
         });
     </script>
 </body>
