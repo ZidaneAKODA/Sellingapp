@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des Ventes</title>
-    
+
     <!-- Importation des composants Ionic (CSS et JS) -->
     <link href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" rel="stylesheet">
     <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
@@ -15,11 +15,50 @@
 
     <!-- Styles globaux pour l'application -->
     <style>
+        /* Configurer la police Inter pour tout le corps */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Styles pour un design totalement plat sur les headers et footers Ionic */
+        ion-header,
+        ion-footer {
+            /* Supprime les ombres par défaut des composants Ionic */
+            --box-shadow: none !important;
+            box-shadow: none !important; /* Pour une compatibilité plus large */
+            /* Supprime les bordures par défaut */
+            --border-width: 0 !important;
+            border: none !important;
+            /* Assure qu'aucune transformation ou filtre ne crée de profondeur */
+            transform: none !important;
+            filter: none !important;
+        }
+
+        ion-toolbar {
+            /* Supprime les ombres par défaut des barres d'outils Ionic */
+            --box-shadow: none !important;
+            box-shadow: none !important; /* Pour une compatibilité plus large */
+            /* Supprime les bordures par défaut des barres d'outils */
+            --border-width: 0 !important;
+            border: none !important;
+            /* Assure qu'aucune transformation ou filtre ne crée de profondeur */
+            transform: none !important;
+            filter: none !important;
+        }
+
+        /* Assurer un design plat pour le header du menu latéral également */
+        ion-menu ion-header ion-toolbar {
+            --box-shadow: none !important;
+            box-shadow: none !important;
+            --border-width: 0 !important;
+        }
+
         /* Cache toutes les pages par défaut */
         .page-content {
             display: none;
-            height: 100%; 
+            height: 100%;
             flex-direction: column;
+            width: 100%; /* Ensure page content takes full width */
         }
 
         /* Le conteneur principal doit être flexible pour que le contenu s'affiche correctement */
@@ -27,8 +66,9 @@
             display: flex;
             flex-direction: column;
             height: 100%;
+            width: 100%; /* Ensure main content takes full width */
         }
-        
+
         /* Style pour la barre de navigation personnalisée */
         .custom-nav {
             display: flex;
@@ -50,7 +90,7 @@
             font-size: 1.8em;
             margin-bottom: 2px;
         }
-        
+
         /* Style pour les liens dans le menu latéral */
         .menu-link {
             text-decoration: none;
@@ -77,6 +117,35 @@
             text-align: center;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             max-width: 80%;
+            width: 100%; /* Ensure content box can take full width up to max-width */
+        }
+        /* Ensure ion-content fills available space */
+        ion-content {
+            --padding-start: 0px !important;
+            --padding-end: 0px !important;
+            --padding-top: 0px !important;
+            --padding-bottom: 0px !important;
+            width: 100%;
+        }
+        /* Ensure ion-list takes full width */
+        ion-list {
+            width: 100%;
+        }
+        /* Ensure main content of pages fills available width */
+        .page-content main {
+            width: 100%;
+        }
+
+        /* Adjust padding for ion-padding to ensure content alignment */
+        .ion-padding {
+            padding-left: 16px;
+            padding-right: 16px;
+        }
+
+        /* Specific adjustments for ion-modal content to stretch correctly */
+        ion-modal ion-content {
+            --padding-start: 16px !important;
+            --padding-end: 16px !important;
         }
     </style>
 </head>
@@ -138,7 +207,7 @@
                     </ion-toolbar>
                 </ion-header>
                 <ion-content class="ion-padding">
-                    <main class="p-4">
+                    <main class="p-4 w-full"> <!-- Added w-full for full width -->
                         <section class="grid grid-cols-2 gap-4 mb-6">
                             <div class="bg-blue-50 p-4 rounded-lg">
                                 <p class="text-sm text-gray-600">Total Receivables</p>
@@ -286,7 +355,7 @@
                     <ion-list-header>
                         <ion-label>Ventes Récentes</ion-label>
                     </ion-list-header>
-                    <ion-list inset="true" id="sales-list">
+                    <ion-list id="sales-list"> <!-- Removed inset="true" for full width -->
                         <!-- Les éléments de vente seront chargés dynamiquement ici -->
                     </ion-list>
                     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
@@ -400,7 +469,7 @@
                     <ion-list-header>
                         <ion-label>Achats Récents</ion-label>
                     </ion-list-header>
-                    <ion-list inset="true" id="purchases-list">
+                    <ion-list id="purchases-list"> <!-- Removed inset="true" for full width -->
                         <!-- Les éléments d'achat seront chargés dynamiquement ici -->
                     </ion-list>
                     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
@@ -649,11 +718,11 @@
                 pages.forEach(page => {
                     page.style.display = 'none';
                 });
-                
+
                 // Affiche la page active
                 const activePage = document.getElementById(pageId);
                 if (activePage) {
-                    activePage.style.display = 'flex'; 
+                    activePage.style.display = 'flex';
                 } else {
                     document.getElementById('accueil-page').style.display = 'flex';
                 }
@@ -673,7 +742,7 @@
                     window.loadSales();
                 } else if (hash === '#achat' && window.loadPurchases) {
                     window.loadPurchases();
-                } 
+                }
                 // updateDashboardTotals est toujours appelé après les autres, ou si la page d'accueil est active.
                 if (window.updateDashboardTotals) {
                     window.updateDashboardTotals();
