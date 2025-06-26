@@ -3,760 +3,439 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion des Ventes</title>
-
-    <!-- Importation des composants Ionic (CSS et JS) -->
-    <link href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" rel="stylesheet">
-    <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
-    <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
-
-    <!-- Styles globaux pour l'application -->
+    <title>AFRICAPHONE Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* Configurer la police Inter pour tout le corps */
+        :root {
+            --primary-color: #1f2937;
+            --secondary-color: #4b5563;
+            --accent-color: #4f46e5;
+            --bg-color: #f9fafb;
+            --danger-color: #dc2626;
+            --success-color: #16a34a;
+        }
         body {
             font-family: 'Inter', sans-serif;
-        }
-
-        /* Styles pour un design totalement plat sur les headers et footers Ionic */
-        ion-header,
-        ion-footer {
-            /* Supprime les ombres par défaut des composants Ionic */
-            --box-shadow: none !important;
-            box-shadow: none !important; /* Pour une compatibilité plus large */
-            /* Supprime les bordures par défaut */
-            --border-width: 0 !important;
-            border: none !important;
-            /* Assure qu'aucune transformation ou filtre ne crée de profondeur */
-            transform: none !important;
-            filter: none !important;
-        }
-
-        ion-toolbar {
-            /* Supprime les ombres par défaut des barres d'outils Ionic */
-            --box-shadow: none !important;
-            box-shadow: none !important; /* Pour une compatibilité plus large */
-            /* Supprime les bordures par défaut des barres d'outils */
-            --border-width: 0 !important;
-            border: none !important;
-            /* Assure qu'aucune transformation ou filtre ne crée de profondeur */
-            transform: none !important;
-            filter: none !important;
-        }
-
-        /* Assurer un design plat pour le header du menu latéral également */
-        ion-menu ion-header ion-toolbar {
-            --box-shadow: none !important;
-            box-shadow: none !important;
-            --border-width: 0 !important;
-            /* Le header du menu latéral reste bleu primaire */
-        }
-
-        /* Cache toutes les pages par défaut */
-        .page-content {
-            display: none;
-            height: 100%;
-            flex-direction: column;
-        }
-
-        /* Le conteneur principal doit être flexible pour que le contenu s'affiche correctement */
-        .ion-page {
+            margin: 0;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
             display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        /* Style pour la barre de navigation personnalisée */
-        .custom-nav {
-            display: flex;
-            justify-content: space-around;
             align-items: center;
-            width: 100%;
-        }
-        .custom-nav a {
-            color: #000; /* Icônes et texte en noir par défaut */
-            text-decoration: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 4px 12px;
-            font-size: 0.8rem;
-            transition: color 0.2s ease-in-out; /* Ajoute une transition pour une animation fluide */
-        }
-        .custom-nav a ion-icon {
-            font-size: 1.8em;
-            margin-bottom: 2px;
-            color: #000; /* S'assurer que l'icône est noire par défaut */
-            transition: color 0.2s ease-in-out; /* Ajoute une transition pour une animation fluide */
-        }
-
-        /* Style pour les liens actifs dans la barre de navigation personnalisée */
-        .custom-nav a.active {
-            color: var(--ion-color-primary); /* Texte en bleu quand actif */
-        }
-        .custom-nav a.active ion-icon {
-            color: var(--ion-color-primary); /* Icône en bleu quand active */
-        }
-
-        /* Style pour les liens dans le menu latéral */
-        .menu-link {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        /* Styles pour la boîte de message personnalisée */
-        .message-box-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
             justify-content: center;
-            align-items: center;
-            z-index: 10000;
+            min-height: 100vh;
         }
-        .message-box-content {
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+        /* --- Login View --- */
+        #login-view {
+            width: 100%;
+            max-width: 360px;
             background: white;
-            padding: 20px;
-            border-radius: 10px;
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        #login-view h1 {
+            font-size: 1.5rem;
             text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            max-width: 80%;
+            margin-bottom: 2rem;
+        }
+
+        /* --- Common Form Styles --- */
+        form { display: flex; flex-direction: column; gap: 1rem; }
+        input[type="text"], input[type="email"], input[type="password"], input[type="number"], textarea, select {
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        button {
+            padding: 0.75rem;
+            border: none;
+            border-radius: 6px;
+            background-color: var(--accent-color);
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover { background-color: #4338ca; }
+        button:disabled { background-color: #a5b4fc; cursor: not-allowed; }
+        
+        /* --- Dashboard View --- */
+        #dashboard-view { display: none; }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        header h1 { font-size: 2rem; margin: 0; }
+        #logout-button { background-color: var(--secondary-color); }
+        #logout-button:hover { background-color: var(--primary-color); }
+
+        #admin-content {
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+        
+        #product-list-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        #product-form-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 2rem;
+        }
+        #form-title { margin-top: 0; }
+        #cancel-edit-button {
+            background-color: #e5e7eb;
+            color: var(--primary-color);
+            display: none;
+        }
+        
+        .product-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .product-item:last-child { border-bottom: none; }
+        .product-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            background-color: #f3f4f6;
+        }
+        .product-info { flex-grow: 1; }
+        .product-info p { margin: 0; }
+        .product-info .name { font-weight: 500; }
+        .product-info .price { color: var(--secondary-color); font-size: 0.9rem; }
+        .product-actions button {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+        }
+        .edit-btn { background-color: var(--success-color); }
+        .delete-btn { background-color: var(--danger-color); }
+        
+        .loader { text-align: center; padding: 2rem; font-size: 1.2rem; }
+
+        @media (max-width: 900px) {
+            #admin-content { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <!-- Le composant racine de l'application Ionic -->
-    <ion-app>
 
-        <!-- Menu Latéral -->
-        <ion-menu content-id="main-content">
-            <ion-header>
-                <ion-toolbar color="primary">
-                    <ion-title>Menu</ion-title>
-                </ion-toolbar>
-            </ion-header>
-            <ion-content>
-                <ion-list>
-                    <!-- Lien vers l'accueil -->
-                    <a href="#accueil" class="menu-link">
-                        <ion-item button>
-                            <ion-icon name="home-outline" slot="start"></ion-icon>
-                            <ion-label>Accueil</ion-label>
-                        </ion-item>
-                    </a>
-                    <!-- Lien vers les ventes -->
-                    <a href="#ventes" class="menu-link">
-                        <ion-item button>
-                            <ion-icon name="cash-outline" slot="start"></ion-icon>
-                            <ion-label>Ventes</ion-label>
-                        </ion-item>
-                    </a>
-                    <!-- Lien vers les achats -->
-                    <a href="#achat" class="menu-link">
-                        <ion-item button>
-                            <ion-icon name="bag-handle-outline" slot="start"></ion-icon>
-                            <ion-label>Achat</ion-label>
-                        </ion-item>
-                    </a>
-                </ion-list>
-            </ion-content>
-        </ion-menu>
+    <div id="login-view">
+        <h1>AFRICAPHONE Admin</h1>
+        <form id="login-form">
+            <input type="email" id="login-email" placeholder="Email" required>
+            <input type="password" id="login-password" placeholder="Mot de passe" required>
+            <button type="submit" id="login-button">Se connecter</button>
+        </form>
+    </div>
 
-        <!-- Contenu principal de l'application (pages + footer) -->
-        <div class="ion-page" id="main-content">
-            <!-- Page Accueil -->
-            <section id="accueil-page" class="page-content">
-                <ion-header>
-                    <!-- Header de la page d'accueil en blanc pur avec une fine bordure inférieure -->
-                    <ion-toolbar color="white" class="border-b border-gray-300">
-                        <ion-buttons slot="start">
-                            <ion-button class="menu-button">
-                                <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
-                            </ion-button>
-                        </ion-buttons>
-                        <ion-title>Accueil</ion-title>
-                        <ion-buttons slot="end">
-                            <ion-button>
-                                <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
-                            </ion-button>
-                        </ion-buttons>
-                    </ion-toolbar>
-                </ion-header>
-                <ion-content class="ion-padding">
-                    <main class="p-4">
-                        <section class="grid grid-cols-2 gap-4 mb-6">
-                            <div class="bg-blue-50 p-4 rounded-lg">
-                                <p class="text-sm text-gray-600">Total Receivables</p>
-                                <div class="flex items-center justify-between mt-1">
-                                    <span id="total-receivables" class="text-2xl font-bold text-gray-800">XOF0</span>
-                                    <span class="material-icons text-gray-500">arrow_drop_down</span>
-                                </div>
-                            </div>
-                            <div class="space-y-3">
-                                <div class="bg-pink-50 p-4 rounded-lg flex items-center justify-between">
-                                    <div>
-                                        <p class="text-2xl font-bold text-gray-800">0</p>
-                                        <p class="text-xs text-gray-600">Overdue Invoices</p>
-                                    </div>
-                                    <span class="material-icons text-gray-500">chevron_right</span>
-                                </div>
-                            </div>
-                            <div class="bg-blue-50 p-4 rounded-lg">
-                                <p class="text-sm text-gray-600">Total Payables</p>
-                                <div class="flex items-center justify-between mt-1">
-                                    <span id="total-payables" class="text-2xl font-bold text-gray-800">XOF0</span>
-                                    <span class="material-icons text-gray-500">arrow_drop_down</span>
-                                </div>
-                            </div>
-                            <div class="space-y-3">
-                                <div class="bg-pink-50 p-4 rounded-lg flex items-center justify-between">
-                                    <div>
-                                        <p class="text-2xl font-bold text-gray-800">0</p>
-                                        <p class="text-xs text-gray-600">Overdue Bills</p>
-                                    </div>
-                                    <span class="material-icons text-gray-500">chevron_right</span>
-                                </div>
-                            </div>
-                        </section>
-                        <section class="mb-6">
-                            <h2 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
-                                <span class="material-icons text-yellow-500 mr-2">bolt</span>
-                                Quick Create
-                            </h2>
-                            <div class="grid grid-cols-4 gap-3">
-                                <button class="flex flex-col items-center p-3 bg-gray-100 rounded-lg hover:bg-gray-200">
-                                    <span class="material-icons text-blue-500 text-3xl mb-1">person_add</span>
-                                    <span class="text-xs text-gray-700">New Customer</span>
-                                </button>
-                                <button class="flex flex-col items-center p-3 bg-gray-100 rounded-lg hover:bg-gray-200">
-                                    <span class="material-icons text-green-500 text-3xl mb-1">description</span>
-                                    <span class="text-xs text-gray-700">New Invoice</span>
-                                </button>
-                                <button class="flex flex-col items-center p-3 bg-gray-100 rounded-lg hover:bg-gray-200">
-                                    <span class="material-icons text-red-500 text-3xl mb-1">receipt_long</span>
-                                    <span class="text-xs text-gray-700">New Bill</span>
-                                </button>
-                                <button class="flex flex-col items-center p-3 bg-gray-100 rounded-lg hover:bg-gray-200">
-                                    <span class="material-icons text-purple-500 text-3xl mb-1">chat_bubble_outline</span>
-                                    <span class="text-xs text-gray-700">New Expense</span>
-                                </button>
-                            </div>
-                        </section>
-                        <section>
-                            <div class="flex items-center justify-between mb-3">
-                                <h2 class="text-lg font-semibold text-gray-800 flex items-center">
-                                    <span class="material-icons text-gray-600 mr-2">show_chart</span>
-                                    Cash Flow
-                                </h2>
-                                <button class="text-sm text-gray-600 bg-white border border-gray-300 px-3 py-1 rounded-md flex items-center">
-                                    This Fiscal Year
-                                    <span class="material-icons text-sm ml-1">arrow_drop_down</span>
-                                </button>
-                            </div>
-                            <div class="bg-white p-4 rounded-lg shadow">
-                                <div class="h-48 relative">
-                                    <div class="absolute bottom-0 left-0 w-full h-full flex items-end">
-                                        <div class="absolute left-0 bottom-0 w-full h-40">
-                                            <div class="absolute text-xs text-gray-500" style="bottom: 0px; left: -25px;">0</div>
-                                            <div class="absolute text-xs text-gray-500" style="bottom: 35px; left: -30px;">-10K</div>
-                                            <div class="absolute text-xs text-gray-500" style="bottom: 70px; left: -30px;">-20K</div>
-                                            <div class="absolute w-0.5 h-full bg-blue-500" style="left: 5%; bottom: 0;"></div>
-                                            <div class="absolute w-full border-t border-dashed border-gray-300" style="bottom: 0px;"></div>
-                                            <div class="absolute w-full border-t border-dashed border-gray-300" style="bottom: 40px;"></div>
-                                            <div class="absolute w-full border-t border-dashed border-gray-300" style="bottom: 80px;"></div>
-                                            <div class="absolute w-full border-t border-dashed border-gray-300" style="bottom: 120px;"></div>
-                                            <svg class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
-                                                <path d="M 5 100 C 15 80, 25 20, 35 50 S 55 120, 65 70 S 85 30, 95 60" fill="none" stroke="#3B82F6" stroke-width="2"></path>
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    <p class="text-center text-gray-500 mt-4">Cash flow chart data will be displayed here.</p>
-                                </div>
-                            </div>
-                        </section>
-                        <p id="user-id-display" class="text-xs text-gray-500 mt-4 text-center">User ID: N/A (Firebase non utilisé)</p>
-                    </main>
-                </ion-content>
-                <script>
-                    // Script spécifique à la page Accueil
-                    document.addEventListener('DOMContentLoaded', () => {
-                        const totalReceivablesSpan = document.getElementById('total-receivables');
-                        const totalPayablesSpan = document.getElementById('total-payables');
+    <div id="dashboard-view" class="container">
+        <header>
+            <h1>Tableau de Bord</h1>
+            <button id="logout-button">Déconnexion</button>
+        </header>
 
-                        // Met à jour les totaux du tableau de bord à partir des données en mémoire
-                        window.updateDashboardTotals = () => {
-                            let totalReceivables = 0;
-                            if (window.salesData) { // Vérifie que window.salesData existe
-                                window.salesData.forEach(sale => {
-                                    totalReceivables += (parseFloat(sale.quantity) * parseFloat(sale.price));
-                                });
-                            }
-                            totalReceivablesSpan.textContent = `XOF${totalReceivables.toFixed(2)}`;
+        <main id="admin-content">
+            <div id="product-list-container">
+                <h2>Liste des Produits</h2>
+                <div id="product-list">
+                    <p class="loader">Chargement des produits...</p>
+                </div>
+            </div>
 
-                            let totalPayables = 0;
-                            if (window.purchasesData) { // Vérifie que window.purchasesData existe
-                                window.purchasesData.forEach(purchase => {
-                                    totalPayables += parseFloat(purchase.cost);
-                                });
-                            }
-                            totalPayablesSpan.textContent = `XOF${totalPayables.toFixed(2)}`;
-                        };
+            <div id="product-form-container">
+                <h2 id="form-title">Ajouter un Produit</h2>
+                <form id="product-form">
+                    <input type="hidden" id="product-id">
+                    <input type="text" id="product-name" placeholder="Nom du produit" required>
+                    <input type="number" id="product-price" placeholder="Prix (FCFA)" required>
+                    <input type="text" id="product-brand" placeholder="Marque (ex: tecno)" required>
+                    <input type="number" id="product-ram" placeholder="RAM (Go)" required>
+                    <input type="number" id="product-rom" placeholder="Stockage (Go)" required>
+                    <textarea id="product-description" placeholder="Description du produit" rows="4"></textarea>
+                    <label for="product-image">Image du produit :</label>
+                    <input type="file" id="product-image" accept="image/png, image/jpeg, image/webp">
+                    <button type="submit" id="save-button">Sauvegarder</button>
+                    <button type="button" id="cancel-edit-button">Annuler la modification</button>
+                </form>
+            </div>
+        </main>
+    </div>
 
-                        // Mise à jour initiale si cette page est la première à être chargée
-                        if (window.location.hash === '' || window.location.hash === '#accueil') {
-                            window.updateDashboardTotals();
-                        }
-                    });
-                </script>
-            </section>
+    <script type="module">
+        // --- Firebase SDK Imports ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, addDoc, updateDoc, deleteDoc, orderBy, query } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-storage.js";
 
-            <!-- Page Ventes -->
-            <section id="ventes-page" class="page-content">
-                <ion-header>
-                    <!-- Header de la page Ventes en blanc pur avec une fine bordure inférieure -->
-                    <ion-toolbar color="white" class="border-b border-gray-300">
-                        <ion-buttons slot="start">
-                            <ion-button class="menu-button">
-                                <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
-                            </ion-button>
-                        </ion-buttons>
-                        <ion-title>Ventes</ion-title>
-                        <ion-buttons slot="end">
-                            <ion-button>
-                                <ion-icon slot="icon-only" name="ellipsis-vertical-outline"></ion-icon>
-                            </ion-button>
-                        </ion-buttons>
-                    </ion-toolbar>
-                </ion-header>
-                <ion-content class="ion-padding">
-                    <ion-list-header>
-                        <ion-label>Ventes Récentes</ion-label>
-                    </ion-list-header>
-                    <ion-list inset="true" id="sales-list">
-                        <!-- Les éléments de vente seront chargés dynamiquement ici -->
-                    </ion-list>
-                    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-                        <ion-fab-button id="add-sale-fab">
-                            <ion-icon name="add-outline"></ion-icon>
-                        </ion-fab-button>
-                    </ion-fab>
-                </ion-content>
-                <script>
-                    // Script spécifique à la page Ventes
-                    document.addEventListener('DOMContentLoaded', () => {
-                        const salesList = document.getElementById('sales-list');
-                        const addSaleFab = document.getElementById('add-sale-fab');
-                        const addSaleModal = document.getElementById('add-sale-modal');
-                        const saveSaleBtn = document.getElementById('save-sale-btn');
+        // --- Firebase Configuration ---
+        // !!! REMPLACEZ PAR VOTRE PROPRE CONFIGURATION FIREBASE !!!
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVmG85CJPSqPDueR1RnxSS5DLtW3QP0Zs",
+            authDomain: "africaphone-vente.firebaseapp.com",
+            projectId: "africaphone-vente",
+            storageBucket: "africaphone-vente.appspot.com",
+            messagingSenderId: "203471818329",
+            appId: "1:203471818329:web:d0e235db15917d8b596b48",
+            measurementId: "G-EYL8YL86KB"
+        };
 
-                        // Charge les données de ventes depuis le tableau en mémoire et les affiche
-                        window.loadSales = () => {
-                            salesList.innerHTML = ''; // Efface la liste actuelle
-                            if (!window.salesData) window.salesData = []; // Assurez-vous que le tableau existe
-                            window.salesData.forEach((sale) => {
-                                const item = document.createElement('ion-item');
-                                item.innerHTML = `
-                                    <ion-icon name="phone-portrait-outline" slot="start"></ion-icon>
-                                    <ion-label>
-                                        <h2>${sale.name}</h2>
-                                        <p>Quantité: ${sale.quantity}, Prix: ${parseFloat(sale.price).toFixed(2)} €</p>
-                                        <p class="text-xs text-gray-500">${sale.timestamp.toLocaleString()}</p>
-                                    </ion-label>
-                                    <ion-buttons slot="end">
-                                        <ion-button color="danger" onclick="window.deleteSale(${sale.id})">
-                                            <ion-icon name="trash-outline"></ion-icon>
-                                        </ion-button>
-                                    </ion-buttons>
-                                `;
-                                salesList.appendChild(item);
-                            });
-                            if (window.updateDashboardTotals) window.updateDashboardTotals();
-                        };
+        // --- Firebase Initialization ---
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
 
-                        // Ajoute une nouvelle vente au tableau en mémoire
-                        saveSaleBtn.addEventListener('click', () => {
-                            const productName = document.getElementById('sale-product-name').value;
-                            const quantity = parseFloat(document.getElementById('sale-quantity').value);
-                            const price = parseFloat(document.getElementById('sale-price').value);
+        // --- DOM Elements ---
+        const loginView = document.getElementById('login-view');
+        const dashboardView = document.getElementById('dashboard-view');
+        const loginForm = document.getElementById('login-form');
+        const logoutButton = document.getElementById('logout-button');
+        const productForm = document.getElementById('product-form');
+        const productListDiv = document.getElementById('product-list');
+        const formTitle = document.getElementById('form-title');
+        const productIdInput = document.getElementById('product-id');
+        const saveButton = document.getElementById('save-button');
+        const cancelEditButton = document.getElementById('cancel-edit-button');
+        let currentProducts = []; // Cache for products to get imagePath on delete
 
-                            if (!productName || isNaN(quantity) || isNaN(price) || quantity <= 0 || price <= 0) {
-                                window.showMessageBox("Veuillez remplir tous les champs correctement.", 'error');
-                                return;
-                            }
-
-                            if (!window.salesData) window.salesData = [];
-                            if (!window.nextSaleId) window.nextSaleId = 1;
-
-                            const newSale = {
-                                id: window.nextSaleId++,
-                                name: productName,
-                                quantity: quantity,
-                                price: price,
-                                timestamp: new Date()
-                            };
-                            window.salesData.push(newSale);
-                            window.showMessageBox("Vente enregistrée avec succès!", 'success');
-                            addSaleModal.dismiss();
-                            // Efface le formulaire et recharge les ventes
-                            document.getElementById('sale-product-name').value = '';
-                            document.getElementById('sale-quantity').value = '';
-                            document.getElementById('sale-price').value = '';
-                            window.loadSales(); // Re-render the list after adding
-                        });
-
-                        // Supprime une vente du tableau en mémoire
-                        window.deleteSale = (id) => {
-                            if (!window.salesData) window.salesData = [];
-                            window.salesData = window.salesData.filter(sale => sale.id !== id);
-                            window.showMessageBox("Vente supprimée avec succès!", 'success');
-                            window.loadSales(); // Re-render the list after deleting
-                        };
-
-                        // Écouteur d'événement pour ouvrir la modale d'ajout de vente
-                        addSaleFab.addEventListener('click', () => {
-                            addSaleModal.present();
-                        });
-
-                        // Charge les ventes si la page est active au chargement initial
-                        if (window.location.hash === '#ventes') {
-                            window.loadSales();
-                        }
-                    });
-                </script>
-            </section>
-
-            <!-- Page Achat -->
-            <section id="achat-page" class="page-content">
-                <ion-header>
-                    <!-- Header de la page Achats en blanc pur avec une fine bordure inférieure -->
-                    <ion-toolbar color="white" class="border-b border-gray-300">
-                        <ion-buttons slot="start">
-                            <ion-button class="menu-button">
-                                <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
-                            </ion-button>
-                        </ion-buttons>
-                        <ion-title>Achats</ion-title>
-                        <ion-buttons slot="end">
-                            <ion-button>
-                                <ion-icon slot="icon-only" name="ellipsis-vertical-outline"></ion-icon>
-                            </ion-button>
-                        </ion-buttons>
-                    </ion-toolbar>
-                </ion-header>
-                <ion-content class="ion-padding">
-                    <ion-list-header>
-                        <ion-label>Achats Récents</ion-label>
-                    </ion-list-header>
-                    <ion-list inset="true" id="purchases-list">
-                        <!-- Les éléments d'achat seront chargés dynamiquement ici -->
-                    </ion-list>
-                    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-                        <ion-fab-button color="secondary" id="add-purchase-fab">
-                            <ion-icon name="add-outline"></ion-icon>
-                        </ion-fab-button>
-                    </ion-fab>
-                </ion-content>
-                <script>
-                    // Script spécifique à la page Achat
-                    document.addEventListener('DOMContentLoaded', () => {
-                        const purchasesList = document.getElementById('purchases-list');
-                        const addPurchaseFab = document.getElementById('add-purchase-fab');
-                        const addPurchaseModal = document.getElementById('add-purchase-modal');
-                        const savePurchaseBtn = document.getElementById('save-purchase-btn');
-
-                        // Charge les données d'achats depuis le tableau en mémoire et les affiche
-                        window.loadPurchases = () => {
-                            purchasesList.innerHTML = ''; // Efface la liste actuelle
-                            if (!window.purchasesData) window.purchasesData = []; // Assurez-vous que le tableau existe
-                            window.purchasesData.forEach((purchase) => {
-                                const item = document.createElement('ion-item');
-                                item.innerHTML = `
-                                    <ion-icon name="server-outline" slot="start"></ion-icon>
-                                    <ion-label>
-                                        <h2>${purchase.name}</h2>
-                                        <p>Fournisseur: ${purchase.supplier}, Coût: ${parseFloat(purchase.cost).toFixed(2)} €</p>
-                                        <p class="text-xs text-gray-500">${purchase.timestamp.toLocaleString()}</p>
-                                    </ion-label>
-                                    <ion-buttons slot="end">
-                                        <ion-button color="danger" onclick="window.deletePurchase(${purchase.id})">
-                                            <ion-icon name="trash-outline"></ion-icon>
-                                        </ion-button>
-                                    </ion-buttons>
-                                `;
-                                purchasesList.appendChild(item);
-                            });
-                            if (window.updateDashboardTotals) window.updateDashboardTotals();
-                        };
-
-                        // Ajoute un nouvel achat au tableau en mémoire
-                        savePurchaseBtn.addEventListener('click', () => {
-                            const itemName = document.getElementById('purchase-item-name').value;
-                            const supplier = document.getElementById('purchase-supplier').value;
-                            const cost = parseFloat(document.getElementById('purchase-cost').value);
-
-                            if (!itemName || !supplier || isNaN(cost) || cost <= 0) {
-                                window.showMessageBox("Veuillez remplir tous les champs correctement.", 'error');
-                                return;
-                            }
-
-                            if (!window.purchasesData) window.purchasesData = [];
-                            if (!window.nextPurchaseId) window.nextPurchaseId = 1;
-
-                            const newPurchase = {
-                                id: window.nextPurchaseId++,
-                                name: itemName,
-                                supplier: supplier,
-                                cost: cost,
-                                timestamp: new Date()
-                            };
-                            window.purchasesData.push(newPurchase);
-                            window.showMessageBox("Achat enregistré avec succès!", 'success');
-                            addPurchaseModal.dismiss();
-                            // Efface le formulaire et recharge les achats
-                            document.getElementById('purchase-item-name').value = '';
-                            document.getElementById('purchase-supplier').value = '';
-                            document.getElementById('purchase-cost').value = '';
-                            window.loadPurchases(); // Re-render the list after adding
-                        });
-
-                        // Supprime un achat du tableau en mémoire
-                        window.deletePurchase = (id) => {
-                            if (!window.purchasesData) window.purchasesData = [];
-                            window.purchasesData = window.purchasesData.filter(purchase => purchase.id !== id);
-                            window.showMessageBox("Achat supprimée avec succès!", 'success');
-                            window.loadPurchases(); // Re-render the list after deleting
-                        };
-
-                        // Écouteur d'événement pour ouvrir la modale d'ajout d'achat
-                        addPurchaseFab.addEventListener('click', () => {
-                            addPurchaseModal.present();
-                        });
-
-                        // Charge les achats si la page est active au chargement initial
-                        if (window.location.hash === '#achat') {
-                            window.loadPurchases();
-                        }
-                    });
-                </script>
-            </section>
-
-            <!-- Pied de page avec la navigation personnalisée -->
-            <ion-footer>
-                <!-- Footer en blanc pur avec une fine bordure supérieure -->
-                <ion-toolbar color="white" class="border-t border-gray-300">
-                    <nav class="custom-nav">
-                        <a href="#accueil">
-                            <ion-icon name="home-outline"></ion-icon>
-                            Accueil
-                        </a>
-                        <a href="#ventes">
-                            <ion-icon name="cash-outline"></ion-icon>
-                            Ventes
-                        </a>
-                        <a href="#achat">
-                            <ion-icon name="bag-handle-outline"></ion-icon>
-                            Achat
-                        </a>
-                    </nav>
-                </ion-toolbar>
-            </ion-footer>
-        </div>
-
-        <!-- Modales pour ajouter des ventes et des achats (globales car utilisées par plusieurs pages) -->
-        <ion-modal id="add-sale-modal">
-            <ion-header>
-                <ion-toolbar color="white" class="border-b border-gray-300">
-                    <ion-title>Ajouter une Vente</ion-title>
-                    <ion-buttons slot="end">
-                        <ion-button onclick="document.getElementById('add-sale-modal').dismiss()">Fermer</ion-button>
-                    </ion-buttons>
-                </ion-toolbar>
-            </ion-header>
-            <ion-content class="ion-padding">
-                <ion-item>
-                    <ion-label position="floating">Nom du Produit</ion-label>
-                    <ion-input id="sale-product-name" type="text"></ion-input>
-                </ion-item>
-                <ion-item>
-                    <ion-label position="floating">Quantité</ion-label>
-                    <ion-input id="sale-quantity" type="number"></ion-input>
-                </ion-item>
-                <ion-item>
-                    <ion-label position="floating">Prix Unitaire (€)</ion-label>
-                    <ion-input id="sale-price" type="number"></ion-input>
-                </ion-item>
-                <ion-button expand="block" class="ion-margin-top" id="save-sale-btn">Enregistrer Vente</ion-button>
-            </ion-content>
-        </ion-modal>
-
-        <ion-modal id="add-purchase-modal">
-            <ion-header>
-                <ion-toolbar color="white" class="border-b border-gray-300">
-                    <ion-title>Ajouter un Achat</ion-title>
-                    <ion-buttons slot="end">
-                        <ion-button onclick="document.getElementById('add-purchase-modal').dismiss()">Fermer</ion-button>
-                    </ion-buttons>
-                </ion-toolbar>
-            </ion-header>
-            <ion-content class="ion-padding">
-                <ion-item>
-                    <ion-label position="floating">Nom de l'Article</ion-label>
-                    <ion-input id="purchase-item-name" type="text"></ion-input>
-                </ion-item>
-                <ion-item>
-                    <ion-label position="floating">Fournisseur</ion-label>
-                    <ion-input id="purchase-supplier" type="text"></ion-input>
-                </ion-item>
-                <ion-item>
-                    <ion-label position="floating">Coût Total (€)</ion-label>
-                    <ion-input id="purchase-cost" type="number"></ion-input>
-                </ion-item>
-                <ion-button expand="block" class="ion-margin-top" id="save-purchase-btn">Enregistrer Achat</ion-button>
-            </ion-content>
-        </ion-modal>
-
-    </ion-app>
-
-    <!-- Script principal de l'application (global) -->
-    <script>
-        // Déclaration des variables globales pour les données et les IDs
-        window.salesData = [];
-        window.purchasesData = [];
-        window.nextSaleId = 1;
-        window.nextPurchaseId = 1;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const pages = document.querySelectorAll('.page-content');
-            const menu = document.querySelector('ion-menu');
-            const menuButtons = document.querySelectorAll('.menu-button');
-            const menuLinks = document.querySelectorAll('.menu-link');
-            const navLinks = document.querySelectorAll('.custom-nav a'); // Sélectionne les liens du pied de page
-
-            /**
-             * Affiche une boîte de message personnalisée.
-             * @param {string} message - Le message à afficher.
-             * @param {string} type - Le type de message (par exemple, 'success', 'error', 'info').
-             */
-            window.showMessageBox = (message, type = 'info') => {
-                const overlay = document.createElement('div');
-                overlay.className = 'message-box-overlay';
-                overlay.style.backgroundColor = type === 'error' ? 'rgba(255, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.5)';
-
-                const content = document.createElement('div');
-                content.className = 'message-box-content';
-
-                const icon = document.createElement('ion-icon');
-                if (type === 'success') {
-                    icon.name = 'checkmark-circle-outline';
-                    icon.style.color = 'green';
-                } else if (type === 'error') {
-                    icon.name = 'close-circle-outline';
-                    icon.style.color = 'red';
-                } else {
-                    icon.name = 'information-circle-outline';
-                    icon.style.color = 'blue';
-                }
-                icon.style.fontSize = '4em';
-                icon.style.marginBottom = '10px';
-
-                const text = document.createElement('p');
-                text.textContent = message;
-                text.style.fontSize = '1.2em';
-                text.style.marginBottom = '20px';
-
-                const okButton = document.createElement('ion-button');
-                okButton.textContent = 'OK';
-                okButton.expand = 'block';
-                okButton.onclick = () => document.body.removeChild(overlay);
-
-                content.appendChild(icon);
-                content.appendChild(text);
-                content.appendChild(okButton);
-                overlay.appendChild(content);
-                document.body.appendChild(overlay);
-            };
-
-            // --- Logique pour ouvrir le menu ---
-            menuButtons.forEach(button => {
-                button.addEventListener('click', () => menu.open());
-            });
-
-            // --- Logique pour fermer le menu en cliquant sur un lien ---
-            menuLinks.forEach(link => {
-                link.addEventListener('click', () => menu.close());
-            });
-
-            // --- Fonction pour naviguer entre les pages ---
-            window.navigate = () => {
-                let hash = window.location.hash || '#accueil';
-                if (hash === '#') hash = '#accueil';
-
-                const pageId = hash.substring(1) + '-page';
-
-                // Cache toutes les pages
-                pages.forEach(page => {
-                    page.style.display = 'none';
-                });
-
-                // Affiche la page active
-                const activePage = document.getElementById(pageId);
-                if (activePage) {
-                    activePage.style.display = 'flex';
-                } else {
-                    document.getElementById('accueil-page').style.display = 'flex';
-                }
-
-                // Réinitialise tous les liens de navigation du pied de page et les icônes
-                navLinks.forEach(link => {
-                    link.classList.remove('active');
-                    const icon = link.querySelector('ion-icon');
-                    if (icon) {
-                        const iconName = icon.name.replace('-outline', ''); // Supprime '-outline'
-                        icon.name = `${iconName}-outline`; // Remet à l'état outline
-                    }
-                });
-
-                // Active le lien et l'icône correspondants au hachage actuel
-                const currentNavLink = document.querySelector(`.custom-nav a[href="${hash}"]`);
-                if (currentNavLink) {
-                    currentNavLink.classList.add('active');
-                    const icon = currentNavLink.querySelector('ion-icon');
-                    if (icon) {
-                        const iconName = icon.name.replace('-outline', ''); // Supprime '-outline'
-                        icon.name = iconName; // Définit l'icône sur sa version pleine
-                    }
-                }
-
-
-                // Supprime la classe 'active' pour tous les liens de navigation du menu latéral
-                menuLinks.forEach(link => {
-                    link.classList.remove('active');
-                });
-
-
-                // Charge les données spécifiques à la page active
-                if (hash === '#ventes' && window.loadSales) {
-                    window.loadSales();
-                } else if (hash === '#achat' && window.loadPurchases) {
-                    window.loadPurchases();
-                }
-                // updateDashboardTotals est toujours appelé après les autres, ou si la page d'accueil est active.
-                if (window.updateDashboardTotals) {
-                    window.updateDashboardTotals();
-                }
-            };
-
-            // Écoute les changements de hash dans l'URL
-            window.addEventListener('hashchange', window.navigate);
-
-            // Affiche la bonne page au chargement initial
-            window.navigate();
+        // --- AUTHENTICATION LOGIC ---
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                // User is signed in, show dashboard
+                loginView.style.display = 'none';
+                dashboardView.style.display = 'block';
+                loadProductsAdmin();
+            } else {
+                // User is signed out, show login form
+                loginView.style.display = 'block';
+                dashboardView.style.display = 'none';
+            }
         });
+
+        loginForm.addEventListener('submit', e => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const loginButton = document.getElementById('login-button');
+            
+            loginButton.disabled = true;
+            loginButton.textContent = 'Connexion...';
+
+            signInWithEmailAndPassword(auth, email, password)
+                .catch(error => {
+                    console.error("Login error:", error);
+                    alert("Email ou mot de passe incorrect.");
+                })
+                .finally(() => {
+                    loginButton.disabled = false;
+                    loginButton.textContent = 'Se connecter';
+                });
+        });
+
+        logoutButton.addEventListener('click', () => {
+            signOut(auth);
+        });
+
+        // --- FIRESTORE & STORAGE LOGIC ---
+
+        // 1. Read Products
+        async function loadProductsAdmin() {
+            productListDiv.innerHTML = '<p class="loader">Chargement des produits...</p>';
+            const q = query(collection(db, "products"), orderBy("brand"), orderBy("name"));
+            const querySnapshot = await getDocs(q);
+            
+            currentProducts = []; // Clear cache
+            productListDiv.innerHTML = '';
+            
+            if (querySnapshot.empty) {
+                productListDiv.innerHTML = '<p>Aucun produit trouvé.</p>';
+                return;
+            }
+
+            querySnapshot.forEach(doc => {
+                const product = { id: doc.id, ...doc.data() };
+                currentProducts.push(product); // Add to cache
+
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'product-item';
+                itemDiv.dataset.id = product.id;
+
+                const img = document.createElement('img');
+                img.src = 'https://placehold.co/60x60/f3f4f6/ccc?text=...'; // Placeholder
+                if(product.imagePath) {
+                    const thumbRef = ref(storage, product.imagePath.replace(/(\.[\w\d_-]+)$/i, '_200x200.webp'));
+                    getDownloadURL(thumbRef)
+                        .then(url => { img.src = url; })
+                        .catch(e => console.log("Could not load thumbnail for " + product.name));
+                }
+
+                const infoDiv = document.createElement('div');
+                infoDiv.className = 'product-info';
+                infoDiv.innerHTML = `
+                    <p class="name">${product.name}</p>
+                    <p class="price">${parseFloat(product.price).toLocaleString('fr-FR')} FCFA - ${product.brand}</p>
+                `;
+                
+                const actionsDiv = document.createElement('div');
+                actionsDiv.className = 'product-actions';
+                actionsDiv.innerHTML = `
+                    <button class="edit-btn">Modifier</button>
+                    <button class="delete-btn">Supprimer</button>
+                `;
+
+                itemDiv.appendChild(img);
+                itemDiv.appendChild(infoDiv);
+                itemDiv.appendChild(actionsDiv);
+                productListDiv.appendChild(itemDiv);
+            });
+        }
+
+        // 2. Handle Form Submission (Create/Update)
+        productForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            saveButton.disabled = true;
+            saveButton.textContent = 'Sauvegarde...';
+
+            const productId = productIdInput.value;
+            const productData = {
+                name: document.getElementById('product-name').value,
+                price: parseFloat(document.getElementById('product-price').value),
+                brand: document.getElementById('product-brand').value.toLowerCase().trim(),
+                ram: parseInt(document.getElementById('product-ram').value),
+                rom: parseInt(document.getElementById('product-rom').value),
+                description: document.getElementById('product-description').value,
+            };
+
+            // Handle image upload
+            const imageFile = document.getElementById('product-image').files[0];
+            if (imageFile) {
+                const imagePath = `products/${Date.now()}_${imageFile.name}`;
+                const storageRef = ref(storage, imagePath);
+                try {
+                    await uploadBytes(storageRef, imageFile);
+                    productData.imagePath = imagePath; // Save path to Firestore
+                } catch (error) {
+                    console.error("Image upload error:", error);
+                    alert("Erreur lors de l'envoi de l'image.");
+                    saveButton.disabled = false;
+                    saveButton.textContent = 'Sauvegarder';
+                    return;
+                }
+            }
+
+            try {
+                if (productId) {
+                    // Update existing product
+                    const productRef = doc(db, "products", productId);
+                    await updateDoc(productRef, productData);
+                    alert("Produit mis à jour avec succès !");
+                } else {
+                    // Create new product
+                    await addDoc(collection(db, "products"), productData);
+                    alert("Produit ajouté avec succès !");
+                }
+                resetForm();
+                await loadProductsAdmin();
+            } catch (error) {
+                console.error("Firestore save error:", error);
+                alert("Erreur lors de la sauvegarde du produit.");
+            } finally {
+                saveButton.disabled = false;
+                saveButton.textContent = 'Sauvegarder';
+            }
+        });
+        
+        // 3. Handle Clicks on Edit/Delete buttons
+        productListDiv.addEventListener('click', async (e) => {
+            const target = e.target;
+            const productItem = target.closest('.product-item');
+            if (!productItem) return;
+            const productId = productItem.dataset.id;
+            
+            if (target.classList.contains('edit-btn')) {
+                // Edit product
+                const product = currentProducts.find(p => p.id === productId);
+                if (product) {
+                    formTitle.textContent = 'Modifier un Produit';
+                    productIdInput.value = product.id;
+                    document.getElementById('product-name').value = product.name;
+                    document.getElementById('product-price').value = product.price;
+                    document.getElementById('product-brand').value = product.brand;
+                    document.getElementById('product-ram').value = product.ram;
+                    document.getElementById('product-rom').value = product.rom;
+                    document.getElementById('product-description').value = product.description || '';
+                    cancelEditButton.style.display = 'block';
+                    window.scrollTo(0, 0);
+                }
+            }
+            
+            if (target.classList.contains('delete-btn')) {
+                // Delete product
+                if (confirm("Êtes-vous sûr de vouloir supprimer ce produit ? Cette action est irréversible.")) {
+                    try {
+                        // Delete image from Storage if it exists
+                        const product = currentProducts.find(p => p.id === productId);
+                        if (product && product.imagePath) {
+                            const imageRef = ref(storage, product.imagePath);
+                            await deleteObject(imageRef).catch(err => console.warn("Could not delete old image, it might not exist.", err));
+                            
+                            // Attempt to delete thumbnail too
+                            const thumbPath = product.imagePath.replace(/(\.[\w\d_-]+)$/i, '_200x200.webp')
+                            const thumbRef = ref(storage, thumbPath);
+                            await deleteObject(thumbRef).catch(err => console.log("Thumbnail did not exist or could not be deleted."));
+                        }
+                        
+                        // Delete document from Firestore
+                        await deleteDoc(doc(db, "products", productId));
+                        alert("Produit supprimé !");
+                        await loadProductsAdmin();
+                    } catch (error) {
+                        console.error("Delete error:", error);
+                        alert("Erreur lors de la suppression du produit.");
+                    }
+                }
+            }
+        });
+        
+        // --- UTILITY FUNCTIONS ---
+        function resetForm() {
+            productForm.reset();
+            productIdInput.value = '';
+            formTitle.textContent = 'Ajouter un Produit';
+            cancelEditButton.style.display = 'none';
+        }
+
+        cancelEditButton.addEventListener('click', resetForm);
+
     </script>
 </body>
 </html>
