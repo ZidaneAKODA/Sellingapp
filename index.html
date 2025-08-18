@@ -8,7 +8,9 @@
   />
   <title>Panneau Admin</title>
 
-  <!-- Inter -->
+  <!-- Favicon to avoid 404 -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect width='64' height='64' rx='12' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' font-size='36' text-anchor='middle' fill='white' font-family='Inter,Arial,sans-serif'%3EA%3C/text%3E%3C/svg%3E" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -118,7 +120,7 @@
       gap: 10px; padding: 10px 14px;
     }
     @media (min-width: 768px) {
-      .toolbar { grid-template-columns: 1fr auto auto; }
+      .toolbar { grid-template-columns: 1fr auto auto auto; } /* Ajout d'une colonne */
     }
     .search {
       height: 44px; border: 1px solid var(--border); background: #f8fafc;
@@ -202,17 +204,17 @@
       min-height: 40vh; display: grid; place-items: center; color: var(--muted);
     }
 
-    /* EDIT PAGE */
-    .edit-wrap {
+    /* EDIT & CREATE PAGE */
+    .form-wrap {
       max-width: 860px; margin: 0 auto;
       background: var(--card); border: 1px solid var(--border);
       border-radius: var(--radius-lg); padding: 16px; box-shadow: var(--shadow-2);
     }
-    .edit-head {
+    .form-head {
       display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px;
     }
-    .edit-title { font-weight: 800; font-size: 18px; }
-    .edit-form { display: grid; gap: 12px; margin-top: 8px; }
+    .form-title { font-weight: 800; font-size: 18px; }
+    .form-main { display: grid; gap: 12px; margin-top: 8px; }
     .twocol {
       display: grid; gap: 12px;
       grid-template-columns: 1fr 1fr;
@@ -223,7 +225,7 @@
       border: 1px solid var(--border); background: #f8fafc; border-radius: var(--radius-md);
       font-size: 15px;
     }
-    .edit-actions {
+    .form-actions {
       margin-top: 6px; display: flex; gap: 10px; justify-content: flex-end;
     }
     .btn-outline { background: #fff; color: var(--primary); border: 1px solid var(--border); }
@@ -231,6 +233,10 @@
       display: inline-flex; align-items: center; gap: 8px;
       padding: 8px 10px; border-radius: 999px; background: #f1f5f9; color: #0f172a; font-weight: 700; font-size: 13px;
       border: 1px solid var(--border);
+    }
+    .image-preview {
+      width: 100px; height: 100px; border-radius: var(--radius-md); object-fit: cover;
+      border: 1px solid var(--border); background: #f8fafc;
     }
 
     /* Small helpers */
@@ -241,7 +247,6 @@
 </head>
 <body>
 
-  <!-- LOGIN -->
   <div id="login" class="login-container">
     <div class="login-card">
       <h1 class="login-title">Panneau Admin</h1>
@@ -261,7 +266,6 @@
     </div>
   </div>
 
-  <!-- APP SHELL -->
   <div id="app" class="app" style="display:none;">
     <header class="header">
       <div class="brand">Gestion des Produits</div>
@@ -272,12 +276,12 @@
 
     <div class="toolbar">
       <input id="search" class="search" type="text" placeholder="Rechercher un produit..." />
-      <span class="hint">Astuce : tapez le nom du modèle, ex. “iPhone 12”.</span>
+      <span class="hint">Astuce : tapez le nom du modèle.</span>
       <button id="back-to-list" class="btn btn-outline hide">Retour à la liste</button>
+      <button id="add-product-btn" class="btn btn-add">Nouvel Article</button>
     </div>
 
     <main id="view" class="content">
-      <!-- ROUTER VIEW -->
       <div class="center" id="loading">
         <div class="loader-dark"></div>
       </div>
@@ -288,386 +292,270 @@
     /* -------------------- Firebase -------------------- */
     const firebaseConfig = {
       apiKey: "AIzaSyDNYwc40OWGXHrOOqqPYTB_jDGJmI7Mc1M",
-      authDomain: "africaphone-vente.firebaseapp.com",
+      authDomain: "africaphone-vente.firebaseapp.com",           // FIXED
       projectId: "africaphone-vente",
-      storageBucket: "africaphone-vente.appspot.com",
+      storageBucket: "africaphone-vente.firebasestorage.app",            // FIXED
       messagingSenderId: "203471818329",
       appId: "1:203471818329:web:c2c77d48098c1a6a596b48"
     };
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-    import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, deleteDoc, orderBy, query } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, deleteDoc, addDoc, orderBy, query } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-storage.js";
 
     const appFB = initializeApp(firebaseConfig);
     const auth = getAuth(appFB);
     const db = getFirestore(appFB);
+    const storage = getStorage(appFB);
 
-    /* -------------------- DOM -------------------- */
-    const $login = document.getElementById('login');
-    const $loginForm = document.getElementById('login-form');
-    const $loginError = document.getElementById('login-error');
-
-    const $app = document.getElementById('app');
-    const $view = document.getElementById('view');
-    const $loading = document.getElementById('loading');
-    const $logout = document.getElementById('logout');
-    const $search = document.getElementById('search');
-    const $backToList = document.getElementById('back-to-list');
-
-    /* -------------------- State -------------------- */
-    let allProducts = [];      // cache liste
-    let searchTerm = "";       // filtre live
-
+    /* -------------------- DOM & State -------------------- */
+    const $ = (selector) => document.querySelector(selector);
+    const $login = $('#login'), $loginForm = $('#login-form'), $loginError = $('#login-error');
+    const $app = $('#app'), $view = $('#view'), $loading = $('#loading'), $logout = $('#logout');
+    const $search = $('#search'), $backToList = $('#back-to-list'), $addProductBtn = $('#add-product-btn');
+    
+    let allProducts = [], searchTerm = "";
     const TRASH_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`;
 
-    /* -------------------- Auth flow -------------------- */
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        $login.style.display = 'none';
-        $app.style.display = 'grid';
-        if (!location.hash) location.hash = '#/products';
-        router(); // affiche la vue courante
-      } else {
-        $app.style.display = 'none';
-        $login.style.display = 'grid';
-      }
+    /* -------------------- Auth & Routing -------------------- */
+    onAuthStateChanged(auth, u => {
+      $login.style.display = u ? 'none' : 'grid';
+      $app.style.display = u ? 'grid' : 'none';
+      if (u && !location.hash) location.hash = '#/products';
+      router();
     });
-
-    $loginForm.addEventListener('submit', async (e) => {
+    $loginForm.addEventListener('submit', async e => {
       e.preventDefault();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-      } catch (err) {
-        $loginError.textContent = "Email ou mot de passe incorrect.";
-        $loginError.classList.remove('hide');
-      }
+      try { await signInWithEmailAndPassword(auth, email.value.trim(), password.value); }
+      catch(err) { $loginError.textContent = "Accès non autorisé."; $loginError.classList.remove('hide'); }
     });
-
     $logout.addEventListener('click', () => signOut(auth));
 
-    /* -------------------- Router -------------------- */
     window.addEventListener('hashchange', router);
+    $backToList.addEventListener('click', () => location.hash = '#/products');
+    $addProductBtn.addEventListener('click', () => location.hash = '#/new');
 
     async function router() {
       const hash = location.hash || '#/products';
-      const [_, route, id] = hash.split('/'); // ["#", "products" | "edit", ":id"]
+      const [_, route, id] = hash.split('/');
+      $backToList.classList.toggle('hide', route !== 'edit' && route !== 'new');
+      $addProductBtn.classList.toggle('hide', route !== 'products');
+      $search.classList.toggle('hide', route !== 'products');
 
-      // UI adaptative toolbar
-      if (route === 'edit') {
-        $backToList.classList.remove('hide');
-      } else {
-        $backToList.classList.add('hide');
-      }
-
-      if (route === 'products') {
-        showLoading();
-        await loadProductsOnce();
-        renderList();
-        hideLoading();
-      } else if (route === 'edit' && id) {
-        showLoading();
-        await renderEditPage(id);
-        hideLoading();
-      } else {
-        // fallback
-        location.hash = '#/products';
-      }
+      showLoading();
+      if (route === 'products') { await loadProductsOnce(); renderList(); }
+      else if (route === 'edit' && id) { await renderFormPage(id); }
+      else if (route === 'new') { renderFormPage(); }
+      else { location.hash = '#/products'; }
+      hideLoading();
     }
+    const showLoading = () => { $view.innerHTML = ''; $view.appendChild($loading); $loading.classList.remove('hide'); }
+    const hideLoading = () => $loading.classList.add('hide');
 
-    $backToList.addEventListener('click', () => {
-      location.hash = '#/products';
-    });
-
-    function showLoading() {
-      $view.innerHTML = '';
-      $view.appendChild($loading);
-      $loading.classList.remove('hide');
-    }
-    function hideLoading() {
-      $loading.classList.add('hide');
-    }
-
-    /* -------------------- Data -------------------- */
+    /* -------------------- Data Fetching -------------------- */
     async function loadProductsOnce() {
-      if (allProducts.length) return; // déjà en cache
+      if (allProducts.length) return;
       try {
         const q = query(collection(db, "products"), orderBy("name"));
         const snap = await getDocs(q);
-        allProducts = [];
-        snap.forEach(d => allProducts.push({ id: d.id, ...d.data() }));
-      } catch (e) {
-        console.error(e);
-        $view.innerHTML = `<div class="center"><span class="text-danger">Erreur de chargement.</span></div>`;
-      }
+        allProducts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      } catch (e) { console.error(e); $view.innerHTML = `<div class="center text-danger">Erreur de chargement.</div>`; }
     }
 
     async function refreshProducts() {
-      allProducts = [];
-      const q = query(collection(db, "products"), orderBy("name"));
-      const snap = await getDocs(q);
-      snap.forEach(d => allProducts.push({ id: d.id, ...d.data() }));
-    }
-
-    function productById(id) {
-      return allProducts.find(p => p.id === id);
+      allProducts = []; await loadProductsOnce();
     }
 
     /* -------------------- LIST VIEW -------------------- */
     function renderList() {
-      const wrap = document.createElement('div');
-      wrap.className = 'list';
-      const filtered = allProducts.filter(p =>
-        (p.name || '').toLowerCase().includes(searchTerm)
-      );
-
+      const listEl = document.createElement('div');
+      listEl.className = 'list';
+      const filtered = allProducts.filter(p => (p.name || '').toLowerCase().includes(searchTerm));
       if (!filtered.length) {
-        $view.innerHTML = `<div class="center">Aucun produit ne correspond à “${escapeHtml(searchTerm)}”.</div>`;
-        return;
+        $view.innerHTML = `<div class="center">Aucun produit trouvé.</div>`; return;
       }
-
-      filtered.forEach(p => {
-        wrap.appendChild(productRow(p));
-      });
-
-      $view.innerHTML = '';
-      $view.appendChild(wrap);
+      filtered.forEach(p => listEl.appendChild(productRow(p)));
+      $view.innerHTML = ''; $view.appendChild(listEl);
     }
 
-    function productRow(product) {
+    function productRow(p) {
       const row = document.createElement('div');
       row.className = 'item';
-      row.dataset.productId = product.id;
-      row.dataset.productName = (product.name || '').toLowerCase();
-
-      const specs = `Specs : ${(product.rom ?? '?')}GB ROM / ${(product.ram ?? '?')}GB RAM`;
-
+      row.dataset.productId = p.id;
+      row.dataset.productName = (p.name || '').toLowerCase();
+      const specs = `Specs: ${p.rom||'?'}GB ROM / ${p.ram||'?'}GB RAM`;
       row.innerHTML = `
-        <img class="thumb" src="${escapeAttr(product.imageUrl || '')}" alt="${escapeAttr(product.name || 'Produit')}" loading="lazy" />
+        <img class="thumb" src="${escapeAttr(p.imageUrl || '')}" alt="${escapeAttr(p.name)}" loading="lazy" />
         <div class="info" style="min-width:0;">
-          <div class="title">${escapeHtml(product.name || 'Sans nom')}</div>
+          <div class="title">${escapeHtml(p.name)}</div>
           <div class="sub">${escapeHtml(specs)}</div>
         </div>
-
         <div class="spacer"></div>
-
         <div class="price-line">
-          <input type="number" class="price-input" placeholder="Nouveau prix" value="${Number(product.price ?? 0)}" />
+          <input type="number" class="price-input" value="${Number(p.price || 0)}" />
           <button class="btn btn-update">Mettre à jour</button>
         </div>
-
         <div class="actions">
           <button class="btn btn-edit">Éditer</button>
           <button class="btn btn-delete" title="Supprimer">${TRASH_ICON_SVG}</button>
-        </div>
-      `;
-
-      // events
-      const $btnUpdate = row.querySelector('.btn-update');
-      const $priceInput = row.querySelector('.price-input');
-      const $btnEdit = row.querySelector('.btn-edit');
-      const $btnDelete = row.querySelector('.btn-delete');
-
-      $btnUpdate.addEventListener('click', () => handlePriceUpdate(product.id, $priceInput, $btnUpdate));
-      $btnEdit.addEventListener('click', () => { location.hash = `#/edit/${product.id}`; });
-      $btnDelete.addEventListener('click', () => handleDelete(product.id, product.name, row));
-
+        </div>`;
+      row.querySelector('.btn-update').addEventListener('click', e => handlePriceUpdate(p.id, e.target.previousElementSibling, e.target));
+      row.querySelector('.btn-edit').addEventListener('click', () => location.hash = `#/edit/${p.id}`);
+      row.querySelector('.btn-delete').addEventListener('click', e => handleDelete(p.id, p.name, row));
       return row;
     }
-
-    async function handlePriceUpdate(id, $input, $button) {
-      const val = parseFloat($input.value);
-      if (isNaN(val) || val < 0) {
-        alert('Veuillez entrer un prix valide.'); return;
-      }
-      const prevHTML = $button.innerHTML;
-      $button.innerHTML = '<div class="loader"></div>';
-      $button.disabled = true;
-      try {
-        await updateDoc(doc(db, 'products', id), { price: val });
-        // mets à jour le cache + UI locale
-        const p = productById(id);
-        if (p) p.price = val;
-        $button.textContent = '✓';
-        $button.style.background = 'var(--success)';
-        setTimeout(() => {
-          $button.textContent = 'Mettre à jour';
-          $button.style.background = 'var(--primary)';
-          $button.disabled = false;
-        }, 1200);
-      } catch (e) {
-        console.error(e);
-        alert("Erreur lors de la mise à jour du prix.");
-        $button.innerHTML = prevHTML;
-        $button.disabled = false;
-      }
-    }
-
-    async function handleDelete(id, name, rowEl) {
-      if (!confirm(`Supprimer “${name || 'Produit'}” ?`)) return;
-      const prev = rowEl.innerHTML;
-      rowEl.style.opacity = '.6';
-      try {
-        await deleteDoc(doc(db, 'products', id));
-        // retire du cache & UI
-        allProducts = allProducts.filter(p => p.id !== id);
-        rowEl.style.transition = 'opacity .25s ease';
-        rowEl.style.opacity = '0';
-        setTimeout(() => rowEl.remove(), 200);
-      } catch (e) {
-        console.error(e);
-        alert("Erreur lors de la suppression.");
-        rowEl.innerHTML = prev;
-        rowEl.style.opacity = '1';
-      }
-    }
-
-    /* Recherche instantanée */
-    $search.addEventListener('input', (e) => {
+    
+    $search.addEventListener('input', e => {
       searchTerm = (e.target.value || '').toLowerCase();
-      if ((location.hash || '').startsWith('#/products')) {
-        renderList();
-      }
+      if (location.hash.startsWith('#/products')) renderList();
     });
 
-    /* -------------------- EDIT VIEW (PAGE) -------------------- */
-    async function renderEditPage(id) {
-      // récup produit (cache ou fetch direct si pas trouvé)
-      let product = productById(id);
-      if (!product) {
-        try {
-          const snap = await getDoc(doc(db, 'products', id));
-          if (snap.exists()) product = { id: snap.id, ...snap.data() };
-        } catch (e) {
-          console.error(e);
-        }
+    /* -------------------- FORM VIEW (Create/Edit) -------------------- */
+    async function renderFormPage(id = null) {
+      let p = {};
+      if (id) {
+        p = allProducts.find(prod => prod.id === id) || await getDoc(doc(db, 'products', id)).then(s => s.exists() ? {id: s.id, ...s.data()} : null);
+        if (!p) { $view.innerHTML = `<div class="center text-danger">Produit introuvable.</div>`; return; }
       }
-      if (!product) {
-        $view.innerHTML = `<div class="center"><span class="text-danger">Produit introuvable.</span></div>`;
-        return;
-      }
-
+      
       const wrap = document.createElement('div');
-      wrap.className = 'edit-wrap';
-
+      wrap.className = 'form-wrap';
       wrap.innerHTML = `
-        <div class="edit-head">
-          <div class="edit-title">Modifier le produit</div>
-          <span class="kpi">ID: ${escapeHtml(product.id.slice(0,8))}…</span>
+        <div class="form-head">
+          <div class="form-title">${id ? 'Modifier le produit' : 'Ajouter un nouveau produit'}</div>
+          ${id ? `<span class="kpi">ID: ${escapeHtml(p.id.slice(0,8))}…</span>` : ''}
         </div>
-
-        <form id="edit-form" class="edit-form">
+        <form id="product-form" class="form-main">
           <div class="field">
             <label class="label" for="p-name">Nom du produit</label>
-            <input id="p-name" class="input" type="text" value="${escapeAttr(product.name || '')}" required />
+            <input id="p-name" class="input" type="text" value="${escapeAttr(p.name || '')}" required />
           </div>
-
           <div class="twocol">
             <div class="field">
-              <label class="label" for="p-price">Prix</label>
-              <input id="p-price" class="input" type="number" min="0" step="0.01" value="${Number(product.price ?? 0)}" />
+              <label class="label" for="p-price">Prix (FCFA)</label>
+              <input id="p-price" class="input" type="number" min="0" value="${Number(p.price ?? '')}" />
             </div>
             <div class="field">
-              <label class="label" for="p-image">Image URL</label>
-              <input id="p-image" class="input" type="url" placeholder="https://…" value="${escapeAttr(product.imageUrl || '')}" />
+                <label class="label" for="p-brand">Marque</label>
+                <input id="p-brand" class="input" type="text" value="${escapeAttr(p.brand || '')}" />
             </div>
           </div>
-
           <div class="twocol">
             <div class="field">
               <label class="label" for="p-ram">RAM (GB)</label>
-              <input id="p-ram" class="input" type="number" min="0" step="1" value="${Number(product.ram ?? '')}" />
+              <input id="p-ram" class="input" type="number" min="0" step="1" value="${Number(p.ram ?? '')}" />
             </div>
             <div class="field">
               <label class="label" for="p-rom">ROM (GB)</label>
-              <input id="p-rom" class="input" type="number" min="0" step="1" value="${Number(product.rom ?? '')}" />
+              <input id="p-rom" class="input" type="number" min="0" step="1" value="${Number(p.rom ?? '')}" />
             </div>
           </div>
-
           <div class="field">
             <label class="label" for="p-desc">Description</label>
-            <textarea id="p-desc" class="textarea" placeholder="Détails du produit…">${escapeHtml(product.description || '')}</textarea>
+            <textarea id="p-desc" class="textarea">${escapeHtml(p.description || '')}</textarea>
           </div>
-
-          <div class="edit-actions">
+          <div class="field">
+            <label class="label" for="p-image">Image</label>
+            <input id="p-image-file" class="input" type="file" accept="image/png, image/jpeg, image/webp" />
+            <img id="p-image-preview" class="image-preview" src="${escapeAttr(p.imageUrl || '')}" style="margin-top:10px; ${p.imageUrl ? '' : 'display:none;'}" />
+          </div>
+          <div class="form-actions">
             <button type="button" id="cancel" class="btn btn-outline">Annuler</button>
-            <button type="submit" id="save" class="btn btn-primary">Enregistrer</button>
+            <button type="submit" id="save" class="btn btn-primary">${id ? 'Enregistrer' : 'Créer le produit'}</button>
           </div>
-        </form>
-      `;
+        </form>`;
+      
+      $view.innerHTML = ''; $view.appendChild(wrap);
 
-      $view.innerHTML = '';
-      $view.appendChild(wrap);
-
-      const $form = document.getElementById('edit-form');
-      const $save = document.getElementById('save');
-      const $cancel = document.getElementById('cancel');
-
-      $cancel.addEventListener('click', () => {
-        location.hash = '#/products';
+      const $imgFile = $('#p-image-file'), $imgPreview = $('#p-image-preview');
+      $imgFile.addEventListener('change', () => {
+        const file = $imgFile.files[0];
+        if (file) { $imgPreview.src = URL.createObjectURL(file); $imgPreview.style.display = 'block'; }
       });
+      
+      $('#cancel').addEventListener('click', () => location.hash = '#/products');
+      $('#product-form').addEventListener('submit', e => handleFormSubmit(e, id));
+    }
 
-      $form.addEventListener('submit', async (e) => {
+    /* -------------------- Actions (Update, Delete, Create) -------------------- */
+    async function handlePriceUpdate(id, inputEl, btnEl) {
+      const val = parseFloat(inputEl.value);
+      if (isNaN(val) || val < 0) return alert('Prix invalide.');
+      const prevHTML = btnEl.innerHTML;
+      btnEl.innerHTML = '<div class="loader"></div>'; btnEl.disabled = true;
+      try {
+        await updateDoc(doc(db, 'products', id), { price: val });
+        const p = allProducts.find(p => p.id === id); if (p) p.price = val;
+        btnEl.textContent = '✓'; btnEl.style.background = 'var(--success)';
+        setTimeout(() => { btnEl.innerHTML = prevHTML; btnEl.style.background = 'var(--primary)'; btnEl.disabled = false; }, 1200);
+      } catch (e) { console.error(e); alert("Erreur."); btnEl.innerHTML = prevHTML; btnEl.disabled = false; }
+    }
+
+    async function handleDelete(id, name, rowEl) {
+      if (!confirm(`Supprimer “${name}”?`)) return;
+      rowEl.style.opacity = '.5';
+      try {
+        await deleteDoc(doc(db, 'products', id));
+        allProducts = allProducts.filter(p => p.id !== id);
+        rowEl.remove();
+      } catch (e) { console.error(e); alert("Erreur."); rowEl.style.opacity = '1'; }
+    }
+    
+    async function handleFormSubmit(e, id) {
         e.preventDefault();
-        const payload = {
-          name: document.getElementById('p-name').value.trim(),
-          price: parseFloat(document.getElementById('p-price').value || '0'),
-          imageUrl: document.getElementById('p-image').value.trim(),
-          ram: parseInt(document.getElementById('p-ram').value || '0', 10),
-          rom: parseInt(document.getElementById('p-rom').value || '0', 10),
-          description: document.getElementById('p-desc').value.trim()
-        };
+        const $saveBtn = $('#save');
+        const prevHTML = $saveBtn.innerHTML;
+        $saveBtn.innerHTML = '<div class="loader"></div>';
+        $saveBtn.disabled = true;
 
-        // petite validation
-        if (!payload.name) { alert('Le nom est obligatoire.'); return; }
-        if (isNaN(payload.price) || payload.price < 0) { alert('Prix invalide.'); return; }
-        if (isNaN(payload.ram)) payload.ram = null;
-        if (isNaN(payload.rom)) payload.rom = null;
-
-        const prev = $save.textContent;
-        $save.innerHTML = '<div class="loader"></div>';
-        $save.disabled = true;
+        const imageFile = $('#p-image-file').files[0];
+        let imageUrl = id ? allProducts.find(p=>p.id===id).imageUrl : ''; // Keep old image URL if not changed
 
         try {
-          await updateDoc(doc(db, 'products', id), payload);
-          // maj cache
-          const idx = allProducts.findIndex(p => p.id === id);
-          if (idx > -1) allProducts[idx] = { ...allProducts[idx], ...payload };
+            // 1. Si une nouvelle image est sélectionnée, on l'upload d'abord
+            if (imageFile) {
+                const imageName = `${Date.now()}-${imageFile.name}`;
+                const storageRef = ref(storage, `product-images/${imageName}`);
+                const snapshot = await uploadBytes(storageRef, imageFile);
+                imageUrl = await getDownloadURL(snapshot.ref);
+            }
 
-          // feedback
-          $save.textContent = '✓ Enregistré';
-          $save.style.background = 'var(--success)';
-          setTimeout(async () => {
-            $save.textContent = prev;
-            $save.style.background = 'var(--primary)';
-            $save.disabled = false;
-            // Retour à la liste et raffraîchit
-            await refreshProducts();
-            location.hash = '#/products';
-          }, 900);
-        } catch (e) {
-          console.error(e);
-          alert("Erreur d'enregistrement.");
-          $save.textContent = prev;
-          $save.disabled = false;
+            const payload = {
+                name: $('#p-name').value.trim(),
+                price: parseFloat($('#p-price').value || '0'),
+                brand: $('#p-brand').value.trim(),
+                ram: parseInt($('#p-ram').value || '0') || null,
+                rom: parseInt($('#p-rom').value || '0') || null,
+                description: $('#p-desc').value.trim(),
+                imageUrl: imageUrl
+            };
+
+            if (!payload.name) { throw new Error('Le nom est obligatoire.'); }
+
+            // 2. Créer ou Mettre à jour le document Firestore
+            if (id) { // Mise à jour
+                await updateDoc(doc(db, "products", id), payload);
+            } else { // Création
+                await addDoc(collection(db, "products"), payload);
+            }
+            
+            $saveBtn.textContent = '✓ Enregistré';
+            $saveBtn.style.background = 'var(--success)';
+            await refreshProducts(); // Recharger les données
+            setTimeout(() => location.hash = '#/products', 800);
+
+        } catch (error) {
+            console.error("Form submit error:", error);
+            alert(`Erreur : ${error.message}`);
+            $saveBtn.innerHTML = prevHTML;
+            $saveBtn.disabled = false;
         }
-      });
     }
 
     /* -------------------- Utils -------------------- */
-    function escapeHtml(s='') {
-      return String(s)
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#39;');
-    }
-    function escapeAttr(s='') {
-      return escapeHtml(s).replaceAll('`', '&#96;');
-    }
+    function escapeHtml(s = '') { return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]); }
+    function escapeAttr(s = '') { return escapeHtml(s).replace('`', '&#96;'); }
   </script>
 </body>
 </html>
