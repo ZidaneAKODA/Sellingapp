@@ -173,7 +173,7 @@
         .product-info {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
         }
         .product-image {
             width: 60px;
@@ -191,14 +191,16 @@
             color: var(--primary);
             margin-bottom: 4px;
         }
-        .product-price-current {
+        .product-specs-current {
             font-size: 14px;
             color: var(--secondary);
+            font-weight: 500;
         }
         .product-actions {
             display: flex;
             align-items: center;
             gap: 12px;
+            margin-top: 8px;
         }
         .price-input {
             flex-grow: 1;
@@ -207,7 +209,6 @@
             border: 1px solid var(--border-color);
             border-radius: 8px;
             background-color: var(--bg-color);
-            /* For numeric keyboard on mobile */
             -moz-appearance: textfield;
         }
         .price-input::-webkit-outer-spin-button,
@@ -215,22 +216,28 @@
             -webkit-appearance: none;
             margin: 0;
         }
-        .update-button {
+        .update-button, .delete-button {
             padding: 12px 16px;
             font-size: 14px;
             font-weight: 600;
             color: white;
-            background-color: var(--primary);
             border: none;
             border-radius: 8px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+        .update-button {
+            background-color: var(--primary);
             min-width: 100px;
         }
         .update-button.success {
             background-color: var(--success);
+        }
+        .delete-button {
+             background-color: var(--error);
+             min-width: 44px;
         }
 
         /* --- Loader / Spinner --- */
@@ -263,7 +270,6 @@
 </head>
 <body>
 
-    <!-- Login Screen -->
     <div id="login-container" class="login-container">
         <h1 class="login-title">Panneau Admin</h1>
         <p class="login-subtitle">Connectez-vous pour gérer les produits.</p>
@@ -275,10 +281,9 @@
         <p id="login-error" class="error-message" style="display: none;"></p>
     </div>
 
-    <!-- Main Admin Panel (initially hidden) -->
     <div id="app-container" class="app-container">
         <header class="admin-header">
-            <h1 class="admin-header-title">Gestion des Prix</h1>
+            <h1 class="admin-header-title">Gestion des Produits</h1>
             <button id="logout-button" class="logout-button">Déconnexion</button>
         </header>
         
@@ -287,37 +292,28 @@
         </div>
 
         <main id="product-list" class="product-list">
-            <!-- Product cards will be injected here by JavaScript -->
-            <div class="global-loader">
-                <div class="loader"></div>
-            </div>
+            <div class="global-loader"><div class="loader"></div></div>
         </main>
     </div>
 
-    <!-- Firebase SDKs -->
     <script type="module">
-        // IMPORTANT: Remplacez cet objet par la configuration de votre projet Firebase
-        // Vous pouvez la trouver dans votre console Firebase > Paramètres du projet > Général > Vos applications > SDK setup and configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyDNYwc40OWGXHrOOqqPYTB_jDGJmI7Mc1M", // Trouvé dans google-services.json
+            apiKey: "AIzaSyDNYwc40OWGXHrOOqqPYTB_jDGJmI7Mc1M",
             authDomain: "africaphone-vente.firebaseapp.com",
-            projectId: "africaphone-vente", // Trouvé dans google-services.json
-            storageBucket: "africaphone-vente.appspot.com", // Trouvé dans google-services.json
-            messagingSenderId: "203471818329", // project_number dans google-services.json
-            appId: "1:203471818329:web:xxxxxxxxxxxxxxxxxxxxxx" // Vous devez créer une app Web dans Firebase pour obtenir ceci
+            projectId: "africaphone-vente",
+            storageBucket: "africaphone-vente.appspot.com",
+            messagingSenderId: "203471818329",
+            appId: "1:203471818329:web:c2c77d48098c1a6a596b48"
         };
 
-        // Importation des fonctions nécessaires des SDKs Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, doc, updateDoc, orderBy, query } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, orderBy, query } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
-        // Initialisation de Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Références aux éléments du DOM
         const loginContainer = document.getElementById('login-container');
         const appContainer = document.getElementById('app-container');
         const loginForm = document.getElementById('login-form');
@@ -326,59 +322,42 @@
         const productListContainer = document.getElementById('product-list');
         const searchInput = document.getElementById('search-input');
 
-        let allProducts = []; // Cache pour la recherche
+        let allProducts = [];
 
-        // --- AUTHENTIFICATION ---
-
-        // Écouteur pour les changements d'état de connexion
         onAuthStateChanged(auth, user => {
             if (user) {
-                // Si l'utilisateur est connecté, on affiche le panneau admin
                 loginContainer.style.display = 'none';
                 appContainer.style.display = 'flex';
                 loadProducts();
             } else {
-                // Sinon, on affiche l'écran de connexion
                 loginContainer.style.display = 'flex';
                 appContainer.style.display = 'none';
             }
         });
 
-        // Gestion de la soumission du formulaire de connexion
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             loginError.style.display = 'none';
-
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                // onAuthStateChanged s'occupera du reste
             } catch (error) {
                 loginError.textContent = "Email ou mot de passe incorrect.";
                 loginError.style.display = 'block';
-                console.error("Login Error:", error);
             }
         });
 
-        // Gestion de la déconnexion
-        logoutButton.addEventListener('click', () => {
-            signOut(auth);
-        });
+        logoutButton.addEventListener('click', () => signOut(auth));
 
-        // --- GESTION DES PRODUITS ---
-
-        // Fonction pour charger et afficher les produits depuis Firestore
         async function loadProducts() {
             productListContainer.innerHTML = `<div class="global-loader"><div class="loader"></div></div>`;
             try {
-                const productsRef = collection(db, "products");
-                // On trie les produits par nom pour un affichage cohérent
-                const q = query(productsRef, orderBy("name"));
+                const q = query(collection(db, "products"), orderBy("name"));
                 const querySnapshot = await getDocs(q);
                 
-                allProducts = []; // Vider le cache
-                productListContainer.innerHTML = ''; // Vider la liste
+                allProducts = [];
+                productListContainer.innerHTML = '';
 
                 if (querySnapshot.empty) {
                     productListContainer.innerHTML = '<p>Aucun produit trouvé.</p>';
@@ -388,47 +367,47 @@
                 querySnapshot.forEach((doc) => {
                     const product = { id: doc.id, ...doc.data() };
                     allProducts.push(product);
-                    const productCard = createProductCard(product);
-                    productListContainer.appendChild(productCard);
+                    productListContainer.appendChild(createProductCard(product));
                 });
 
             } catch (error) {
                 console.error("Error loading products:", error);
-                productListContainer.innerHTML = '<p style="color: var(--error);">Erreur lors du chargement des produits.</p>';
+                productListContainer.innerHTML = '<p style="color: var(--error);">Erreur chargement.</p>';
             }
         }
         
-        // Fonction pour créer une carte produit HTML
         function createProductCard(product) {
             const card = document.createElement('div');
             card.className = 'product-card';
             card.dataset.productId = product.id;
             card.dataset.productName = product.name.toLowerCase();
 
-            const currentPriceFormatted = new Intl.NumberFormat('fr-FR').format(product.price) + ' FCFA';
+            const currentPriceFormatted = `Prix : ${new Intl.NumberFormat('fr-FR').format(product.price)} FCFA`;
+            const currentSpecs = `Specs : ${product.rom || '?'}GB ROM / ${product.ram || '?'}GB RAM`;
 
             card.innerHTML = `
                 <div class="product-info">
                     <img src="${product.imageUrl}" alt="${product.name}" class="product-image" loading="lazy">
                     <div class="product-details">
                         <p class="product-name">${product.name}</p>
-                        <p class="product-price-current">Actuel : ${currentPriceFormatted}</p>
+                        <p class="product-specs-current">${currentSpecs}</p>
                     </div>
                 </div>
                 <div class="product-actions">
                     <input type="number" class="price-input" placeholder="Nouveau prix" value="${product.price}">
                     <button class="update-button">Mettre à jour</button>
+                    <button class="delete-button" title="Supprimer le produit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: white;"><path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
                 </div>
             `;
-
-            // Ajout de l'écouteur d'événement pour le bouton "Mettre à jour"
-            const updateButton = card.querySelector('.update-button');
-            updateButton.addEventListener('click', () => handlePriceUpdate(product.id, card));
+            
+            card.querySelector('.update-button').addEventListener('click', () => handlePriceUpdate(product.id, card));
+            card.querySelector('.delete-button').addEventListener('click', () => handleProductDelete(product.id, product.name, card));
 
             return card;
         }
 
-        // Fonction pour gérer la mise à jour du prix
         async function handlePriceUpdate(productId, cardElement) {
             const input = cardElement.querySelector('.price-input');
             const button = cardElement.querySelector('.update-button');
@@ -439,7 +418,6 @@
                 return;
             }
 
-            // Afficher un loader sur le bouton
             button.innerHTML = '<div class="loader"></div>';
             button.disabled = true;
 
@@ -449,15 +427,9 @@
                     price: newPrice
                 });
                 
-                // Feedback visuel de succès
                 button.innerHTML = '✓';
                 button.classList.add('success');
                 
-                // Mettre à jour le texte du prix actuel
-                const currentPriceElement = cardElement.querySelector('.product-price-current');
-                currentPriceElement.textContent = `Actuel : ${new Intl.NumberFormat('fr-FR').format(newPrice)} FCFA`;
-
-                // Revenir à l'état initial après un court délai
                 setTimeout(() => {
                     button.innerHTML = 'Mettre à jour';
                     button.classList.remove('success');
@@ -472,18 +444,24 @@
             }
         }
 
-        // --- RECHERCHE ---
+        async function handleProductDelete(productId, productName, cardElement) {
+            if (!confirm(`Êtes-vous sûr de vouloir supprimer le produit "${productName}" ?`)) return;
+
+            try {
+                await deleteDoc(doc(db, "products", productId));
+                cardElement.style.transition = 'opacity 0.5s ease';
+                cardElement.style.opacity = '0';
+                setTimeout(() => cardElement.remove(), 500);
+            } catch (error) {
+                console.error("Error deleting product:", error);
+                alert("Erreur lors de la suppression.");
+            }
+        }
+
         searchInput.addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase();
-            const allCards = productListContainer.querySelectorAll('.product-card');
-            
-            allCards.forEach(card => {
-                const productName = card.dataset.productName;
-                if (productName.includes(searchTerm)) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
-                }
+            document.querySelectorAll('.product-card').forEach(card => {
+                card.style.display = card.dataset.productName.includes(searchTerm) ? 'flex' : 'none';
             });
         });
 
