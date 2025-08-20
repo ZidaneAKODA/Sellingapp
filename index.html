@@ -95,6 +95,13 @@
     .label{display:flex;align-items:center;justify-content:space-between;font-weight:700;margin:4px 0 8px 0}
     .hint{font-size:12px;color:var(--ink-3);margin-top:4px}
     .error{font-size:12px;color:var(--danger);margin-top:4px}
+    .toggle{display:inline-flex;cursor:pointer;align-items:center;gap:8px;user-select:none}
+    .toggle-switch{position:relative;display:inline-block;width:36px;height:20px}
+    .toggle-switch input{opacity:0;width:0;height:0}
+    .toggle-slider{position:absolute;cursor:pointer;inset:0;background-color:#ccc;border-radius:34px;transition:.2s}
+    .toggle-slider:before{position:absolute;content:"";height:14px;width:14px;left:3px;bottom:3px;background-color:white;border-radius:50%;transition:.2s}
+    input:checked + .toggle-slider{background-color:var(--accent)}
+    input:checked + .toggle-slider:before{transform:translateX(16px)}
 
     /* Skeleton */
     @keyframes pulse{0%{opacity:.6}50%{opacity:1}100%{opacity:.6}}
@@ -245,6 +252,7 @@
         <div class="section">Navigation</div>
         <a data-route="#/products" class="link-item"><i data-lucide="package" class="icon"></i> Produits</a>
         <a data-route="#/matches" class="link-item"><i data-lucide="swords" class="icon"></i> Matchs</a>
+        <a data-route="#/promocards" class="link-item"><i data-lucide="layout-template" class="icon"></i> Cartes Promo</a>
         <div class="section">G&eacute;n&eacute;ral</div>
         <a data-route="#/settings" class="link-item"><i data-lucide="settings" class="icon"></i> Param&egrave;tres</a>
       </nav>
@@ -267,6 +275,7 @@
         <div class="section">Navigation</div>
         <a id="nav-products" href="#/products" class="active"><i data-lucide="package" class="icon"></i> Produits</a>
         <a id="nav-matches" href="#/matches"><i data-lucide="swords" class="icon"></i> Matchs</a>
+        <a id="nav-promocards" href="#/promocards"><i data-lucide="layout-template" class="icon"></i> Cartes Promo</a>
         <div class="section">G&eacute;n&eacute;ral</div>
         <a id="nav-settings" href="#/settings"><i data-lucide="settings" class="icon"></i> Param&egrave;tres</a>
       </nav>
@@ -288,8 +297,10 @@
       </div>
 
       <div class="top-actions">
+        <div class="kpi" title="Cartes promo actives"><i data-lucide="layout-template" class="icon"></i><span id="kpi-promocards">—</span></div>
         <div class="kpi" title="Articles au catalogue"><i data-lucide="package" class="icon"></i><span id="kpi-products">—</span></div>
         <div class="kpi" title="Matchs planifi&eacute;s"><i data-lucide="swords" class="icon"></i><span id="kpi-matches">—</span></div>
+        <button id="quick-add-promocard" class="btn btn-outline btn-small"><i data-lucide="plus" class="icon"></i> Carte</button>
         <button id="quick-add-product" class="btn btn-outline btn-small"><i data-lucide="plus" class="icon"></i> Produit</button>
         <button id="quick-add-match" class="btn btn-outline btn-small"><i data-lucide="plus" class="icon"></i> Match</button>
       </div>
@@ -335,6 +346,15 @@
         </div>
       </div>
 
+      <div id="toolbar-promocards" class="toolbar hide">
+          <div class="filters">
+              <input id="search-promocards" class="input" type="search" placeholder="Rechercher une carte promo..." />
+          </div>
+          <div class="view-toggle">
+              <button id="add-promocard" class="btn btn-primary btn-small"><i data-lucide="plus" class="icon"></i> Nouvelle carte</button>
+          </div>
+      </div>
+
       <!-- Zones de rendu -->
       <section id="page-products" class="page hide" aria-labelledby="nav-products">
         <div id="products-content"></div>
@@ -342,6 +362,10 @@
 
       <section id="page-matches" class="page hide" aria-labelledby="nav-matches">
         <div id="matches-content"></div>
+      </section>
+
+      <section id="page-promocards" class="page hide" aria-labelledby="nav-promocards">
+          <div id="promocards-content"></div>
       </section>
 
       <section id="page-settings" class="page hide" aria-labelledby="nav-settings">
@@ -385,7 +409,7 @@
       apiKey: "AIzaSyDNYwc40OWGXHrOOqqPYTB_jDGJmI7Mc1M",
       authDomain: "africaphone-vente.firebaseapp.com",
       projectId: "africaphone-vente",
-      storageBucket: "africaphone-vente.appspot.com",
+      storageBucket: "africaphone-vente.firebasestorage.app",
       messagingSenderId: "203471818329",
       appId: "1:203471818329:web:c2c77d48098c1a6a596b48"
     };
@@ -468,6 +492,7 @@
     /* ============================ State ============================ */
     let allProducts = [];
     let allMatches = [];
+    let allPromoCards = [];
     let productSearchTerm = '';
     let productCategoryFilter = '';
     let viewMode = 'table'; // 'table' | 'cards'
@@ -484,7 +509,7 @@
       const pass = $('#password').value.trim();
       $('#email-err').classList.add('hide'); $('#password-err').classList.add('hide'); $loginError.classList.add('hide');
       if(!email){ $('#email-err').textContent='Email requis.'; $('#email-err').classList.remove('hide'); return; }
-      if(!pass){ $('#password-err').textContent='Mot de passe requis.'; $('#password-err').classList.remove('hide'); return; }
+      if(!pass){ $('#password-err').textContent='Mot de passe requis.'; $('#password-err').classList.add('hide'); return; }
       try{
         await signInWithEmailAndPassword(auth, email, pass);
         toast('Bienvenue','Connexion r&eacute;ussie','success');
@@ -545,9 +570,9 @@
     });
 
     /* ============================ Routing ============================ */
-    const $navProducts = $('#nav-products'), $navMatches = $('#nav-matches'), $navSettings = $('#nav-settings');
-    const $toolbarProducts = $('#toolbar-products'), $toolbarMatches = $('#toolbar-matches');
-    const $productsContent = $('#products-content'), $matchesContent = $('#matches-content');
+    const $navProducts = $('#nav-products'), $navMatches = $('#nav-matches'), $navSettings = $('#nav-settings'), $navPromoCards = $('#nav-promocards');
+    const $toolbarProducts = $('#toolbar-products'), $toolbarMatches = $('#toolbar-matches'), $toolbarPromoCards = $('#toolbar-promocards');
+    const $productsContent = $('#products-content'), $matchesContent = $('#matches-content'), $promoCardsContent = $('#promocards-content');
 
     window.addEventListener('hashchange', handleRoute);
     async function handleRoute(){
@@ -556,18 +581,21 @@
       const id = parts[2];
 
       // Nav active
-      $navProducts.classList.toggle('active', route==='products' || route==='edit-product' || route==='new-product');
-      $navMatches.classList.toggle('active', route==='matches' || route==='edit-match' || route==='new-match');
-      $navSettings.classList.toggle('active', route==='settings');
+      $navProducts.classList.toggle('active', route.includes('product'));
+      $navMatches.classList.toggle('active', route.includes('match'));
+      $navPromoCards.classList.toggle('active', route.includes('promocard'));
+      $navSettings.classList.toggle('active', route === 'settings');
 
       // Toolbars affichage
-      $toolbarProducts.classList.toggle('hide', !(route.indexOf('product')!==-1));
-      $toolbarMatches.classList.toggle('hide', !(route.indexOf('match')!==-1));
-
+      $toolbarProducts.classList.toggle('hide', !route.includes('product'));
+      $toolbarMatches.classList.toggle('hide', !route.includes('match'));
+      $toolbarPromoCards.classList.toggle('hide', !route.includes('promocard'));
+      
       // Pages
-      $('#page-products').classList.toggle('hide', !(route.indexOf('product')!==-1));
-      $('#page-matches').classList.toggle('hide', !(route.indexOf('match')!==-1));
-      $('#page-settings').classList.toggle('hide', route!=='settings');
+      $('#page-products').classList.toggle('hide', !route.includes('product'));
+      $('#page-matches').classList.toggle('hide', !route.includes('match'));
+      $('#page-promocards').classList.toggle('hide', !route.includes('promocard'));
+      $('#page-settings').classList.toggle('hide', route !== 'settings');
 
       if(route==='products'){ setCrumb('Produits'); await ensureProductsLoaded(); renderProductList(); }
       else if(route==='new-product'){ setCrumb('Nouveau produit'); renderProductFormPage(); }
@@ -575,6 +603,9 @@
       else if(route==='matches'){ setCrumb('Matchs'); await ensureMatchesLoaded(); renderMatchList(); }
       else if(route==='new-match'){ setCrumb('Nouveau match'); renderMatchFormPage(); }
       else if(route==='edit-match' && id){ setCrumb('Éditer match'); await renderMatchFormPage(id); }
+      else if(route==='promocards'){ setCrumb('Cartes Promo'); await ensurePromoCardsLoaded(); renderPromoCardList(); }
+      else if(route==='new-promocard'){ setCrumb('Nouvelle Carte Promo'); renderPromoCardFormPage(); }
+      else if(route==='edit-promocard' && id){ setCrumb('Éditer Carte Promo'); await renderPromoCardFormPage(id); }
       else if(route==='settings'){ setCrumb('Param&egrave;tres'); }
       else { location.hash = '#/products'; }
     }
@@ -584,6 +615,7 @@
       // Raccourcis
       $('#quick-add-product').onclick = function(){ location.hash = '#/new-product'; };
       $('#quick-add-match').onclick = function(){ location.hash = '#/new-match'; };
+      $('#quick-add-promocard').onclick = function(){ location.hash = '#/new-promocard'; };
       // Recherche globale
       const gSearch = $('#global-search');
       document.addEventListener('keydown', function(e){
@@ -599,7 +631,6 @@
     /* ============================ Data Fetch ============================ */
     async function ensureProductsLoaded(){
       if(allProducts.length) return;
-      // Skeleton
       $productsContent.innerHTML = '<div class="skeleton" style="height:52px;margin-bottom:8px"></div>'.repeat(6);
       const q = query(collection(db,'products'), orderBy('name','asc'));
       const snap = await getDocs(q);
@@ -614,9 +645,17 @@
       allMatches = snap.docs.map(function(d){ return {id:d.id, ...d.data()}; });
       $('#kpi-matches').textContent = String(allMatches.length);
     }
+    async function ensurePromoCardsLoaded() {
+        if(allPromoCards.length > 0) return;
+        $promoCardsContent.innerHTML = '<div class="skeleton" style="height:52px;margin-bottom:8px"></div>'.repeat(3);
+        const q = query(collection(db, 'promoCards'), orderBy('sortOrder', 'asc'));
+        const snap = await getDocs(q);
+        allPromoCards = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        $('#kpi-promocards').textContent = String(allPromoCards.length);
+    }
+
 
     /* ============================ Products UI ============================ */
-    // Toolbar bindings
     $('#search-products').addEventListener('input', function(e){ productSearchTerm = (e.target.value||'').toLowerCase(); if(location.hash.indexOf('#/products')===0) renderProductList(); });
     $('#filter-category').addEventListener('change', function(e){ productCategoryFilter = e.target.value || ''; if(location.hash.indexOf('#/products')===0) renderProductList(); });
     $('#add-product').addEventListener('click', function(){ location.hash = '#/new-product'; });
@@ -636,7 +675,6 @@
       if(productCategoryFilter){
         arr = arr.filter(function(p){ return (p.category||'') === productCategoryFilter; });
       }
-      // sort
       const dir = sortBy.dir==='asc' ? 1 : -1;
       arr.sort(function(a,b){
         const ka = (a[sortBy.key] ?? '').toString().toLowerCase();
@@ -742,8 +780,6 @@
           tb.appendChild(tr);
         });
         $productsContent.innerHTML=''; $productsContent.appendChild(table);
-
-        // select all
         $('#sel-all').addEventListener('change', function(e){
           $$('#tbody-products [data-select]').forEach(function(cb){ cb.checked = e.target.checked; });
           updateBulkState();
@@ -789,20 +825,37 @@
       finally{ inputEl.disabled=false; }
     }
 
-    async function handleDelete(id, name, type){
-      const ok = await openModal({
-        title: 'Supprimer',
-        body: 'Supprimer "<strong>' + escapeHtml(name||id) + '</strong>" ?',
-        okText:'Supprimer', cancelText:'Annuler', danger:true
-      });
-      if(!ok) return;
-      try{
-        await deleteDoc(doc(db,type,id));
-        if(type==='products'){ allProducts = allProducts.filter(function(p){return p.id!==id;}); renderProductList(); $('#kpi-products').textContent = String(allProducts.length); }
-        else { allMatches = allMatches.filter(function(m){return m.id!==id;}); renderMatchList(); $('#kpi-matches').textContent = String(allMatches.length); }
-        toast('Supprimé','', 'success');
-      }catch(e){ console.error(e); toast('Erreur','Suppression impossible','error'); }
+    async function handleDelete(id, name, type) {
+        const ok = await openModal({
+            title: 'Supprimer',
+            body: 'Supprimer "<strong>' + escapeHtml(name || id) + '</strong>" ?',
+            okText: 'Supprimer',
+            cancelText: 'Annuler',
+            danger: true
+        });
+        if (!ok) return;
+        try {
+            await deleteDoc(doc(db, type, id));
+            if (type === 'products') {
+                allProducts = allProducts.filter(p => p.id !== id);
+                renderProductList();
+                $('#kpi-products').textContent = String(allProducts.length);
+            } else if (type === 'matches') {
+                allMatches = allMatches.filter(m => m.id !== id);
+                renderMatchList();
+                $('#kpi-matches').textContent = String(allMatches.length);
+            } else if (type === 'promoCards') {
+                allPromoCards = allPromoCards.filter(c => c.id !== id);
+                renderPromoCardList();
+                $('#kpi-promocards').textContent = String(allPromoCards.length);
+            }
+            toast('Supprimé', '', 'success');
+        } catch (e) {
+            console.error(e);
+            toast('Erreur', 'Suppression impossible', 'error');
+        }
     }
+
 
     /* ------------------- Product Form ------------------- */
     async function renderProductFormPage(id){
@@ -871,7 +924,6 @@
       
       if(p.category) $('#p-category').value = p.category;
 
-      // Image preview
       const fileEl = $('#p-image-file'), prev = $('#p-image-preview');
       fileEl.addEventListener('change', function(){
         const f = fileEl.files && fileEl.files[0]; if(f){ prev.src = URL.createObjectURL(f); prev.style.display='block'; }
@@ -1074,6 +1126,176 @@
         toast('Erreur','Enregistrement impossible','error');
       }
     }
+    
+    /* ============================ Promo Cards UI ============================ */
+    $('#add-promocard').addEventListener('click', () => location.hash = '#/new-promocard');
+    $('#search-promocards').addEventListener('input', () => renderPromoCardList());
+
+    function renderPromoCardList() {
+        const term = ($('#search-promocards').value || '').toLowerCase();
+        const arr = term ? allPromoCards.filter(c => (c.title || '').toLowerCase().includes(term)) : allPromoCards;
+
+        if (!arr.length) {
+            $promoCardsContent.innerHTML = '<div class="center" style="padding:32px">Aucune carte promo.</div>';
+            return;
+        }
+        const table = document.createElement('table');
+        table.className = 'table';
+        table.innerHTML = `
+            <thead>
+                <tr>
+                    <th style="width:60px">Image</th>
+                    <th>Titre</th>
+                    <th>Destination</th>
+                    <th>Ordre</th>
+                    <th>Statut</th>
+                    <th style="width:180px;text-align:right">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tbody-promocards"></tbody>`;
+        const tb = table.querySelector('#tbody-promocards');
+        arr.forEach(c => {
+            const tr = document.createElement('tr');
+            tr.dataset.id = c.id;
+            tr.innerHTML = `
+                <td>${c.image ? `<img class="img" src="${escapeAttr(c.image)}" />` : ''}</td>
+                <td style="font-weight:800">${escapeHtml(c.title || 'Sans titre')}</td>
+                <td><span class="chip">${escapeHtml(c.screen || 'Aucune')}</span></td>
+                <td><span class="badge">${c.sortOrder || 'N/A'}</span></td>
+                <td>
+                    <label class="toggle">
+                        <span class="toggle-switch">
+                            <input type="checkbox" data-active-toggle ${c.isActive ? 'checked' : ''}>
+                            <span class="toggle-slider"></span>
+                        </span>
+                    </label>
+                </td>
+                <td class="actions">
+                    <button class="btn btn-small" data-edit>Éditer</button>
+                    <button class="btn btn-danger btn-small" data-del>Supprimer</button>
+                </td>`;
+            tr.querySelector('[data-edit]').onclick = () => location.hash = `#/edit-promocard/${c.id}`;
+            tr.querySelector('[data-del]').onclick = () => handleDelete(c.id, c.title, 'promoCards');
+            tr.querySelector('[data-active-toggle]').onchange = (e) => handlePromoCardStatusToggle(c.id, e.target.checked);
+            tb.appendChild(tr);
+        });
+        $promoCardsContent.innerHTML = '';
+        $promoCardsContent.appendChild(table);
+        lucide.createIcons();
+    }
+    
+    async function handlePromoCardStatusToggle(id, isActive) {
+        try {
+            await updateDoc(doc(db, 'promoCards', id), { isActive: isActive });
+            const card = allPromoCards.find(c => c.id === id);
+            if (card) card.isActive = isActive;
+            toast('Statut mis à jour', `La carte est maintenant ${isActive ? 'active' : 'inactive'}.`, 'success');
+        } catch (error) {
+            console.error("Erreur de mise à jour du statut:", error);
+            toast('Erreur', 'Impossible de changer le statut.', 'error');
+            renderPromoCardList(); // Re-render to revert the toggle on error
+        }
+    }
+
+    async function renderPromoCardFormPage(id) {
+        let card = {};
+        if (id) {
+            card = allPromoCards.find(c => c.id === id) || (await getDoc(doc(db, 'promoCards', id)).then(s => s.exists() ? { id: s.id, ...s.data() } : null));
+            if (!card) {
+                $promoCardsContent.innerHTML = '<div class="center" style="padding:32px">Carte introuvable.</div>';
+                return;
+            }
+        }
+        const wrap = document.createElement('div');
+        wrap.className = 'form-wrap';
+        wrap.innerHTML = `
+            <div class="form-head"><div class="form-title">${id ? 'Éditer' : 'Nouvelle'} Carte Promo</div></div>
+            <form class="form-main" novalidate>
+                <div class="twocol">
+                    <div class="field">
+                        <label class="label" for="pc-title">Titre</label>
+                        <input id="pc-title" class="input" type="text" value="${escapeAttr(card.title || '')}" required />
+                    </div>
+                    <div class="field">
+                        <label class="label" for="pc-subtitle">Sous-titre (optionnel)</label>
+                        <input id="pc-subtitle" class="input" type="text" value="${escapeAttr(card.subtitle || '')}" />
+                    </div>
+                </div>
+                <div class="twocol">
+                    <div class="field">
+                        <label class="label" for="pc-cta">Texte du bouton (CTA)</label>
+                        <input id="pc-cta" class="input" type="text" value="${escapeAttr(card.cta || '')}" />
+                    </div>
+                    <div class="field">
+                        <label class="label" for="pc-screen">Écran de destination</label>
+                        <input id="pc-screen" class="input" type="text" value="${escapeAttr(card.screen || '')}" placeholder="Ex: MatchList, Store..." />
+                    </div>
+                </div>
+                <div class="twocol">
+                    <div class="field">
+                      <label class="label" for="pc-image">URL de l'image</label>
+                      <input id="pc-image" class="input" type="url" value="${escapeAttr(card.image || '')}" />
+                    </div>
+                    <div class="field">
+                        <label class="label" for="pc-sortOrder">Ordre d'affichage</label>
+                        <input id="pc-sortOrder" class="input" type="number" min="1" step="1" value="${card.sortOrder || ''}" required />
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="toggle">
+                        <span class="toggle-switch">
+                            <input id="pc-isActive" type="checkbox" ${card.isActive !== false ? 'checked' : ''}>
+                            <span class="toggle-slider"></span>
+                        </span>
+                        <span>Active (visible dans l'application)</span>
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn" data-cancel>Annuler</button>
+                    <button type="submit" class="btn btn-primary">${id ? 'Enregistrer' : 'Créer la carte'}</button>
+                </div>
+            </form>`;
+        $promoCardsContent.innerHTML = '';
+        $promoCardsContent.appendChild(wrap);
+        wrap.querySelector('[data-cancel]').onclick = () => location.hash = '#/promocards';
+        wrap.querySelector('form').onsubmit = e => handlePromoCardFormSubmit(e, id);
+    }
+
+    async function handlePromoCardFormSubmit(e, id) {
+        e.preventDefault();
+        const data = {
+            title: $('#pc-title').value.trim(),
+            subtitle: $('#pc-subtitle').value.trim(),
+            cta: $('#pc-cta').value.trim(),
+            screen: $('#pc-screen').value.trim(),
+            image: $('#pc-image').value.trim(),
+            sortOrder: parseInt($('#pc-sortOrder').value, 10) || 0,
+            isActive: $('#pc-isActive').checked,
+        };
+        if (!data.title || !data.sortOrder) {
+            toast('Erreur', 'Le titre et l\'ordre sont requis.', 'error');
+            return;
+        }
+        try {
+            if (id) {
+                await updateDoc(doc(db, 'promoCards', id), data);
+                const i = allPromoCards.findIndex(c => c.id === id);
+                if (i > -1) allPromoCards[i] = { id, ...data };
+                toast('Carte mise à jour', data.title, 'success');
+            } else {
+                const refDoc = await addDoc(collection(db, 'promoCards'), data);
+                allPromoCards.push({ id: refDoc.id, ...data });
+                $('#kpi-promocards').textContent = String(allPromoCards.length);
+                toast('Carte créée', data.title, 'success');
+            }
+            allPromoCards.sort((a, b) => a.sortOrder - b.sortOrder);
+            location.hash = '#/promocards';
+        } catch (err) {
+            console.error(err);
+            toast('Erreur', 'Enregistrement impossible', 'error');
+        }
+    }
+
 
     /* ============================ Sorting (click header) ============================ */
     document.addEventListener('click', function(e){
